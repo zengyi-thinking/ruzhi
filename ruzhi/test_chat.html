@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儒智 - 历史人物对话测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .user-message {
+            background-color: #e1f5fe;
+            margin-left: 50px;
+        }
+        .ai-message {
+            background-color: #f1f1f1;
+            margin-right: 50px;
+        }
+        .character-selector {
+            margin-bottom: 20px;
+        }
+        .input-container {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3367d6;
+        }
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>儒智 - 历史人物对话测试</h1>
+    
+    <div class="character-selector">
+        <label for="character-select">选择历史人物：</label>
+        <select id="character-select">
+            <option value="confucius">孔子</option>
+            <option value="mengzi">孟子</option>
+            <option value="xunzi">荀子</option>
+        </select>
+        <button id="load-characters">加载人物列表</button>
+    </div>
+    
+    <div class="chat-container" id="chat-container">
+        <div class="message ai-message">
+            请选择一位历史人物开始对话。
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">正在思考回复...</div>
+    
+    <div class="input-container">
+        <input type="text" id="message-input" placeholder="在此输入您的问题...">
+        <button id="send-button">发送</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatContainer = document.getElementById('chat-container');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const characterSelect = document.getElementById('character-select');
+            const loadCharactersButton = document.getElementById('load-characters');
+            const loadingIndicator = document.getElementById('loading');
+            
+            // API 地址
+            const API_URL = 'http://127.0.0.1:8003/api/v1/dialogue';
+            
+            // 加载角色列表
+            loadCharactersButton.addEventListener('click', async function() {
+                try {
+                    const response = await fetch(`${API_URL}/characters`);
+                    const data = await response.json();
+                    
+                    // 清空下拉列表
+                    characterSelect.innerHTML = '';
+                    
+                    // 添加获取到的角色
+                    data.characters.forEach(character => {
+                        const option = document.createElement('option');
+                        option.value = character.id;
+                        option.textContent = character.name;
+                        characterSelect.appendChild(option);
+                    });
+                    
+                    addMessage('系统', '角色列表已更新。');
+                } catch (error) {
+                    console.error('获取角色列表失败:', error);
+                    addMessage('系统', '获取角色列表失败，请检查API服务是否启动。');
+                }
+            });
+            
+            // 发送消息
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+                
+                // 添加用户消息到聊天界面
+                addMessage('用户', message);
+                messageInput.value = '';
+                
+                // 显示加载指示器
+                loadingIndicator.style.display = 'block';
+                
+                // 发送请求到AI服务
+                fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: 'test_user',
+                        message: message,
+                        character: characterSelect.value
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API响应错误');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 隐藏加载指示器
+                    loadingIndicator.style.display = 'none';
+                    
+                    // 添加AI回复到聊天界面
+                    addMessage(getCharacterName(data.character), data.content);
+                })
+                .catch(error => {
+                    console.error('发送消息失败:', error);
+                    loadingIndicator.style.display = 'none';
+                    addMessage('系统', '发送消息失败，请检查API服务是否启动。');
+                });
+            }
+            
+            function addMessage(sender, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = sender === '用户' ? 'message user-message' : 'message ai-message';
+                messageDiv.innerHTML = `<strong>${sender}:</strong> ${content}`;
+                chatContainer.appendChild(messageDiv);
+                
+                // 自动滚动到底部
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function getCharacterName(characterId) {
+                switch(characterId) {
+                    case 'confucius': return '孔子';
+                    case 'mengzi': return '孟子';
+                    case 'xunzi': return '荀子';
+                    default: return characterId;
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

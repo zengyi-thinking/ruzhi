@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儒智 - DeepSeek历史人物对话测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #3a539b;
+            text-align: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            position: relative;
+            clear: both;
+        }
+        .user-message {
+            background-color: #e1f5fe;
+            margin-left: 50px;
+            border-top-right-radius: 0;
+            float: right;
+        }
+        .ai-message {
+            background-color: #f1f1f1;
+            margin-right: 50px;
+            border-top-left-radius: 0;
+            float: left;
+        }
+        .character-selector {
+            margin-bottom: 20px;
+        }
+        .input-container {
+            display: flex;
+            margin-bottom: 10px;
+            clear: both;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3367d6;
+        }
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            display: none;
+            clear: both;
+            padding: 10px;
+        }
+        .api-config {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .api-config input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        .time {
+            font-size: 0.7em;
+            color: #999;
+            margin-top: 5px;
+            display: block;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+    <h1>儒智 - DeepSeek历史人物对话测试</h1>
+    
+    <div class="api-config">
+        <h3>DeepSeek API配置</h3>
+        <label for="api-key">API密钥:</label>
+        <input type="text" id="api-key" placeholder="输入您的DeepSeek API密钥" value="sk-d624fca8134b4ecc84c178770118ffb8">
+    </div>
+    
+    <div class="character-selector">
+        <label for="character-select">选择历史人物：</label>
+        <select id="character-select">
+            <option value="confucius">孔子</option>
+            <option value="mengzi">孟子</option>
+            <option value="xunzi">荀子</option>
+        </select>
+    </div>
+    
+    <div class="chat-container clearfix" id="chat-container">
+        <div class="message ai-message">
+            请选择一位历史人物开始对话。
+            <span class="time">系统消息</span>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">正在思考回复...</div>
+    
+    <div class="input-container">
+        <input type="text" id="message-input" placeholder="在此输入您的问题...">
+        <button id="send-button">发送</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatContainer = document.getElementById('chat-container');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const characterSelect = document.getElementById('character-select');
+            const loadingIndicator = document.getElementById('loading');
+            const apiKeyInput = document.getElementById('api-key');
+            
+            // API 配置
+            const API_BASE = "https://api.deepseek.com/v1";
+            
+            // 人物配置
+            const characterConfigs = {
+                "confucius": {
+                    name: "孔子",
+                    description: "你是孔子，春秋末期伟大的思想家、教育家，儒家学派创始人。你提倡'仁'、'礼'等价值观，著有《论语》，教导弟子'己所不欲，勿施于人'。请用孔子的语气风格回答问题，引经据典但不晦涩，表达简洁有力。"
+                },
+                "mengzi": {
+                    name: "孟子",
+                    description: "你是孟子，战国时期伟大的思想家、教育家，儒家学派的重要代表人物，被后人尊称为'亚圣'。你提出'性善论'，主张王道政治，强调'民为贵，社稷次之，君为轻'。请用孟子的语气风格回答问题，语言犀利坚定，善于辩论，富有哲理性。"
+                },
+                "xunzi": {
+                    name: "荀子",
+                    description: "你是荀子，战国末期著名思想家、文学家，儒家学派重要代表人物。你提出'性恶论'，主张'天行有常'，强调礼义教化的重要性。请用荀子的语气风格回答问题，逻辑严密，善于分析辩论，语言犀利直接，条理清晰。"
+                }
+            };
+            
+            // 发送消息
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+                
+                // 获取当前选择的角色
+                const characterId = characterSelect.value;
+                const character = characterConfigs[characterId];
+                
+                // 添加用户消息到聊天界面
+                addMessage('用户', message);
+                messageInput.value = '';
+                
+                // 显示加载指示器
+                loadingIndicator.style.display = 'block';
+                
+                // 调用DeepSeek API
+                callDeepSeekAPI(character, message);
+            }
+            
+            function callDeepSeekAPI(character, message) {
+                const apiKey = apiKeyInput.value.trim();
+                if (!apiKey) {
+                    addMessage('系统', '请输入有效的DeepSeek API密钥');
+                    loadingIndicator.style.display = 'none';
+                    return;
+                }
+                
+                const headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                };
+                
+                const payload = {
+                    "model": "deepseek-chat",
+                    "messages": [
+                        {"role": "system", "content": character.description},
+                        {"role": "user", "content": message}
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 1000
+                };
+                
+                fetch(`${API_BASE}/chat/completions`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API响应错误: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 隐藏加载指示器
+                    loadingIndicator.style.display = 'none';
+                    
+                    // 提取回复内容
+                    if (data.choices && data.choices.length > 0) {
+                        const reply = data.choices[0].message.content;
+                        addMessage(character.name, reply);
+                    } else {
+                        addMessage('系统', '获取回复失败，请重试');
+                    }
+                })
+                .catch(error => {
+                    console.error('API调用错误:', error);
+                    loadingIndicator.style.display = 'none';
+                    addMessage('系统', `调用API失败: ${error.message}`);
+                });
+            }
+            
+            function addMessage(sender, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = sender === '用户' ? 'message user-message' : 'message ai-message';
+                
+                // 添加消息内容
+                messageDiv.innerHTML = `
+                    ${content}
+                    <span class="time">${sender} - ${getCurrentTime()}</span>
+                `;
+                
+                chatContainer.appendChild(messageDiv);
+                
+                // 添加clearfix以确保浮动布局正确
+                const clearfix = document.createElement('div');
+                clearfix.className = 'clearfix';
+                chatContainer.appendChild(clearfix);
+                
+                // 自动滚动到底部
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function getCurrentTime() {
+                const now = new Date();
+                return now.toLocaleTimeString();
+            }
+        });
+    </script>
+</body>
+</html> 
