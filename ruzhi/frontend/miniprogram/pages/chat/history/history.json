@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "对话历史",
+  "enablePullDownRefresh": false,
+  "backgroundColor": "#f5f5f5",
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-loading": "@vant/weapp/loading/index"
+  }
+}

@@ -1,0 +1,44 @@
+/* 经典库页面样式 */
+
+.classics-container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.classics-header {
+  margin-bottom: 30rpx;
+}
+
+.classics-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.classics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.classic-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.classic-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.classic-desc {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.6;
+}

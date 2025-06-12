@@ -1,0 +1,27 @@
+{
+  "name": "ruzhi-miniprogram",
+  "version": "1.0.0",
+  "description": "儒智微信小程序",
+  "main": "app.js",
+  "scripts": {
+    "dev": "echo '开发环境'",
+    "build": "echo '构建生产版本'"
+  },
+  "keywords": [
+    "miniprogram",
+    "wechat",
+    "traditional-culture",
+    "ocr",
+    "ai-chat"
+  ],
+  "author": "儒智团队",
+  "license": "MIT",
+  "dependencies": {
+    "@vant/weapp": "^1.11.6"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/ruzhi-miniprogram.git"
+  }
+}

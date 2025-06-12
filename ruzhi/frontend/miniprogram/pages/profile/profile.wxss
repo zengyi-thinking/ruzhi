@@ -1,0 +1,58 @@
+/* 个人中心页面样式 */
+
+.profile-container {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.profile-header {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: #fff;
+  padding: 40rpx 20rpx;
+  text-align: center;
+}
+
+.user-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.user-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.user-desc {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.profile-content {
+  padding: 20rpx;
+}
+
+.menu-section {
+  margin-bottom: 30rpx;
+}
+
+.menu-item {
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 2rpx;
+  overflow: hidden;
+}
+
+.menu-item:first-child {
+  border-top-left-radius: 16rpx;
+  border-top-right-radius: 16rpx;
+}
+
+.menu-item:last-child {
+  border-bottom-left-radius: 16rpx;
+  border-bottom-right-radius: 16rpx;
+  margin-bottom: 0;
+}

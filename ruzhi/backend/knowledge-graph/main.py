@@ -2,10 +2,16 @@
 儒智知识图谱服务 - 主入口
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 import logging
+import sys
+import time
+import traceback
 from contextlib import asynccontextmanager
+from datetime import datetime
 import os
 
 # 导入API模块
@@ -35,12 +41,38 @@ NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "password")
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
+# 配置增强的日志系统
+def setup_logging():
+    """设置增强的日志配置"""
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+    )
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
+    console_handler.setLevel(logging.INFO)
+
+    # 确保日志目录存在
+    os.makedirs("logs", exist_ok=True)
+
+    file_handler = logging.FileHandler("logs/knowledge_graph.log", encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.DEBUG)
+
+    error_handler = logging.FileHandler("logs/knowledge_graph_errors.log", encoding="utf-8")
+    error_handler.setFormatter(formatter)
+    error_handler.setLevel(logging.ERROR)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.addHandler(console_handler)
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(error_handler)
+
+    return logging.getLogger(__name__)
+
+logger = setup_logging()
+start_time = time.time()
 
 # 图谱服务实例
 graph_service = None
@@ -79,6 +111,36 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# 请求日志中间件
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """记录所有HTTP请求"""
+    start_time_req = time.time()
+
+    logger.info(f"请求开始: {request.method} {request.url}")
+
+    try:
+        response = await call_next(request)
+        process_time = time.time() - start_time_req
+
+        logger.info(
+            f"请求完成: {request.method} {request.url} - "
+            f"状态码: {response.status_code} - "
+            f"处理时间: {process_time:.3f}s"
+        )
+
+        response.headers["X-Process-Time"] = str(process_time)
+        return response
+
+    except Exception as e:
+        process_time = time.time() - start_time_req
+        logger.error(
+            f"请求失败: {request.method} {request.url} - "
+            f"错误: {str(e)} - "
+            f"处理时间: {process_time:.3f}s"
+        )
+        raise
+
 # 添加CORS中间件
 app.add_middleware(
     CORSMiddleware,
@@ -87,6 +149,44 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 全局异常处理器
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    """处理HTTP异常"""
+    logger.warning(f"HTTP异常: {exc.status_code} - {exc.detail} - URL: {request.url}")
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": "HTTP错误",
+            "message": exc.detail,
+            "status_code": exc.status_code,
+            "timestamp": datetime.now().isoformat(),
+            "path": str(request.url)
+        }
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """处理所有未捕获的异常"""
+    error_id = f"kg_error_{int(time.time())}_{hash(str(exc)) % 10000}"
+
+    logger.error(
+        f"未处理异常 [{error_id}]: {type(exc).__name__}: {str(exc)} - "
+        f"URL: {request.url} - "
+        f"Traceback: {traceback.format_exc()}"
+    )
+
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "知识图谱服务内部错误",
+            "message": "服务遇到意外错误，请稍后重试",
+            "error_id": error_id,
+            "timestamp": datetime.now().isoformat(),
+            "path": str(request.url)
+        }
+    )
 
 # 根路径
 @app.get("/")

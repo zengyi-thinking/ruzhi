@@ -1,0 +1,65 @@
+{
+  "characters": [
+    {
+      "id": "confucius",
+      "name": "孔子",
+      "full_name": "孔丘",
+      "birth_year": -551,
+      "death_year": -479,
+      "dynasty": "春秋",
+      "title": "至圣先师",
+      "description": "儒家学派创始人，中国古代伟大的思想家、教育家",
+      "key_thoughts": [
+        "仁",
+        "礼",
+        "教育",
+        "德治"
+      ],
+      "famous_quotes": [
+        "学而时习之，不亦说乎？",
+        "己所不欲，勿施于人",
+        "三人行，必有我师焉"
+      ],
+      "personality_traits": {
+        "wisdom": 10,
+        "compassion": 9,
+        "patience": 8,
+        "humor": 7,
+        "strictness": 6
+      },
+      "dialogue_style": "温和而深刻，善于启发，常用比喻",
+      "modern_relevance": "教育理念、道德修养在现代仍有重要意义"
+    },
+    {
+      "id": "mencius",
+      "name": "孟子",
+      "full_name": "孟轲",
+      "birth_year": -372,
+      "death_year": -289,
+      "dynasty": "战国",
+      "title": "亚圣",
+      "description": "儒家学派重要代表，发展了孔子思想，提出性善论",
+      "key_thoughts": [
+        "性善论",
+        "仁政",
+        "民本",
+        "浩然之气"
+      ],
+      "famous_quotes": [
+        "人之初，性本善",
+        "民为贵，社稷次之，君为轻",
+        "富贵不能淫，贫贱不能移，威武不能屈"
+      ],
+      "personality_traits": {
+        "wisdom": 9,
+        "righteousness": 10,
+        "courage": 9,
+        "eloquence": 10,
+        "idealism": 9
+      },
+      "dialogue_style": "雄辩有力，逻辑严密，富有激情",
+      "modern_relevance": "人性观、政治理念对现代民主思想有启发"
+    }
+  ],
+  "created_at": "2025-06-12T12:47:22.735633"
+}

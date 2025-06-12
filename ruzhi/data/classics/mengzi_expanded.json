@@ -1,0 +1,67 @@
+{
+  "title": "孟子",
+  "author": "孟子",
+  "description": "儒家经典著作，发展了孔子的思想，提出性善论",
+  "chapters": [
+    {
+      "chapter_id": "liang_hui_wang",
+      "chapter_name": "梁惠王章句",
+      "chapter_number": 1,
+      "sections": [
+        {
+          "section_id": "1_1",
+          "original_text": "孟子见梁惠王。王曰：「叟不远千里而来，亦将有以利吾国乎？」孟子对曰：「王何必曰利？亦有仁义而已矣。」",
+          "modern_translation": "孟子拜见梁惠王。王说：「老先生不远千里而来，也是要有什么来使我的国家获利吧？」孟子回答说：「大王何必说利呢？只要有仁义就够了。」",
+          "annotation": {
+            "key_concepts": [
+              "仁义",
+              "利益",
+              "政治理念",
+              "王道"
+            ],
+            "detailed_explanation": "孟子强调仁义高于利益，体现了儒家重义轻利的价值观。",
+            "historical_context": "战国时期各国争霸，孟子提出仁政理念对抗功利主义。",
+            "modern_application": "现代社会中，价值观与利益的平衡仍然是重要议题。",
+            "related_concepts": [
+              "价值观",
+              "政治伦理",
+              "社会责任",
+              "道德选择"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "chapter_id": "li_lou",
+      "chapter_name": "离娄章句",
+      "chapter_number": 4,
+      "sections": [
+        {
+          "section_id": "4_1",
+          "original_text": "孟子曰：「仁之实，事亲是也；义之实，从兄是也。」",
+          "modern_translation": "孟子说：「仁的实质，就是侍奉父母；义的实质，就是顺从兄长。」",
+          "annotation": {
+            "key_concepts": [
+              "仁",
+              "义",
+              "孝悌",
+              "家庭伦理"
+            ],
+            "detailed_explanation": "孟子将抽象的仁义概念具体化为家庭伦理关系。",
+            "historical_context": "孟子继承并发展了孔子的思想，强调仁义的实践性。",
+            "modern_application": "家庭关系仍然是现代社会道德教育的基础。",
+            "related_concepts": [
+              "道德实践",
+              "家庭教育",
+              "伦理关系",
+              "品德培养"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "created_at": "2025-06-12T12:47:22.734046",
+  "updated_at": "2025-06-12T12:47:22.734053"
+}

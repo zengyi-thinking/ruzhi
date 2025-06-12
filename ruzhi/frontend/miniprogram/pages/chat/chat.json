@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "人物对话",
+  "enablePullDownRefresh": false,
+  "backgroundColor": "#f5f5f5",
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-loading": "@vant/weapp/loading/index",
+    "van-toast": "@vant/weapp/toast/index"
+  }
+}

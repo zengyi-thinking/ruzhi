@@ -1,0 +1,130 @@
+<!--首页模板-->
+<view class="home-container">
+  <!-- 顶部用户信息区域 -->
+  <view class="user-header">
+    <view class="user-info" bindtap="onUserAvatarClick">
+      <image 
+        class="user-avatar" 
+        src="{{hasUserInfo ? userInfo.avatarUrl : '/images/default-avatar.png'}}"
+        mode="aspectFill"
+      />
+      <view class="user-details">
+        <text class="user-name">{{hasUserInfo ? userInfo.nickName : '点击登录'}}</text>
+        <text class="user-desc">{{hasUserInfo ? '继续学习传统文化' : '开启智慧之旅'}}</text>
+      </view>
+    </view>
+    <view class="header-actions">
+      <text class="icon-bell">🔔</text>
+    </view>
+  </view>
+
+  <!-- 学习统计卡片 -->
+  <view class="stats-card card" bindtap="onViewStudyStats">
+    <view class="stats-header">
+      <text class="stats-title">学习统计</text>
+      <text class="icon-arrow">→</text>
+    </view>
+    <view class="stats-content">
+      <view class="stat-item">
+        <text class="stat-number">{{studyStats.totalDays}}</text>
+        <text class="stat-label">学习天数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{studyStats.completedChapters}}</text>
+        <text class="stat-label">完成章节</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{studyStats.ocrCount}}</text>
+        <text class="stat-label">识别次数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{studyStats.totalHours}}</text>
+        <text class="stat-label">学习时长(h)</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能模块 -->
+  <view class="features-section">
+    <view class="section-header">
+      <text class="section-title">核心功能</text>
+    </view>
+    <view class="features-grid">
+      <view 
+        class="feature-item" 
+        wx:for="{{features}}" 
+        wx:key="id"
+        data-feature="{{item}}"
+        bindtap="onFeatureClick"
+      >
+        <view class="feature-icon" style="background-color: {{item.color}}20;">
+          <image src="{{item.icon}}" class="feature-image" mode="aspectFit" />
+        </view>
+        <text class="feature-title">{{item.title}}</text>
+        <text class="feature-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日推荐 -->
+  <view class="recommend-section" wx:if="{{todayRecommend.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">今日推荐</text>
+      <text class="section-more" bindtap="onViewMoreRecommend">查看更多</text>
+    </view>
+    <scroll-view class="recommend-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="recommend-list">
+        <view 
+          class="recommend-item" 
+          wx:for="{{todayRecommend}}" 
+          wx:key="id"
+          data-item="{{item}}"
+          bindtap="onRecommendClick"
+        >
+          <image src="{{item.image}}" class="recommend-image" mode="aspectFill" />
+          <view class="recommend-content">
+            <text class="recommend-title">{{item.title}}</text>
+            <text class="recommend-text ancient-text">{{item.content}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 最近使用 -->
+  <view class="recent-section" wx:if="{{recentUsed.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最近使用</text>
+    </view>
+    <view class="recent-list">
+      <view 
+        class="recent-item" 
+        wx:for="{{recentUsed}}" 
+        wx:key="id"
+        data-feature="{{item}}"
+        bindtap="onFeatureClick"
+      >
+        <view class="recent-icon" style="background-color: {{item.color}}20;">
+          <image src="{{item.icon}}" class="recent-image" mode="aspectFit" />
+        </view>
+        <view class="recent-info">
+          <text class="recent-title">{{item.title}}</text>
+          <text class="recent-time">{{item.lastUsed}}</text>
+        </view>
+        <text class="icon-arrow">→</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner">⏳</view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && todayRecommend.length === 0 && recentUsed.length === 0}}">
+    <view class="empty-icon">📚</view>
+    <text class="empty-text">暂无内容</text>
+  </view>
+</view>

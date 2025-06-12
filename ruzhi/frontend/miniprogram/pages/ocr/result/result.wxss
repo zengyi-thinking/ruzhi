@@ -1,0 +1,50 @@
+/* OCR结果页面样式 */
+
+.result-container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.result-header {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.result-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.result-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.result-content {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.result-text {
+  font-size: 28rpx;
+  line-height: 2;
+  color: #333;
+  font-family: 'STSong', 'SimSun', serif;
+}
+
+.result-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}

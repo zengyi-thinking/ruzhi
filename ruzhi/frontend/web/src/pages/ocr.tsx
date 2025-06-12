@@ -18,7 +18,12 @@ import {
   Form,
   Tooltip,
   Table,
-  Tag
+  Tag,
+  Modal,
+  Input,
+  notification,
+  Dropdown,
+  Menu
 } from 'antd';
 import { 
   InboxOutlined, 
@@ -31,7 +36,13 @@ import {
   SaveOutlined,
   CopyOutlined,
   CheckCircleOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  EditOutlined,
+  DownloadOutlined,
+  FileWordOutlined,
+  FilePdfOutlined,
+  FileTextOutlined as FileTextIcon,
+  MoreOutlined
 } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd';
 import axios from 'axios';
@@ -42,6 +53,7 @@ const { Title, Paragraph, Text } = Typography;
 const { Dragger } = Upload;
 const { TabPane } = Tabs;
 const { Option } = Select;
+const { TextArea } = Input;
 
 // 与后端模型对应的接口定义
 interface TextVariant {
@@ -97,6 +109,10 @@ export default function OCRPage() {
   const [historyItems, setHistoryItems] = useState<OCRHistoryItem[]>([]);
   const [loadingModes, setLoadingModes] = useState<boolean>(false);
   const [loadingHistory, setLoadingHistory] = useState<boolean>(false);
+  const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
+  const [editedText, setEditedText] = useState<string>('');
+  const [saveModalVisible, setSaveModalVisible] = useState<boolean>(false);
+  const [saveTitle, setSaveTitle] = useState<string>('');
   const [enhanceSettings, setEnhanceSettings] = useState({
     enhance_image: true,
     denoise: true,
@@ -244,10 +260,159 @@ export default function OCRPage() {
     }
   };
 
-  // 保存识别结果
-  const saveResult = () => {
-    message.success('结果已保存');
-    // 实际项目中应调用API保存结果
+  // 打开文本编辑模态框
+  const openEditModal = () => {
+    setEditedText(ocrResult?.text || '');
+    setEditModalVisible(true);
+  };
+
+  // 保存编辑后的文本
+  const saveEditedText = () => {
+    if (ocrResult) {
+      setOcrResult({
+        ...ocrResult,
+        text: editedText
+      });
+      setEditModalVisible(false);
+      notification.success({
+        message: '文本编辑成功',
+        description: '识别结果已更新为编辑后的内容。'
+      });
+    }
+  };
+
+  // 打开保存模态框
+  const openSaveModal = () => {
+    const timestamp = new Date().toLocaleString();
+    setSaveTitle(`OCR识别结果_${timestamp}`);
+    setSaveModalVisible(true);
+  };
+
+  // 保存识别结果到历史
+  const saveResultToHistory = async () => {
+    if (!ocrResult) return;
+
+    try {
+      const saveData = {
+        title: saveTitle,
+        text: ocrResult.text,
+        confidence: ocrResult.confidence,
+        processing_time: ocrResult.processing_time,
+        variants: ocrResult.variants,
+        layout: ocrResult.layout,
+        created_at: new Date().toISOString()
+      };
+
+      // 实际项目中应调用API保存结果
+      // await axios.post('/api/v1/ocr/save', saveData);
+
+      setSaveModalVisible(false);
+      notification.success({
+        message: '保存成功',
+        description: '识别结果已保存到历史记录。'
+      });
+    } catch (error) {
+      notification.error({
+        message: '保存失败',
+        description: '无法保存识别结果，请重试。'
+      });
+    }
+  };
+
+  // 导出为不同格式
+  const exportResult = (format: 'txt' | 'json' | 'docx' | 'pdf') => {
+    if (!ocrResult) return;
+
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `OCR识别结果_${timestamp}`;
+
+    switch (format) {
+      case 'txt':
+        exportAsText(filename);
+        break;
+      case 'json':
+        exportAsJSON(filename);
+        break;
+      case 'docx':
+        exportAsWord(filename);
+        break;
+      case 'pdf':
+        exportAsPDF(filename);
+        break;
+    }
+  };
+
+  // 导出为文本文件
+  const exportAsText = (filename: string) => {
+    const content = ocrResult?.text || '';
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+    notification.success({ message: '文本文件导出成功' });
+  };
+
+  // 导出为JSON文件
+  const exportAsJSON = (filename: string) => {
+    const exportData = {
+      text: ocrResult?.text,
+      confidence: ocrResult?.confidence,
+      processing_time: ocrResult?.processing_time,
+      variants: ocrResult?.variants,
+      layout: ocrResult?.layout,
+      export_time: new Date().toISOString()
+    };
+
+    const content = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    notification.success({ message: 'JSON文件导出成功' });
+  };
+
+  // 导出为Word文档（简化版）
+  const exportAsWord = (filename: string) => {
+    const content = `
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>OCR识别结果</title>
+        </head>
+        <body>
+          <h1>OCR识别结果</h1>
+          <h2>识别文本</h2>
+          <p>${ocrResult?.text?.replace(/\n/g, '<br>')}</p>
+          <h2>识别信息</h2>
+          <p>置信度: ${((ocrResult?.confidence || 0) * 100).toFixed(0)}%</p>
+          <p>处理时间: ${ocrResult?.processing_time?.toFixed(2)}秒</p>
+          <p>导出时间: ${new Date().toLocaleString()}</p>
+        </body>
+      </html>
+    `;
+
+    const blob = new Blob([content], { type: 'application/msword;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.doc`;
+    link.click();
+    URL.revokeObjectURL(url);
+    notification.success({ message: 'Word文档导出成功' });
+  };
+
+  // 导出为PDF（简化版，实际项目中建议使用专门的PDF库）
+  const exportAsPDF = (filename: string) => {
+    notification.info({
+      message: 'PDF导出',
+      description: 'PDF导出功能需要集成专门的PDF生成库，当前版本暂不支持。'
+    });
   };
 
   const handleSettingChange = (setting: string, value: boolean) => {
@@ -410,20 +575,53 @@ export default function OCRPage() {
               }
               extra={
                 <Space>
+                  <Tooltip title="编辑文本">
+                    <Button
+                      icon={<EditOutlined />}
+                      onClick={openEditModal}
+                      size="small"
+                    />
+                  </Tooltip>
                   <Tooltip title="复制文本">
-                    <Button 
-                      icon={<CopyOutlined />} 
+                    <Button
+                      icon={<CopyOutlined />}
                       onClick={copyTextToClipboard}
                       size="small"
                     />
                   </Tooltip>
                   <Tooltip title="保存结果">
-                    <Button 
-                      icon={<SaveOutlined />} 
-                      onClick={saveResult}
+                    <Button
+                      icon={<SaveOutlined />}
+                      onClick={openSaveModal}
                       size="small"
                     />
                   </Tooltip>
+                  <Dropdown
+                    overlay={
+                      <Menu onClick={({ key }) => exportResult(key as any)}>
+                        <Menu.Item key="txt" icon={<FileTextIcon />}>
+                          导出为文本文件
+                        </Menu.Item>
+                        <Menu.Item key="json" icon={<FileTextIcon />}>
+                          导出为JSON文件
+                        </Menu.Item>
+                        <Menu.Item key="docx" icon={<FileWordOutlined />}>
+                          导出为Word文档
+                        </Menu.Item>
+                        <Menu.Item key="pdf" icon={<FilePdfOutlined />}>
+                          导出为PDF文档
+                        </Menu.Item>
+                      </Menu>
+                    }
+                    trigger={['click']}
+                  >
+                    <Tooltip title="导出文件">
+                      <Button
+                        icon={<DownloadOutlined />}
+                        size="small"
+                      />
+                    </Tooltip>
+                  </Dropdown>
                 </Space>
               }
             >
@@ -606,6 +804,89 @@ export default function OCRPage() {
           {renderHistoryTab()}
         </TabPane>
       </Tabs>
+
+      {/* 文本编辑模态框 */}
+      <Modal
+        title="编辑识别文本"
+        open={editModalVisible}
+        onCancel={() => setEditModalVisible(false)}
+        onOk={saveEditedText}
+        width={800}
+        okText="保存"
+        cancelText="取消"
+      >
+        <div style={{ marginBottom: 16 }}>
+          <Text type="secondary">
+            您可以在下方编辑识别出的文本内容，修正识别错误或添加标点符号。
+          </Text>
+        </div>
+        <TextArea
+          value={editedText}
+          onChange={(e) => setEditedText(e.target.value)}
+          rows={15}
+          placeholder="请输入或编辑文本内容..."
+          style={{ fontSize: '16px', lineHeight: '1.8' }}
+        />
+        <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
+          <Text type="secondary">字符数: {editedText.length}</Text>
+          <Space>
+            <Button size="small" onClick={() => setEditedText('')}>
+              清空
+            </Button>
+            <Button size="small" onClick={() => setEditedText(ocrResult?.text || '')}>
+              重置
+            </Button>
+          </Space>
+        </div>
+      </Modal>
+
+      {/* 保存结果模态框 */}
+      <Modal
+        title="保存识别结果"
+        open={saveModalVisible}
+        onCancel={() => setSaveModalVisible(false)}
+        onOk={saveResultToHistory}
+        okText="保存"
+        cancelText="取消"
+      >
+        <Form layout="vertical">
+          <Form.Item label="保存标题" required>
+            <Input
+              value={saveTitle}
+              onChange={(e) => setSaveTitle(e.target.value)}
+              placeholder="请输入保存标题..."
+            />
+          </Form.Item>
+          <Form.Item label="识别内容预览">
+            <div style={{
+              maxHeight: '200px',
+              overflow: 'auto',
+              padding: '12px',
+              border: '1px solid #f0f0f0',
+              borderRadius: '4px',
+              backgroundColor: '#fafafa'
+            }}>
+              <Text className="ancient-text">
+                {ocrResult?.text?.substring(0, 200)}
+                {(ocrResult?.text?.length || 0) > 200 ? '...' : ''}
+              </Text>
+            </div>
+          </Form.Item>
+          <Form.Item label="识别信息">
+            <Space direction="vertical" size="small">
+              <Text type="secondary">
+                置信度: {((ocrResult?.confidence || 0) * 100).toFixed(0)}%
+              </Text>
+              <Text type="secondary">
+                处理时间: {ocrResult?.processing_time?.toFixed(2)}秒
+              </Text>
+              <Text type="secondary">
+                异体字数量: {ocrResult?.variants?.length || 0}个
+              </Text>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
 
       <style jsx global>{`
         .ocr-card {

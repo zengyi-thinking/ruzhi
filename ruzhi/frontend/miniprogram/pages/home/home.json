@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "儒智",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#1890ff",
+  "backgroundTextStyle": "light",
+  "usingComponents": {
+    "van-icon": "@vant/weapp/icon/index",
+    "van-loading": "@vant/weapp/loading/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-toast": "@vant/weapp/toast/index"
+  }
+}

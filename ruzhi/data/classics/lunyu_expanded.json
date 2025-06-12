@@ -1,0 +1,101 @@
+{
+  "title": "论语",
+  "author": "孔子及其弟子",
+  "description": "儒家经典著作，记录孔子及其弟子的言行",
+  "chapters": [
+    {
+      "chapter_id": "xue_er",
+      "chapter_name": "学而篇",
+      "chapter_number": 1,
+      "sections": [
+        {
+          "section_id": "1_1",
+          "original_text": "子曰：「学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？」",
+          "modern_translation": "孔子说：「学习了知识并且按时复习，不是很愉快吗？有朋友从远方来，不是很快乐吗？别人不了解我，我也不怨恨，不也是君子的品格吗？」",
+          "annotation": {
+            "key_concepts": [
+              "学习",
+              "复习",
+              "友谊",
+              "君子",
+              "修养"
+            ],
+            "detailed_explanation": "这是《论语》的开篇之语，体现了孔子教育思想的核心：学习的快乐、友谊的珍贵、以及君子的修养。",
+            "historical_context": "春秋时期，孔子强调教育的重要性，认为学习是人生的乐趣之一。",
+            "modern_application": "在现代社会，终身学习的理念与孔子的教育思想不谋而合。",
+            "related_concepts": [
+              "教育",
+              "品德修养",
+              "人际关系",
+              "情绪管理"
+            ]
+          },
+          "commentary": [
+            {
+              "commentator": "朱熹",
+              "content": "学之时习，所以学者将以行之也。朋友远来，所以辅仁也。人不知而不愠，所以为君子也。"
+            },
+            {
+              "commentator": "现代解读",
+              "content": "这段话体现了孔子对学习、友谊和品格修养的深刻理解，是儒家思想的精髓体现。"
+            }
+          ]
+        },
+        {
+          "section_id": "1_2",
+          "original_text": "有子曰：「其为人也孝弟，而好犯上者，鲜矣；不好犯上，而好作乱者，未之有也。君子务本，本立而道生。孝弟也者，其为仁之本与！」",
+          "modern_translation": "有子说：「一个人如果孝顺父母、敬爱兄长，却喜欢冒犯上级的，是很少的；不喜欢冒犯上级，却喜欢造反作乱的，是没有的。君子专心致力于根本，根本确立了，道就产生了。孝顺父母、敬爱兄长，这就是仁的根本吧！」",
+          "annotation": {
+            "key_concepts": [
+              "孝悌",
+              "仁",
+              "君子",
+              "根本",
+              "道"
+            ],
+            "detailed_explanation": "有子强调孝悌是仁德的根本，体现了儒家重视家庭伦理的思想。",
+            "historical_context": "春秋时期社会动荡，儒家强调从家庭伦理出发建立社会秩序。",
+            "modern_application": "现代社会中，家庭教育和孝道仍然是品德教育的重要内容。",
+            "related_concepts": [
+              "家庭伦理",
+              "社会秩序",
+              "品德教育",
+              "仁爱"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "chapter_id": "wei_zheng",
+      "chapter_name": "为政篇",
+      "chapter_number": 2,
+      "sections": [
+        {
+          "section_id": "2_1",
+          "original_text": "子曰：「为政以德，譬如北辰，居其所而众星共之。」",
+          "modern_translation": "孔子说：「用道德来治理国家，就像北极星一样，安居在自己的位置上，众星都围绕着它。」",
+          "annotation": {
+            "key_concepts": [
+              "德治",
+              "政治",
+              "道德",
+              "领导力"
+            ],
+            "detailed_explanation": "孔子提出德治思想，认为统治者应该以德服人，而不是以力服人。",
+            "historical_context": "春秋时期政治混乱，孔子提出德治理念作为治国方略。",
+            "modern_application": "现代政治中，道德领导力仍然是重要的治理理念。",
+            "related_concepts": [
+              "政治哲学",
+              "领导艺术",
+              "道德治理",
+              "社会管理"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "created_at": "2025-06-12T12:47:22.733048",
+  "updated_at": "2025-06-12T12:47:22.733077"
+}

@@ -1,0 +1,75 @@
+{
+  "concepts": [
+    {
+      "id": "ren",
+      "name": "仁",
+      "definition": "儒家核心概念，指仁爱、仁慈、人道",
+      "category": "核心价值",
+      "importance": 10,
+      "related_texts": [
+        "论语",
+        "孟子"
+      ],
+      "modern_relevance": "现代人文关怀、社会责任的基础"
+    },
+    {
+      "id": "yi",
+      "name": "义",
+      "definition": "正义、道义、应该做的事",
+      "category": "核心价值",
+      "importance": 9,
+      "related_texts": [
+        "论语",
+        "孟子"
+      ],
+      "modern_relevance": "现代法治精神、道德准则的体现"
+    },
+    {
+      "id": "li",
+      "name": "礼",
+      "definition": "礼仪、制度、社会规范",
+      "category": "社会制度",
+      "importance": 8,
+      "related_texts": [
+        "论语"
+      ],
+      "modern_relevance": "现代社会秩序、文明礼貌的基础"
+    },
+    {
+      "id": "xiao_ti",
+      "name": "孝悌",
+      "definition": "孝顺父母、敬爱兄长",
+      "category": "家庭伦理",
+      "importance": 9,
+      "related_texts": [
+        "论语",
+        "孟子"
+      ],
+      "modern_relevance": "现代家庭教育、孝道文化的核心"
+    }
+  ],
+  "relations": [
+    {
+      "from": "xiao_ti",
+      "to": "ren",
+      "relation_type": "基础关系",
+      "strength": 0.9,
+      "description": "孝悌是仁的根本"
+    },
+    {
+      "from": "ren",
+      "to": "yi",
+      "relation_type": "并列关系",
+      "strength": 0.8,
+      "description": "仁义并重，相辅相成"
+    },
+    {
+      "from": "li",
+      "to": "ren",
+      "relation_type": "实现关系",
+      "strength": 0.7,
+      "description": "礼是仁的外在表现"
+    }
+  ],
+  "created_at": "2025-06-12T12:47:22.734723"
+}

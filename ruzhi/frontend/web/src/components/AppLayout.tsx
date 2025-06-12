@@ -1,10 +1,12 @@
 import React, { ReactNode } from 'react';
-import { 
-  Layout, 
-  Typography, 
+import {
+  Layout,
+  Typography,
   Menu,
   Breadcrumb
 } from 'antd';
+import { FeedbackProvider } from './FeedbackProvider';
+import ErrorBoundary from './ErrorBoundary';
 import { 
   BookOutlined, 
   ReadOutlined,
@@ -12,7 +14,8 @@ import {
   ScanOutlined,
   QuestionCircleOutlined,
   HistoryOutlined,
-  UserOutlined
+  UserOutlined,
+  MessageOutlined
 } from '@ant-design/icons';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -51,15 +54,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   };
 
   return (
-    <>
-      <Head>
-        <title>{title} - 儒智</title>
-        <meta name="description" content={description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      
-      <Layout className="app-layout">
+    <FeedbackProvider>
+      <ErrorBoundary>
+        <Head>
+          <title>{title} - 儒智</title>
+          <meta name="description" content={description} />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+
+        <Layout className="app-layout">
         <Header className="app-header">
           <div className="logo" onClick={() => router.push('/')}>
             <BookOutlined className="logo-icon" />
@@ -88,6 +92,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                 icon: <ScanOutlined />,
                 label: '古籍识别',
                 onClick: () => handleMenuClick('ocr'),
+              },
+              {
+                key: 'dialogue',
+                icon: <MessageOutlined />,
+                label: '人物对话',
+                onClick: () => handleMenuClick('dialogue'),
               },
               {
                 key: 'learning',
@@ -138,7 +148,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           儒智 ©{new Date().getFullYear()} - 让古代智慧在现代社会焕发新生
         </Footer>
       </Layout>
-    </>
+      </ErrorBoundary>
+    </FeedbackProvider>
   );
 };
 
