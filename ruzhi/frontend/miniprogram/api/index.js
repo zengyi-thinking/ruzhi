@@ -40,29 +40,34 @@ const ocrAPI = {
 const chatAPI = {
   // 获取历史人物列表
   getCharacters() {
-    return request.get('/api/v1/dialogue/characters')
-  },
-
-  // 获取历史人物详情
-  getCharacterInfo(characterId) {
-    return request.get(`/api/v1/dialogue/characters/${characterId}`)
+    return request.get('/api/v1/chat/characters')
   },
 
   // 发送对话消息
   sendMessage(data) {
-    return request.post('/api/v1/dialogue/chat', data, {
+    return request.post('/api/v1/chat/send', data, {
       loadingText: '思考中...'
     })
   },
 
-  // 获取对话历史
-  getChatHistory(userId) {
-    return request.get(`/api/v1/dialogue/history/${userId}`)
+  // 获取对话历史列表
+  getConversationHistory(userId) {
+    return request.get(`/api/v1/chat/conversations/${userId}`)
+  },
+
+  // 获取与特定人物的对话历史
+  getCharacterHistory(userId, characterId) {
+    return request.get(`/api/v1/chat/character-history/${userId}/${characterId}`)
   },
 
   // 保存对话记录
-  saveChatHistory(data) {
-    return request.post('/api/v1/dialogue/save', data)
+  saveConversation(data) {
+    return request.post('/api/v1/chat/save', data)
+  },
+
+  // 删除对话记录
+  deleteConversation(conversationId) {
+    return request.delete(`/api/v1/chat/delete/${conversationId}`)
   }
 }
 

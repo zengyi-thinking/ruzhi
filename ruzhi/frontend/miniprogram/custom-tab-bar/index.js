@@ -8,32 +8,32 @@ Component({
       {
         pagePath: "/pages/home/home",
         text: "首页",
-        iconPath: "wap-home-o",
-        selectedIconPath: "wap-home"
+        icon: "🏠",
+        selectedIcon: "🏠"
       },
       {
-        pagePath: "/pages/ocr/ocr", 
+        pagePath: "/pages/ocr/ocr",
         text: "古籍识别",
-        iconPath: "scan",
-        selectedIconPath: "scan"
+        icon: "📷",
+        selectedIcon: "📷"
       },
       {
         pagePath: "/pages/chat/chat",
-        text: "人物对话", 
-        iconPath: "chat-o",
-        selectedIconPath: "chat"
+        text: "人物对话",
+        icon: "💬",
+        selectedIcon: "💬"
       },
       {
         pagePath: "/pages/classics/classics",
         text: "经典库",
-        iconPath: "book-o", 
-        selectedIconPath: "book"
+        icon: "📚",
+        selectedIcon: "📚"
       },
       {
         pagePath: "/pages/profile/profile",
         text: "我的",
-        iconPath: "user-o",
-        selectedIconPath: "user"
+        icon: "👤",
+        selectedIcon: "👤"
       }
     ]
   },

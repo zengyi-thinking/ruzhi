@@ -1,2 +1,191 @@
-<!--pages/ocr/ocr.wxml-->
-<text>pages/ocr/ocr.wxml</text>
+<!--OCR古籍识别页面-->
+<view class="page-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="header-title">
+      <text class="title-icon">📖</text>
+      <text class="title-text">古籍识别</text>
+    </view>
+    <view class="header-subtitle">智能识别古籍文字，传承文化经典</view>
+  </view>
+
+  <!-- 图片选择区域 -->
+  <view class="image-section">
+    <view wx:if="{{!hasImage}}" class="image-placeholder" bindtap="onChooseImage">
+      <view class="placeholder-icon">📷</view>
+      <view class="placeholder-text">点击选择图片</view>
+      <view class="placeholder-hint">支持拍照或从相册选择</view>
+    </view>
+
+    <view wx:else class="image-preview">
+      <image src="{{imageUrl}}" mode="aspectFit" class="preview-image" />
+      <view class="image-actions">
+        <button class="action-btn secondary" bindtap="onReChooseImage">
+          <text class="btn-icon">🔄</text>
+          <text>重选</text>
+        </button>
+        <button class="action-btn danger" bindtap="onDeleteImage">
+          <text class="btn-icon">🗑️</text>
+          <text>删除</text>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- OCR模式选择 -->
+  <view class="mode-section" wx:if="{{hasImage}}">
+    <view class="section-title">识别模式</view>
+    <view class="mode-list">
+      <view
+        wx:for="{{ocrModes}}"
+        wx:key="id"
+        class="mode-item {{selectedMode === item.id ? 'active' : ''}}"
+        bindtap="onModeChange"
+        data-mode="{{item.id}}"
+      >
+        <view class="mode-name">{{item.name}}</view>
+        <view class="mode-desc">{{item.description}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 识别设置 -->
+  <view class="settings-section" wx:if="{{hasImage}}">
+    <view class="section-title">识别设置</view>
+    <view class="settings-list">
+      <view class="setting-item">
+        <view class="setting-label">图像增强</view>
+        <switch
+          checked="{{ocrSettings.enhance_image}}"
+          bindchange="onSettingChange"
+          data-setting="enhance_image"
+          color="#1890ff"
+        />
+      </view>
+      <view class="setting-item">
+        <view class="setting-label">版面检测</view>
+        <switch
+          checked="{{ocrSettings.detect_layout}}"
+          bindchange="onSettingChange"
+          data-setting="detect_layout"
+          color="#1890ff"
+        />
+      </view>
+      <view class="setting-item">
+        <view class="setting-label">异体字识别</view>
+        <switch
+          checked="{{ocrSettings.recognize_variants}}"
+          bindchange="onSettingChange"
+          data-setting="recognize_variants"
+          color="#1890ff"
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- 开始识别按钮 -->
+  <view class="action-section" wx:if="{{hasImage}}">
+    <button
+      class="recognize-btn {{recognizing ? 'loading' : ''}}"
+      bindtap="onStartRecognition"
+      disabled="{{recognizing}}"
+    >
+      <text wx:if="{{!recognizing}}">🔍 开始识别</text>
+      <text wx:else>🔄 识别中...</text>
+    </button>
+  </view>
+
+  <!-- 历史记录入口 -->
+  <view class="history-section">
+    <view class="history-header" bindtap="onShowHistory">
+      <view class="history-title">
+        <text class="history-icon">📚</text>
+        <text>识别历史</text>
+      </view>
+      <view class="history-count">{{historyList.length}}条记录</view>
+      <text class="arrow-icon">></text>
+    </view>
+
+    <!-- 最近记录预览 -->
+    <view class="recent-history" wx:if="{{historyList.length > 0}}">
+      <view
+        wx:for="{{historyList.slice(0, 3)}}"
+        wx:key="id"
+        class="history-preview-item"
+        bindtap="onHistoryItemClick"
+        data-item="{{item}}"
+      >
+        <view class="history-text">{{item.text.substring(0, 20)}}...</view>
+        <view class="history-time">{{item.timestamp}}</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 历史记录弹窗 -->
+<view class="history-modal {{showHistory ? 'show' : ''}}" wx:if="{{showHistory}}">
+  <view class="modal-mask" bindtap="onHideHistory"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">识别历史</view>
+      <view class="modal-actions">
+        <button class="clear-btn" bindtap="onClearHistory" wx:if="{{historyList.length > 0}}">
+          清空
+        </button>
+        <button class="close-btn" bindtap="onHideHistory">✕</button>
+      </view>
+    </view>
+
+    <view class="modal-body">
+      <view wx:if="{{historyList.length === 0}}" class="empty-history">
+        <view class="empty-icon">📝</view>
+        <view class="empty-text">暂无识别记录</view>
+      </view>
+
+      <view wx:else class="history-list">
+        <view
+          wx:for="{{historyList}}"
+          wx:key="id"
+          class="history-item"
+        >
+          <view class="history-content" bindtap="onHistoryItemClick" data-item="{{item}}">
+            <view class="history-text-full">{{item.text}}</view>
+            <view class="history-meta">
+              <view class="meta-item">
+                <text class="meta-label">模式:</text>
+                <text class="meta-value">{{item.mode}}</text>
+              </view>
+              <view class="meta-item">
+                <text class="meta-label">置信度:</text>
+                <text class="meta-value">{{item.confidence}}%</text>
+              </view>
+              <view class="meta-item">
+                <text class="meta-label">时间:</text>
+                <text class="meta-value">{{item.timestamp}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="history-actions">
+            <button
+              class="delete-btn"
+              bindtap="onDeleteHistoryItem"
+              data-index="{{index}}"
+            >
+              删除
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-overlay" wx:if="{{loading || recognizing}}">
+  <view class="loading-content">
+    <view class="loading-spinner">🔄</view>
+    <view class="loading-text">
+      {{loading ? '加载中...' : '识别中...'}}
+    </view>
+  </view>
+</view>

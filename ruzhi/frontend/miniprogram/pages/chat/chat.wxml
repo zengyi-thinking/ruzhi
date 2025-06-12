@@ -1,2 +1,374 @@
-<!--pages/chat/chat.wxml-->
-<text>pages/chat/chat.wxml</text>
+<!--AI人物对话页面-->
+<view class="chat-container">
+  <!-- 人物选择模式 -->
+  <view wx:if="{{!selectedCharacter}}" class="character-selection">
+    <!-- 页面标题 -->
+    <view class="page-header">
+      <view class="header-title">
+        <text class="title-icon">🎭</text>
+        <text class="title-text">与圣贤对话</text>
+      </view>
+      <view class="header-subtitle">选择一位历史人物，开启智慧对话</view>
+    </view>
+
+    <!-- 人物列表 -->
+    <view class="characters-grid">
+      <view
+        wx:for="{{characters}}"
+        wx:key="id"
+        class="character-card"
+        bindtap="onCharacterSelect"
+        data-character="{{item}}"
+      >
+        <view class="character-avatar">
+          <image src="{{item.avatar}}" mode="aspectFill" class="avatar-image" />
+          <view class="character-dynasty">{{item.dynasty}}</view>
+        </view>
+        <view class="character-info">
+          <view class="character-name">{{item.name}}</view>
+          <view class="character-title">{{item.title}}</view>
+          <view class="character-desc">{{item.description}}</view>
+          <view class="character-tags">
+            <text
+              wx:for="{{item.tags}}"
+              wx:for-item="tag"
+              wx:key="*this"
+              class="tag"
+            >
+              {{tag}}
+            </text>
+          </view>
+        </view>
+        <view class="character-stats">
+          <view class="stat-item">
+            <text class="stat-label">对话次数</text>
+            <text class="stat-value">{{item.chatCount || 0}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">满意度</text>
+            <text class="stat-value">{{item.satisfaction || 95}}%</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 历史对话入口 -->
+    <view class="history-section">
+      <view class="section-header" bindtap="onShowHistory">
+        <view class="section-title">
+          <text class="section-icon">📚</text>
+          <text>对话历史</text>
+        </view>
+        <view class="history-count">{{totalConversations}}次对话</view>
+        <text class="arrow-icon">></text>
+      </view>
+
+      <!-- 最近对话预览 -->
+      <view wx:if="{{recentConversations.length > 0}}" class="recent-conversations">
+        <view
+          wx:for="{{recentConversations.slice(0, 3)}}"
+          wx:key="id"
+          class="conversation-preview"
+          bindtap="onConversationClick"
+          data-conversation="{{item}}"
+        >
+          <view class="conversation-character">{{item.character}}</view>
+          <view class="conversation-preview-text">{{item.lastMessage}}</view>
+          <view class="conversation-time">{{item.timestamp}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 对话界面 -->
+  <view wx:else class="chat-interface">
+    <!-- 对话头部 -->
+    <view class="chat-header">
+      <view class="header-left" bindtap="onBackToSelection">
+        <text class="back-icon">←</text>
+        <text class="back-text">返回</text>
+      </view>
+      <view class="character-info-header">
+        <image src="{{selectedCharacter.avatar}}" class="header-avatar" />
+        <view class="header-character-info">
+          <view class="header-character-name">{{selectedCharacter.name}}</view>
+          <view class="header-character-status">{{chatStatus}}</view>
+        </view>
+      </view>
+      <view class="header-right" bindtap="onShowChatMenu">
+        <text class="menu-icon">⋯</text>
+      </view>
+    </view>
+
+    <!-- 消息列表 -->
+    <scroll-view
+      class="messages-container"
+      scroll-y="true"
+      scroll-top="{{scrollTop}}"
+      scroll-into-view="{{scrollIntoView}}"
+    >
+      <view class="messages-list">
+        <!-- 欢迎消息 -->
+        <view wx:if="{{messages.length === 0}}" class="welcome-message">
+          <view class="welcome-avatar">
+            <image src="{{selectedCharacter.avatar}}" class="welcome-avatar-image" />
+          </view>
+          <view class="welcome-content">
+            <view class="welcome-text">{{selectedCharacter.welcomeMessage}}</view>
+            <view class="welcome-suggestions">
+              <text class="suggestion-title">您可以问我：</text>
+              <view
+                wx:for="{{selectedCharacter.suggestions}}"
+                wx:key="*this"
+                class="suggestion-item"
+                bindtap="onSuggestionClick"
+                data-text="{{item}}"
+              >
+                {{item}}
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 对话消息 -->
+        <view
+          wx:for="{{messages}}"
+          wx:key="id"
+          class="message-item {{item.role === 'user' ? 'user-message' : 'assistant-message'}}"
+          id="message-{{item.id}}"
+        >
+          <view wx:if="{{item.role === 'assistant'}}" class="message-avatar">
+            <image src="{{selectedCharacter.avatar}}" class="message-avatar-image" />
+          </view>
+          <view class="message-content">
+            <view class="message-bubble">
+              <text class="message-text">{{item.content}}</text>
+              <view wx:if="{{item.role === 'assistant' && item.thinking}}" class="thinking-process">
+                <text class="thinking-label">思考过程：</text>
+                <text class="thinking-text">{{item.thinking}}</text>
+              </view>
+            </view>
+            <view class="message-meta">
+              <text class="message-time">{{item.timestamp}}</text>
+              <view wx:if="{{item.role === 'assistant'}}" class="message-actions">
+                <text class="action-btn" bindtap="onCopyMessage" data-content="{{item.content}}">复制</text>
+                <text class="action-btn" bindtap="onLikeMessage" data-message="{{item}}">
+                  {{item.liked ? '❤️' : '🤍'}}
+                </text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 正在输入提示 -->
+        <view wx:if="{{isTyping}}" class="typing-indicator" id="typing-indicator">
+          <view class="typing-avatar">
+            <image src="{{selectedCharacter.avatar}}" class="typing-avatar-image" />
+          </view>
+          <view class="typing-content">
+            <view class="typing-dots">
+              <text class="dot">●</text>
+              <text class="dot">●</text>
+              <text class="dot">●</text>
+            </view>
+            <text class="typing-text">{{selectedCharacter.name}}正在思考...</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 输入区域 -->
+    <view class="input-section">
+      <view class="input-container">
+        <textarea
+          class="message-input"
+          placeholder="请输入您想说的话..."
+          value="{{inputText}}"
+          bindinput="onInputChange"
+          auto-height
+          maxlength="500"
+          show-confirm-bar="false"
+        />
+        <view class="input-actions">
+          <button
+            class="send-btn {{inputText.trim() ? 'active' : ''}}"
+            bindtap="onSendMessage"
+            disabled="{{!inputText.trim() || isSending}}"
+          >
+            <text wx:if="{{!isSending}}">发送</text>
+            <text wx:else>发送中...</text>
+          </button>
+        </view>
+      </view>
+      <view class="quick-actions">
+        <text class="quick-action" bindtap="onQuickAction" data-action="inspire">求教</text>
+        <text class="quick-action" bindtap="onQuickAction" data-action="discuss">讨论</text>
+        <text class="quick-action" bindtap="onQuickAction" data-action="question">提问</text>
+        <text class="quick-action" bindtap="onQuickAction" data-action="share">分享</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 对话菜单弹窗 -->
+<view class="chat-menu-modal {{showChatMenu ? 'show' : ''}}" wx:if="{{showChatMenu}}">
+  <view class="modal-mask" bindtap="onHideChatMenu"></view>
+  <view class="modal-content">
+    <view class="menu-header">
+      <view class="menu-title">对话选项</view>
+      <button class="close-btn" bindtap="onHideChatMenu">✕</button>
+    </view>
+    <view class="menu-body">
+      <view class="menu-item" bindtap="onExportChat">
+        <text class="menu-icon">📤</text>
+        <text class="menu-text">导出对话</text>
+      </view>
+      <view class="menu-item" bindtap="onShareChat">
+        <text class="menu-icon">📱</text>
+        <text class="menu-text">分享对话</text>
+      </view>
+      <view class="menu-item" bindtap="onClearChat">
+        <text class="menu-icon">🗑️</text>
+        <text class="menu-text">清空对话</text>
+      </view>
+      <view class="menu-item" bindtap="onChatSettings">
+        <text class="menu-icon">⚙️</text>
+        <text class="menu-text">对话设置</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 历史对话弹窗 -->
+<view class="history-modal {{showHistory ? 'show' : ''}}" wx:if="{{showHistory}}">
+  <view class="modal-mask" bindtap="onHideHistory"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">对话历史</view>
+      <view class="modal-actions">
+        <button class="search-btn" bindtap="onToggleSearch">
+          <text class="search-icon">🔍</text>
+        </button>
+        <button class="close-btn" bindtap="onHideHistory">✕</button>
+      </view>
+    </view>
+
+    <!-- 搜索框 -->
+    <view wx:if="{{showSearch}}" class="search-section">
+      <input
+        class="search-input"
+        placeholder="搜索对话内容..."
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+    </view>
+
+    <view class="modal-body">
+      <view wx:if="{{filteredConversations.length === 0}}" class="empty-history">
+        <view class="empty-icon">💬</view>
+        <view class="empty-text">暂无对话记录</view>
+      </view>
+
+      <view wx:else class="history-list">
+        <view
+          wx:for="{{filteredConversations}}"
+          wx:key="id"
+          class="history-item"
+          bindtap="onHistoryItemClick"
+          data-conversation="{{item}}"
+        >
+          <view class="history-character">
+            <image src="{{item.characterAvatar}}" class="history-avatar" />
+            <view class="history-character-name">{{item.character}}</view>
+          </view>
+          <view class="history-content">
+            <view class="history-preview">{{item.preview}}</view>
+            <view class="history-meta">
+              <text class="history-time">{{item.timestamp}}</text>
+              <text class="history-count">{{item.messageCount}}条消息</text>
+            </view>
+          </view>
+          <view class="history-actions">
+            <button
+              class="delete-btn"
+              bindtap="onDeleteHistory"
+              data-id="{{item.id}}"
+              catchtap="true"
+            >
+              删除
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 对话设置弹窗 -->
+<view class="settings-modal {{showSettings ? 'show' : ''}}" wx:if="{{showSettings}}">
+  <view class="modal-mask" bindtap="onHideSettings"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">对话设置</view>
+      <button class="close-btn" bindtap="onHideSettings">✕</button>
+    </view>
+    <view class="modal-body">
+      <view class="setting-section">
+        <view class="setting-title">回复风格</view>
+        <view class="setting-options">
+          <view
+            wx:for="{{replyStyles}}"
+            wx:key="id"
+            class="option-item {{chatSettings.replyStyle === item.id ? 'active' : ''}}"
+            bindtap="onReplyStyleChange"
+            data-style="{{item.id}}"
+          >
+            <view class="option-name">{{item.name}}</view>
+            <view class="option-desc">{{item.description}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="setting-section">
+        <view class="setting-title">其他设置</view>
+        <view class="setting-list">
+          <view class="setting-item">
+            <view class="setting-label">显示思考过程</view>
+            <switch
+              checked="{{chatSettings.showThinking}}"
+              bindchange="onSettingChange"
+              data-setting="showThinking"
+              color="#1890ff"
+            />
+          </view>
+          <view class="setting-item">
+            <view class="setting-label">打字机效果</view>
+            <switch
+              checked="{{chatSettings.typewriterEffect}}"
+              bindchange="onSettingChange"
+              data-setting="typewriterEffect"
+              color="#1890ff"
+            />
+          </view>
+          <view class="setting-item">
+            <view class="setting-label">消息提示音</view>
+            <switch
+              checked="{{chatSettings.soundEnabled}}"
+              bindchange="onSettingChange"
+              data-setting="soundEnabled"
+              color="#1890ff"
+            />
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-overlay" wx:if="{{loading}}">
+  <view class="loading-content">
+    <view class="loading-spinner">🔄</view>
+    <view class="loading-text">{{loadingText}}</view>
+  </view>
+</view>

@@ -2,9 +2,5 @@
   "navigationBarTitleText": "概念详情",
   "enablePullDownRefresh": false,
   "backgroundColor": "#f5f5f5",
-  "usingComponents": {
-    "van-icon": "@vant/weapp/icon/index",
-    "van-loading": "@vant/weapp/loading/index",
-    "van-tag": "@vant/weapp/tag/index"
-  }
+  "usingComponents": {}
 }

@@ -1,12 +1,11 @@
 /* 儒智微信小程序 - 全局样式 */
 
-/* 引入Vant组件库样式 */
-@import '@vant/weapp/common/index.wxss';
-
 /* 全局样式重置 */
 page {
   background-color: #f5f5f5;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
   font-size: 28rpx;
   line-height: 1.6;
   color: #333;
@@ -109,7 +108,7 @@ page {
 
 /* 古文样式 */
 .ancient-text {
-  font-family: 'STSong', 'SimSun', serif;
+  font-family: "STSong", "SimSun", serif;
   font-size: 32rpx;
   line-height: 2;
   color: #333;
@@ -117,7 +116,7 @@ page {
 }
 
 .ancient-title {
-  font-family: 'STSong', 'SimSun', serif;
+  font-family: "STSong", "SimSun", serif;
   font-size: 36rpx;
   font-weight: 600;
   color: #1890ff;
@@ -154,39 +153,91 @@ page {
 }
 
 /* 间距样式 */
-.mt-10 { margin-top: 10rpx; }
-.mt-20 { margin-top: 20rpx; }
-.mt-30 { margin-top: 30rpx; }
-.mt-40 { margin-top: 40rpx; }
+.mt-10 {
+  margin-top: 10rpx;
+}
+.mt-20 {
+  margin-top: 20rpx;
+}
+.mt-30 {
+  margin-top: 30rpx;
+}
+.mt-40 {
+  margin-top: 40rpx;
+}
 
-.mb-10 { margin-bottom: 10rpx; }
-.mb-20 { margin-bottom: 20rpx; }
-.mb-30 { margin-bottom: 30rpx; }
-.mb-40 { margin-bottom: 40rpx; }
+.mb-10 {
+  margin-bottom: 10rpx;
+}
+.mb-20 {
+  margin-bottom: 20rpx;
+}
+.mb-30 {
+  margin-bottom: 30rpx;
+}
+.mb-40 {
+  margin-bottom: 40rpx;
+}
 
-.ml-10 { margin-left: 10rpx; }
-.ml-20 { margin-left: 20rpx; }
-.ml-30 { margin-left: 30rpx; }
+.ml-10 {
+  margin-left: 10rpx;
+}
+.ml-20 {
+  margin-left: 20rpx;
+}
+.ml-30 {
+  margin-left: 30rpx;
+}
 
-.mr-10 { margin-right: 10rpx; }
-.mr-20 { margin-right: 20rpx; }
-.mr-30 { margin-right: 30rpx; }
+.mr-10 {
+  margin-right: 10rpx;
+}
+.mr-20 {
+  margin-right: 20rpx;
+}
+.mr-30 {
+  margin-right: 30rpx;
+}
 
-.pt-10 { padding-top: 10rpx; }
-.pt-20 { padding-top: 20rpx; }
-.pt-30 { padding-top: 30rpx; }
+.pt-10 {
+  padding-top: 10rpx;
+}
+.pt-20 {
+  padding-top: 20rpx;
+}
+.pt-30 {
+  padding-top: 30rpx;
+}
 
-.pb-10 { padding-bottom: 10rpx; }
-.pb-20 { padding-bottom: 20rpx; }
-.pb-30 { padding-bottom: 30rpx; }
+.pb-10 {
+  padding-bottom: 10rpx;
+}
+.pb-20 {
+  padding-bottom: 20rpx;
+}
+.pb-30 {
+  padding-bottom: 30rpx;
+}
 
-.pl-10 { padding-left: 10rpx; }
-.pl-20 { padding-left: 20rpx; }
-.pl-30 { padding-left: 30rpx; }
+.pl-10 {
+  padding-left: 10rpx;
+}
+.pl-20 {
+  padding-left: 20rpx;
+}
+.pl-30 {
+  padding-left: 30rpx;
+}
 
-.pr-10 { padding-right: 10rpx; }
-.pr-20 { padding-right: 20rpx; }
-.pr-30 { padding-right: 30rpx; }
+.pr-10 {
+  padding-right: 10rpx;
+}
+.pr-20 {
+  padding-right: 20rpx;
+}
+.pr-30 {
+  padding-right: 30rpx;
+}
 
 /* 圆角样式 */
 .rounded {
@@ -331,16 +382,164 @@ page {
   justify-content: center;
 }
 
+/* 原生组件样式补充 */
+.icon-bell,
+.icon-arrow {
+  font-size: 32rpx;
+  color: #666;
+}
+
+.loading-spinner {
+  font-size: 48rpx;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-icon {
+  font-size: 96rpx;
+  margin-bottom: 32rpx;
+}
+
+.empty-text {
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 表单组件样式 */
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid #e8e8e8;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #1890ff;
+  outline: none;
+}
+
+.form-textarea {
+  min-height: 120rpx;
+  resize: vertical;
+}
+
+/* 列表组件样式 */
+.list-item {
+  background: #fff;
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  align-items: center;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item-content {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.list-item-title {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.list-item-desc {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.list-item-arrow {
+  color: #ccc;
+  font-size: 24rpx;
+}
+
+/* 标签组件样式 */
+.tag {
+  display: inline-block;
+  padding: 8rpx 16rpx;
+  font-size: 20rpx;
+  border-radius: 6rpx;
+  margin-right: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.tag-primary {
+  background: #e6f7ff;
+  color: #1890ff;
+  border: 1rpx solid #91d5ff;
+}
+
+.tag-success {
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1rpx solid #b7eb8f;
+}
+
+.tag-warning {
+  background: #fffbe6;
+  color: #faad14;
+  border: 1rpx solid #ffe58f;
+}
+
+.tag-error {
+  background: #fff2f0;
+  color: #ff4d4f;
+  border: 1rpx solid #ffccc7;
+}
+
+/* 进度条样式 */
+.progress-bar {
+  width: 100%;
+  height: 8rpx;
+  background: #f0f0f0;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #1890ff;
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
 /* 响应式设计 */
 @media (max-width: 375px) {
   .container {
     padding: 15rpx;
   }
-  
+
   .card {
     padding: 20rpx;
   }
-  
+
   .ancient-text {
     font-size: 30rpx;
   }

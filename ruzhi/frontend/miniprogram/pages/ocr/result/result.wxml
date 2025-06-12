@@ -1,2 +1,162 @@
-<!--pages/ocr/result/result.wxml-->
-<text>pages/ocr/result/result.wxml</text>
+<!--OCR识别结果页面-->
+<view class="result-container">
+  <!-- 页面头部 -->
+  <view class="result-header">
+    <view class="header-title">
+      <text class="title-icon">✨</text>
+      <text class="title-text">识别结果</text>
+    </view>
+    <view class="result-meta">
+      <view class="meta-item">
+        <text class="meta-label">置信度:</text>
+        <text class="meta-value confidence">{{ocrResult.confidence}}%</text>
+      </view>
+      <view class="meta-item">
+        <text class="meta-label">处理时间:</text>
+        <text class="meta-value">{{ocrResult.processing_time}}ms</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 识别文本 -->
+  <view class="text-section">
+    <view class="section-header">
+      <text class="section-title">识别文本</text>
+      <view class="text-actions">
+        <button class="action-btn" bindtap="onCopyText">
+          <text class="btn-icon">📋</text>
+          <text>复制</text>
+        </button>
+        <button class="action-btn" bindtap="onEditText">
+          <text class="btn-icon">✏️</text>
+          <text>编辑</text>
+        </button>
+      </view>
+    </view>
+
+    <view class="text-content">
+      <textarea
+        wx:if="{{editMode}}"
+        class="text-editor"
+        value="{{editedText}}"
+        bindinput="onTextInput"
+        placeholder="请输入文本内容"
+        auto-height
+        maxlength="5000"
+      />
+      <view wx:else class="text-display ancient-text">
+        {{ocrResult.text}}
+      </view>
+    </view>
+
+    <view wx:if="{{editMode}}" class="edit-actions">
+      <button class="save-btn" bindtap="onSaveEdit">保存修改</button>
+      <button class="cancel-btn" bindtap="onCancelEdit">取消</button>
+    </view>
+  </view>
+
+  <!-- 异体字识别结果 -->
+  <view wx:if="{{ocrResult.variants && ocrResult.variants.length > 0}}" class="variants-section">
+    <view class="section-title">异体字识别</view>
+    <view class="variants-list">
+      <view
+        wx:for="{{ocrResult.variants}}"
+        wx:key="index"
+        class="variant-item"
+      >
+        <view class="variant-original">{{item.original}}</view>
+        <text class="variant-arrow">→</text>
+        <view class="variant-standard">{{item.standard}}</view>
+        <view class="variant-confidence">{{item.confidence}}%</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <button class="primary-btn" bindtap="onAnalyzeText">
+      <text class="btn-icon">🔍</text>
+      <text>智能分析</text>
+    </button>
+    <button class="secondary-btn" bindtap="onSaveToFavorites">
+      <text class="btn-icon">⭐</text>
+      <text>收藏</text>
+    </button>
+    <button class="secondary-btn" bindtap="onShareResult">
+      <text class="btn-icon">📤</text>
+      <text>分享</text>
+    </button>
+  </view>
+
+  <!-- 相关推荐 -->
+  <view wx:if="{{recommendations.length > 0}}" class="recommendations-section">
+    <view class="section-title">相关推荐</view>
+    <view class="recommendations-list">
+      <view
+        wx:for="{{recommendations}}"
+        wx:key="id"
+        class="recommendation-item"
+        bindtap="onRecommendationClick"
+        data-item="{{item}}"
+      >
+        <view class="recommendation-title">{{item.title}}</view>
+        <view class="recommendation-desc">{{item.description}}</view>
+        <view class="recommendation-tags">
+          <text
+            wx:for="{{item.tags}}"
+            wx:for-item="tag"
+            wx:key="*this"
+            class="tag"
+          >
+            {{tag}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 分析结果弹窗 -->
+<view class="analysis-modal {{showAnalysis ? 'show' : ''}}" wx:if="{{showAnalysis}}">
+  <view class="modal-mask" bindtap="onHideAnalysis"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">智能分析结果</view>
+      <button class="close-btn" bindtap="onHideAnalysis">✕</button>
+    </view>
+
+    <view class="modal-body">
+      <view wx:if="{{analysisResult.keywords && analysisResult.keywords.length > 0}}" class="analysis-section">
+        <view class="analysis-title">关键词</view>
+        <view class="keywords-list">
+          <text
+            wx:for="{{analysisResult.keywords}}"
+            wx:key="*this"
+            class="keyword-tag"
+          >
+            {{item}}
+          </text>
+        </view>
+      </view>
+
+      <view wx:if="{{analysisResult.source}}" class="analysis-section">
+        <view class="analysis-title">出处</view>
+        <view class="source-info">
+          <view class="source-title">{{analysisResult.source.title}}</view>
+          <view class="source-author">{{analysisResult.source.author}}</view>
+          <view class="source-dynasty">{{analysisResult.source.dynasty}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{analysisResult.explanation}}" class="analysis-section">
+        <view class="analysis-title">释义</view>
+        <view class="explanation-text">{{analysisResult.explanation}}</view>
+      </view>
+
+      <view wx:if="{{analysisResult.translation}}" class="analysis-section">
+        <view class="analysis-title">现代译文</view>
+        <view class="translation-text">{{analysisResult.translation}}</view>
+      </view>
+    </view>
+  </view>
+</view>

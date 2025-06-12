@@ -30,17 +30,17 @@ interface BreadcrumbItem {
 
 interface AppLayoutProps {
   children: ReactNode;
-  title: string;
+  title?: string;
   description?: string;
-  selectedKey: string;
+  selectedKey?: string;
   breadcrumbs?: BreadcrumbItem[];
 }
 
-const AppLayout: React.FC<AppLayoutProps> = ({ 
-  children, 
-  title, 
+const AppLayout: React.FC<AppLayoutProps> = ({
+  children,
+  title = '儒智',
   description = '儒智APP - 融合传统儒家经典与现代科技',
-  selectedKey,
+  selectedKey = 'home',
   breadcrumbs = []
 }) => {
   const router = useRouter();
@@ -106,8 +106,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                 onClick: () => handleMenuClick('learning'),
               },
               {
-                key: 'tools',
+                key: 'history-analysis',
                 icon: <HistoryOutlined />,
+                label: '智能分析',
+                onClick: () => handleMenuClick('history-analysis'),
+              },
+              {
+                key: 'tools',
+                icon: <QuestionCircleOutlined />,
                 label: '文化活化',
                 onClick: () => handleMenuClick('tools'),
               },

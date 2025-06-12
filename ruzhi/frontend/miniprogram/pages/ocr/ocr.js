@@ -263,7 +263,8 @@ Page({
 
   // 切换OCR模式
   onModeChange: function (e) {
-    this.setData({ selectedMode: e.detail })
+    const mode = e.currentTarget.dataset.mode
+    this.setData({ selectedMode: mode })
   },
 
   // 切换设置项
