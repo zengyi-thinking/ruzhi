@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习中心 - 儒智</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        /* 学习中心特定样式 */
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .progress-info {
+            flex: 1;
+        }
+        
+        .progress-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .progress-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .achievement-card {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.3s ease;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .achievement-card.unlocked {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-color: #667eea;
+        }
+        
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .achievement-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-desc {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-progress {
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            color: #ff4d4f;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .refresh-btn:hover {
+            background: #5a6fd8;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回首页</a>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">学习中心</span>
+        </div>
+
+        <div class="page-header">
+            <h1>📚 学习中心</h1>
+            <p>个人学习管理系统，跟踪进度，获得成就</p>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📊 学习统计</div>
+            <div id="statsContent" class="loading">加载学习统计中...</div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📈 学习进度</div>
+            <div id="progressContent" class="loading">加载学习进度中...</div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">🏆 学习成就</div>
+            <div id="achievementsContent" class="loading">加载成就数据中...</div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📅 今日计划</div>
+            <div id="plansContent" class="loading">加载今日计划中...</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn-primary" onclick="loadAllData()">🔄 刷新数据</button>
+        </div>
+    </div>
+    
+    <script>
+        const baseUrl = 'http://localhost:8000';
+        const testUserId = 'test_user_001';
+        
+        // 加载学习统计
+        async function loadStats() {
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/learning/stats/${testUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    document.getElementById('statsContent').innerHTML = `
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-number">${stats.totalDays}</span>
+                                <div class="stat-label">学习天数</div>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">${stats.totalHours}</span>
+                                <div class="stat-label">学习时长</div>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number">${stats.totalPoints}</span>
+                                <div class="stat-label">总积分</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                document.getElementById('statsContent').innerHTML = `
+                    <div class="error">加载失败: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // 加载学习进度
+        async function loadProgress() {
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/learning/progress/${testUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const progressHtml = data.data.map(item => `
+                        <div class="progress-item">
+                            <div class="progress-info">
+                                <div class="progress-title">${item.icon} ${item.title}</div>
+                                <div class="progress-subtitle">${item.subtitle}</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${item.progress}%"></div>
+                            </div>
+                            <div style="margin-left: 10px; font-weight: 600; color: #667eea;">
+                                ${item.progress}%
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('progressContent').innerHTML = progressHtml;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                document.getElementById('progressContent').innerHTML = `
+                    <div class="error">加载失败: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // 加载成就数据
+        async function loadAchievements() {
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/learning/achievements/${testUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const achievementsHtml = data.data.map(item => `
+                        <div class="achievement-card ${item.unlocked ? 'unlocked' : ''}">
+                            <span class="achievement-icon">${item.icon}</span>
+                            <div class="achievement-title">${item.title}</div>
+                            <div class="achievement-desc">${item.description}</div>
+                            <div class="achievement-progress">
+                                ${item.unlocked ? 
+                                    `已解锁 - ${item.unlockedDate}` : 
+                                    `${item.currentValue}/${item.targetValue}`
+                                }
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('achievementsContent').innerHTML = `
+                        <div class="achievement-grid">${achievementsHtml}</div>
+                    `;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                document.getElementById('achievementsContent').innerHTML = `
+                    <div class="error">加载失败: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // 加载今日计划
+        async function loadPlans() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const response = await fetch(`${baseUrl}/api/v1/learning/plans/${testUserId}/${today}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.data.length === 0) {
+                        document.getElementById('plansContent').innerHTML = `
+                            <div style="text-align: center; padding: 20px; color: #666;">
+                                今日暂无学习计划
+                            </div>
+                        `;
+                    } else {
+                        const plansHtml = data.data.map(item => `
+                            <div class="progress-item">
+                                <div class="progress-info">
+                                    <div class="progress-title">
+                                        ${item.completed ? '✅' : '⭕'} ${item.title}
+                                    </div>
+                                    <div class="progress-subtitle">
+                                        ${item.type} | ${item.duration}分钟 | ${item.difficulty}
+                                    </div>
+                                </div>
+                                <div style="color: ${item.completed ? '#52c41a' : '#667eea'}; font-weight: 600;">
+                                    ${item.completed ? '已完成' : item.progress + '%'}
+                                </div>
+                            </div>
+                        `).join('');
+                        
+                        document.getElementById('plansContent').innerHTML = plansHtml;
+                    }
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                document.getElementById('plansContent').innerHTML = `
+                    <div class="error">加载失败: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // 加载所有数据
+        function loadAllData() {
+            loadStats();
+            loadProgress();
+            loadAchievements();
+            loadPlans();
+        }
+        
+        // 页面加载时执行
+        window.addEventListener('load', loadAllData);
+    </script>
+</body>
+</html>

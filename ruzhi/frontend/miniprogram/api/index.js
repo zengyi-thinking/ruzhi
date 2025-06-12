@@ -162,6 +162,114 @@ const userAPI = {
   // 获取学习统计
   getStudyStats(userId) {
     return request.get(`/api/v1/user/${userId}/stats`)
+  },
+
+  // 获取用户学习历史
+  getLearningHistory(userId) {
+    return request.get(`/api/v1/user/${userId}/learning-history`)
+  },
+
+  // 获取AI分析结果
+  getAIAnalysis(userId, data) {
+    return request.post(`/api/v1/user/${userId}/ai-analysis`, data)
+  },
+
+  // 获取个性化推荐
+  getRecommendations(userId) {
+    return request.get(`/api/v1/user/${userId}/recommendations`)
+  },
+
+  // 获取学习路径
+  getLearningPaths(userId) {
+    return request.get(`/api/v1/user/${userId}/learning-paths`)
+  },
+
+  // 记录学习会话
+  recordSession(userId, data) {
+    return request.post(`/api/v1/user/${userId}/learning-session`, data)
+  },
+
+  // 获取用户资料
+  getUserProfile(userId) {
+    return request.get(`/api/v1/auth/profile/${userId}`)
+  },
+
+  // 更新用户资料
+  updateUserProfile(userId, data) {
+    return request.put(`/api/v1/auth/profile/${userId}`, data)
+  }
+}
+
+// 学习中心相关API
+const learningAPI = {
+  // 获取学习统计
+  getStudyStats(userId) {
+    return request.get(`/api/v1/learning/stats/${userId}`)
+  },
+
+  // 获取学习进度
+  getProgressData(userId) {
+    return request.get(`/api/v1/learning/progress/${userId}`)
+  },
+
+  // 获取今日计划
+  getTodayPlans(userId, date) {
+    return request.get(`/api/v1/learning/plans/${userId}/${date}`)
+  },
+
+  // 获取用户成就
+  getAchievements(userId) {
+    return request.get(`/api/v1/learning/achievements/${userId}`)
+  },
+
+  // 创建学习计划
+  createPlan(planData) {
+    return request.post('/api/v1/learning/plans', planData)
+  },
+
+  // 更新计划状态
+  updatePlanStatus(userId, planId, completed) {
+    return request.put(`/api/v1/learning/plans/${userId}/${planId}/status`, {
+      completed: completed
+    })
+  },
+
+  // 获取某日学习记录
+  getDayStudyRecords(userId, date) {
+    return request.get(`/api/v1/learning/records/${userId}/${date}`)
+  },
+
+  // 获取统计数据
+  getStatsData(userId, type) {
+    return request.get(`/api/v1/learning/stats/${userId}?type=${type}`)
+  }
+}
+
+// 用户认证相关API
+const authAPI = {
+  // 用户注册
+  register(userData) {
+    return request.post('/api/v1/auth/register', userData)
+  },
+
+  // 用户登录
+  login(credentials) {
+    return request.post('/api/v1/auth/login', credentials)
+  },
+
+  // 验证令牌
+  verifyToken(token) {
+    return request.post('/api/v1/auth/verify', { token })
+  },
+
+  // 获取用户资料
+  getUserProfile(userId) {
+    return request.get(`/api/v1/auth/profile/${userId}`)
+  },
+
+  // 更新用户资料
+  updateUserProfile(userId, data) {
+    return request.put(`/api/v1/auth/profile/${userId}`, data)
   }
 }
 
@@ -198,5 +306,7 @@ module.exports = {
   knowledgeAPI,
   classicsAPI,
   userAPI,
+  learningAPI,
+  authAPI,
   systemAPI
 }

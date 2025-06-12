@@ -1,0 +1,121 @@
+<!--儒智小程序 - 首页-->
+<view class="page-container traditional-bg">
+  <!-- 头部欢迎区域 -->
+  <view class="header-section">
+    <view class="welcome-card card">
+      <view class="welcome-content">
+        <view class="welcome-title">🏛️ 儒智</view>
+        <view class="welcome-subtitle">传统文化智能学习平台</view>
+        <view class="welcome-desc">探索中华文化的智慧宝库，与古代先贤对话交流</view>
+      </view>
+      <view class="welcome-avatar">
+        <image src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" class="avatar-large" mode="aspectFill"></image>
+        <view class="user-name">{{userInfo.nickName || '文化学者'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日学习统计 -->
+  <view class="stats-section">
+    <view class="card">
+      <view class="card-title">📊 今日学习</view>
+      <view class="stats-grid">
+        <view class="stat-item">
+          <view class="stat-number">{{todayStats.studyTime}}</view>
+          <view class="stat-label">分钟</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">{{todayStats.conversations}}</view>
+          <view class="stat-label">对话</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">{{todayStats.ocrCount}}</view>
+          <view class="stat-label">识别</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">{{todayStats.points}}</view>
+          <view class="stat-label">积分</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能导航 -->
+  <view class="features-section">
+    <view class="card">
+      <view class="card-title">🎯 核心功能</view>
+      <view class="features-grid">
+        <view class="feature-item" bindtap="navigateToOCR">
+          <view class="feature-icon">📷</view>
+          <view class="feature-title">OCR识别</view>
+          <view class="feature-desc">古籍文本智能识别</view>
+        </view>
+        <view class="feature-item" bindtap="navigateToDialogue">
+          <view class="feature-icon">💬</view>
+          <view class="feature-title">AI对话</view>
+          <view class="feature-desc">与古代先贤交流</view>
+        </view>
+        <view class="feature-item" bindtap="navigateToKnowledge">
+          <view class="feature-icon">🧠</view>
+          <view class="feature-title">知识图谱</view>
+          <view class="feature-desc">探索文化概念</view>
+        </view>
+        <view class="feature-item" bindtap="navigateToClassics">
+          <view class="feature-icon">📚</view>
+          <view class="feature-title">经典阅读</view>
+          <view class="feature-desc">智能注释解读</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近活动 -->
+  <view class="recent-section">
+    <view class="card">
+      <view class="card-title">⏰ 最近活动</view>
+      <view class="recent-list" wx:if="{{recentActivities.length > 0}}">
+        <view class="recent-item" wx:for="{{recentActivities}}" wx:key="id">
+          <view class="recent-icon">{{item.icon}}</view>
+          <view class="recent-content">
+            <view class="recent-title">{{item.title}}</view>
+            <view class="recent-time">{{item.time}}</view>
+          </view>
+          <view class="recent-arrow">›</view>
+        </view>
+      </view>
+      <view class="empty" wx:else>
+        <view class="empty-icon">📝</view>
+        <view class="empty-text">暂无学习记录<br/>开始您的文化探索之旅吧</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 推荐内容 -->
+  <view class="recommend-section">
+    <view class="card">
+      <view class="card-title">💡 今日推荐</view>
+      <view class="recommend-item" wx:for="{{recommendations}}" wx:key="id" bindtap="handleRecommendTap" data-item="{{item}}">
+        <view class="recommend-content">
+          <view class="recommend-title">{{item.title}}</view>
+          <view class="recommend-desc">{{item.description}}</view>
+          <view class="recommend-tags">
+            <view class="tag tag-primary" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</view>
+          </view>
+        </view>
+        <view class="recommend-arrow">›</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快速操作 -->
+  <view class="quick-actions">
+    <view class="action-btn btn-primary" bindtap="quickOCR">
+      <view class="action-icon">📸</view>
+      <view class="action-text">快速识别</view>
+    </view>
+    <view class="action-btn btn-secondary" bindtap="quickChat">
+      <view class="action-icon">💭</view>
+      <view class="action-text">开始对话</view>
+    </view>
+  </view>
+</view>

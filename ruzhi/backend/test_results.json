@@ -1,0 +1,152 @@
+{
+  "summary": {
+    "total_tests": 20,
+    "passed_tests": 20,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "total_time": 41.86880397796631,
+    "timestamp": "2025-06-12T21:07:15.941045"
+  },
+  "results": [
+    {
+      "module": "系统",
+      "test_name": "健康检查",
+      "success": true,
+      "details": "状态码: 200",
+      "timestamp": "2025-06-12T21:06:36.164275"
+    },
+    {
+      "module": "OCR",
+      "test_name": "获取识别模式",
+      "success": true,
+      "details": "模式数量: 4",
+      "timestamp": "2025-06-12T21:06:38.209873"
+    },
+    {
+      "module": "OCR",
+      "test_name": "获取历史记录",
+      "success": true,
+      "details": "状态码: 200",
+      "timestamp": "2025-06-12T21:06:40.256776"
+    },
+    {
+      "module": "OCR",
+      "test_name": "AI文本解读",
+      "success": true,
+      "details": "解读成功: True",
+      "timestamp": "2025-06-12T21:06:42.386777"
+    },
+    {
+      "module": "对话",
+      "test_name": "获取人物列表",
+      "success": true,
+      "details": "人物数量: 5",
+      "timestamp": "2025-06-12T21:06:44.442116"
+    },
+    {
+      "module": "对话",
+      "test_name": "AI人物对话",
+      "success": true,
+      "details": "对话成功: True",
+      "timestamp": "2025-06-12T21:06:46.592499"
+    },
+    {
+      "module": "对话",
+      "test_name": "获取对话历史",
+      "success": true,
+      "details": "状态码: 200",
+      "timestamp": "2025-06-12T21:06:48.656287"
+    },
+    {
+      "module": "学习",
+      "test_name": "获取用户统计",
+      "success": true,
+      "details": "统计获取: True",
+      "timestamp": "2025-06-12T21:06:50.700787"
+    },
+    {
+      "module": "学习",
+      "test_name": "获取学习进度",
+      "success": true,
+      "details": "进度项目数: 3",
+      "timestamp": "2025-06-12T21:06:52.757003"
+    },
+    {
+      "module": "学习",
+      "test_name": "获取用户成就",
+      "success": true,
+      "details": "成就数量: 4",
+      "timestamp": "2025-06-12T21:06:54.815061"
+    },
+    {
+      "module": "经典",
+      "test_name": "获取经典列表",
+      "success": true,
+      "details": "经典数量: 3",
+      "timestamp": "2025-06-12T21:06:56.879597"
+    },
+    {
+      "module": "经典",
+      "test_name": "AI文本注释",
+      "success": true,
+      "details": "注释成功: True",
+      "timestamp": "2025-06-12T21:06:59.000260"
+    },
+    {
+      "module": "经典",
+      "test_name": "概念解释",
+      "success": true,
+      "details": "解释成功: True",
+      "timestamp": "2025-06-12T21:07:01.124799"
+    },
+    {
+      "module": "知识图谱",
+      "test_name": "概念详情分析",
+      "success": true,
+      "details": "分析成功: True",
+      "timestamp": "2025-06-12T21:07:03.249441"
+    },
+    {
+      "module": "知识图谱",
+      "test_name": "概念故事生成",
+      "success": true,
+      "details": "故事生成: True",
+      "timestamp": "2025-06-12T21:07:05.383353"
+    },
+    {
+      "module": "知识图谱",
+      "test_name": "自动概念扩展",
+      "success": true,
+      "details": "扩展成功: True",
+      "timestamp": "2025-06-12T21:07:07.531795"
+    },
+    {
+      "module": "知识图谱",
+      "test_name": "智能搜索",
+      "success": true,
+      "details": "搜索成功: True",
+      "timestamp": "2025-06-12T21:07:09.702199"
+    },
+    {
+      "module": "知识图谱",
+      "test_name": "学习路径生成",
+      "success": true,
+      "details": "路径生成: True",
+      "timestamp": "2025-06-12T21:07:11.856868"
+    },
+    {
+      "module": "配置",
+      "test_name": "获取API配置",
+      "success": true,
+      "details": "配置获取: True",
+      "timestamp": "2025-06-12T21:07:13.899929"
+    },
+    {
+      "module": "配置",
+      "test_name": "获取API统计",
+      "success": true,
+      "details": "统计获取: True",
+      "timestamp": "2025-06-12T21:07:15.936475"
+    }
+  ]
+}

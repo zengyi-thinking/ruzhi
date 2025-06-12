@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识图谱 - 儒智</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.7);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .back-link {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .title {
+            color: #ecf0f1;
+            font-size: 1.5rem;
+            font-weight: 300;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .control-btn {
+            padding: 8px 16px;
+            background: rgba(52, 152, 219, 0.8);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .control-btn:hover {
+            background: rgba(52, 152, 219, 1);
+            transform: translateY(-2px);
+        }
+        
+        .search-box {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            width: 200px;
+            outline: none;
+        }
+        
+        .graph-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+        }
+        
+        .node {
+            position: absolute;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            user-select: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-width: 80px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+            z-index: 10;
+        }
+        
+        .node.selected {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+        }
+        
+        .node.core {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            font-size: 1.1rem;
+            padding: 15px 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+        
+        .connection {
+            position: absolute;
+            background: rgba(52, 152, 219, 0.6);
+            height: 2px;
+            transform-origin: left center;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .connection.active {
+            background: rgba(231, 76, 60, 0.8);
+            height: 3px;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        
+        .sidebar {
+            position: absolute;
+            right: 20px;
+            top: 100px;
+            bottom: 20px;
+            width: 300px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            overflow-y: auto;
+            transform: translateX(320px);
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .sidebar-title {
+            color: #ecf0f1;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .concept-info {
+            color: #bdc3c7;
+            line-height: 1.6;
+        }
+        
+        .concept-info h3 {
+            color: #3498db;
+            margin: 15px 0 10px 0;
+        }
+        
+        .concept-info p {
+            margin-bottom: 10px;
+        }
+        
+        .related-concepts {
+            margin-top: 20px;
+        }
+        
+        .related-item {
+            background: rgba(52, 152, 219, 0.2);
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ecf0f1;
+        }
+        
+        .related-item:hover {
+            background: rgba(52, 152, 219, 0.4);
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 50;
+        }
+        
+        .legend-title {
+            color: #ecf0f1;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ecf0f1;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .sidebar {
+                width: 250px;
+                right: 10px;
+                top: 120px;
+            }
+            
+            .search-box {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="index.html" class="back-link">← 返回首页</a>
+                <div class="title">🕸️ 知识图谱</div>
+            </div>
+            <div class="controls">
+                <input type="text" class="search-box" placeholder="搜索概念..." id="searchBox">
+                <button class="control-btn" id="resetBtn">重置视图</button>
+                <button class="control-btn" id="layoutBtn">重新布局</button>
+                <button class="control-btn" id="infoBtn">详细信息</button>
+            </div>
+        </div>
+        
+        <div class="graph-container" id="graphContainer">
+            <div class="loading" id="loading">构建知识图谱中</div>
+        </div>
+        
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-title">概念详情</div>
+            <div class="concept-info" id="conceptInfo">
+                <p>点击任意概念节点查看详细信息</p>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-title">图例说明</div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #f39c12, #e67e22);"></div>
+                <span>核心概念</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #3498db, #2980b9);"></div>
+                <span>相关概念</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #e74c3c, #c0392b);"></div>
+                <span>选中概念</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const baseUrl = 'http://localhost:8000';
+        let nodes = [];
+        let connections = [];
+        let selectedNode = null;
+        
+        // 知识图谱数据
+        const knowledgeData = {
+            nodes: [
+                { id: 'ren', name: '仁', type: 'core', x: 400, y: 300, description: '儒家思想的核心概念，指仁爱、仁慈、人道主义精神' },
+                { id: 'li', name: '礼', type: 'normal', x: 600, y: 200, description: '社会秩序和道德规范的体现' },
+                { id: 'yi', name: '义', type: 'normal', x: 600, y: 400, description: '正义、道德行为的准则' },
+                { id: 'zhi', name: '智', type: 'normal', x: 200, y: 200, description: '智慧、知识、理性思考能力' },
+                { id: 'xin', name: '信', type: 'normal', x: 200, y: 400, description: '诚信、信任、言行一致' },
+                { id: 'dao', name: '道', type: 'core', x: 800, y: 300, description: '道家核心概念，宇宙万物的根本规律' },
+                { id: 'de', name: '德', type: 'normal', x: 1000, y: 200, description: '道德品质、德行' },
+                { id: 'wu', name: '无', type: 'normal', x: 1000, y: 400, description: '道家哲学中的虚无、空灵状态' },
+                { id: 'junzi', name: '君子', type: 'normal', x: 400, y: 100, description: '儒家理想人格，具备高尚品德的人' },
+                { id: 'xiaoren', name: '小人', type: 'normal', x: 400, y: 500, description: '品德低下、心胸狭隘的人' }
+            ],
+            connections: [
+                { from: 'ren', to: 'li', label: '体现' },
+                { from: 'ren', to: 'yi', label: '包含' },
+                { from: 'ren', to: 'zhi', label: '需要' },
+                { from: 'ren', to: 'xin', label: '基于' },
+                { from: 'ren', to: 'junzi', label: '成就' },
+                { from: 'dao', to: 'de', label: '产生' },
+                { from: 'dao', to: 'wu', label: '体现' },
+                { from: 'li', to: 'junzi', label: '培养' },
+                { from: 'yi', to: 'junzi', label: '塑造' },
+                { from: 'junzi', to: 'xiaoren', label: '对立' }
+            ]
+        };
+        
+        // 初始化知识图谱
+        function initKnowledgeGraph() {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                createNodes();
+                createConnections();
+                bindEvents();
+            }, 1500);
+        }
+        
+        // 创建节点
+        function createNodes() {
+            const container = document.getElementById('graphContainer');
+            
+            knowledgeData.nodes.forEach(nodeData => {
+                const node = document.createElement('div');
+                node.className = `node ${nodeData.type}`;
+                node.textContent = nodeData.name;
+                node.style.left = nodeData.x + 'px';
+                node.style.top = nodeData.y + 'px';
+                node.dataset.id = nodeData.id;
+                
+                node.addEventListener('click', () => selectNode(nodeData));
+                container.appendChild(node);
+                
+                nodes.push({ element: node, data: nodeData });
+            });
+        }
+        
+        // 创建连接线
+        function createConnections() {
+            const container = document.getElementById('graphContainer');
+            
+            knowledgeData.connections.forEach(connData => {
+                const fromNode = knowledgeData.nodes.find(n => n.id === connData.from);
+                const toNode = knowledgeData.nodes.find(n => n.id === connData.to);
+                
+                if (fromNode && toNode) {
+                    const connection = document.createElement('div');
+                    connection.className = 'connection';
+                    
+                    const dx = toNode.x - fromNode.x;
+                    const dy = toNode.y - fromNode.y;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    
+                    connection.style.left = (fromNode.x + 40) + 'px';
+                    connection.style.top = (fromNode.y + 20) + 'px';
+                    connection.style.width = length + 'px';
+                    connection.style.transform = `rotate(${angle}deg)`;
+                    
+                    container.appendChild(connection);
+                    connections.push({ element: connection, data: connData });
+                }
+            });
+        }
+        
+        // 选择节点
+        function selectNode(nodeData) {
+            // 清除之前的选择
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+            document.querySelectorAll('.connection').forEach(c => c.classList.remove('active'));
+            
+            // 选中当前节点
+            const nodeElement = document.querySelector(`[data-id="${nodeData.id}"]`);
+            nodeElement.classList.add('selected');
+            selectedNode = nodeData;
+            
+            // 高亮相关连接
+            connections.forEach(conn => {
+                if (conn.data.from === nodeData.id || conn.data.to === nodeData.id) {
+                    conn.element.classList.add('active');
+                }
+            });
+            
+            // 显示详细信息
+            showNodeInfo(nodeData);
+        }
+        
+        // 显示节点信息
+        function showNodeInfo(nodeData) {
+            const sidebar = document.getElementById('sidebar');
+            const conceptInfo = document.getElementById('conceptInfo');
+            
+            // 获取相关概念
+            const relatedConcepts = knowledgeData.connections
+                .filter(conn => conn.from === nodeData.id || conn.to === nodeData.id)
+                .map(conn => {
+                    const relatedId = conn.from === nodeData.id ? conn.to : conn.from;
+                    const relatedNode = knowledgeData.nodes.find(n => n.id === relatedId);
+                    return { node: relatedNode, relation: conn.label };
+                });
+            
+            let relatedHtml = '';
+            if (relatedConcepts.length > 0) {
+                relatedHtml = `
+                    <div class="related-concepts">
+                        <h3>相关概念</h3>
+                        ${relatedConcepts.map(item => 
+                            `<div class="related-item" onclick="selectNodeById('${item.node.id}')">
+                                ${item.node.name} (${item.relation})
+                            </div>`
+                        ).join('')}
+                    </div>
+                `;
+            }
+            
+            conceptInfo.innerHTML = `
+                <h3>${nodeData.name}</h3>
+                <p>${nodeData.description}</p>
+                
+                <h3>概念类型</h3>
+                <p>${nodeData.type === 'core' ? '核心概念' : '相关概念'}</p>
+                
+                <h3>哲学背景</h3>
+                <p>${getPhilosophicalBackground(nodeData.id)}</p>
+                
+                ${relatedHtml}
+                
+                <div style="margin-top: 20px;">
+                    <button class="control-btn" onclick="askAIAboutConcept('${nodeData.id}')">
+                        🤖 AI解读
+                    </button>
+                </div>
+            `;
+            
+            sidebar.classList.add('open');
+        }
+        
+        // 获取哲学背景
+        function getPhilosophicalBackground(conceptId) {
+            const backgrounds = {
+                'ren': '儒家思想的核心，强调人与人之间的仁爱关系',
+                'li': '儒家社会秩序理论的重要组成部分',
+                'yi': '儒家道德哲学的基本原则',
+                'zhi': '儒家教育思想的重要内容',
+                'xin': '儒家人际关系理论的基础',
+                'dao': '道家哲学的根本概念，代表宇宙的本源',
+                'de': '道家修养理论的核心',
+                'wu': '道家哲学的重要思想，强调虚静无为',
+                'junzi': '儒家理想人格的典型代表',
+                'xiaoren': '儒家道德批判的对象'
+            };
+            return backgrounds[conceptId] || '传统文化的重要概念';
+        }
+        
+        // 通过ID选择节点
+        function selectNodeById(nodeId) {
+            const nodeData = knowledgeData.nodes.find(n => n.id === nodeId);
+            if (nodeData) {
+                selectNode(nodeData);
+            }
+        }
+        
+        // AI解读概念
+        async function askAIAboutConcept(conceptId) {
+            const conceptNode = knowledgeData.nodes.find(n => n.id === conceptId);
+            const conceptInfo = document.getElementById('conceptInfo');
+
+            // 添加加载状态
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'ai-loading';
+            loadingDiv.innerHTML = `
+                <div style="padding: 15px; background: rgba(212, 175, 55, 0.1); border-radius: 8px; margin-top: 15px;">
+                    <div style="color: #d4af37; font-weight: 600;">🤖 AI正在分析"${conceptNode.name}"...</div>
+                    <div style="font-size: 0.9rem; color: #7f8c8d; margin-top: 5px;">请稍候，正在生成深度解读</div>
+                </div>
+            `;
+            conceptInfo.appendChild(loadingDiv);
+
+            try {
+                const response = await fetch(`http://localhost:8000/api/v1/knowledge/concept/${encodeURIComponent(conceptNode.name)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const aiAnalysis = document.createElement('div');
+                    aiAnalysis.className = 'ai-analysis';
+                    aiAnalysis.innerHTML = `
+                        <div style="background: rgba(255,255,255,0.95); border-radius: 10px; padding: 20px; margin-top: 15px; border: 1px solid #d4af37;">
+                            <h3 style="color: #d4af37; margin-bottom: 15px;">🤖 AI深度解读</h3>
+                            <div style="line-height: 1.6; color: #2c3e50;">${data.data.description.replace(/\n/g, '<br>')}</div>
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ecf0f1; font-size: 0.9rem; color: #7f8c8d;">
+                                <span>置信度: ${(data.data.confidence * 100).toFixed(1)}%</span> |
+                                <span>来源: ${data.data.source === 'deepseek_api' ? 'DeepSeek AI' : '备用解读'}</span> |
+                                <span>生成时间: ${new Date(data.data.timestamp).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    conceptInfo.replaceChild(aiAnalysis, loadingDiv);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('AI解读失败:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `
+                    <div style="background: rgba(231, 76, 60, 0.1); border-radius: 8px; padding: 15px; margin-top: 15px; border: 1px solid #e74c3c;">
+                        <div style="color: #e74c3c; font-weight: 600;">❌ AI解读失败</div>
+                        <div style="font-size: 0.9rem; color: #7f8c8d; margin-top: 5px;">错误: ${error.message}</div>
+                    </div>
+                `;
+                conceptInfo.replaceChild(errorDiv, loadingDiv);
+            }
+        }
+        
+        // 绑定事件
+        function bindEvents() {
+            // 搜索功能
+            document.getElementById('searchBox').addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                nodes.forEach(node => {
+                    if (node.data.name.toLowerCase().includes(query)) {
+                        node.element.style.opacity = '1';
+                        node.element.style.transform = 'scale(1.1)';
+                    } else {
+                        node.element.style.opacity = query ? '0.3' : '1';
+                        node.element.style.transform = 'scale(1)';
+                    }
+                });
+            });
+            
+            // 重置视图
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                document.querySelectorAll('.node').forEach(n => {
+                    n.classList.remove('selected');
+                    n.style.opacity = '1';
+                    n.style.transform = 'scale(1)';
+                });
+                document.querySelectorAll('.connection').forEach(c => c.classList.remove('active'));
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('searchBox').value = '';
+            });
+            
+            // 重新布局
+            document.getElementById('layoutBtn').addEventListener('click', () => {
+                animateLayout();
+            });
+            
+            // 信息面板切换
+            document.getElementById('infoBtn').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+        }
+        
+        // 动画布局
+        function animateLayout() {
+            nodes.forEach((node, index) => {
+                setTimeout(() => {
+                    const angle = (index / nodes.length) * 2 * Math.PI;
+                    const radius = 200;
+                    const centerX = window.innerWidth / 2;
+                    const centerY = window.innerHeight / 2;
+                    
+                    const newX = centerX + Math.cos(angle) * radius - 40;
+                    const newY = centerY + Math.sin(angle) * radius - 20;
+                    
+                    node.element.style.transition = 'all 1s ease';
+                    node.element.style.left = newX + 'px';
+                    node.element.style.top = newY + 'px';
+                    
+                    // 更新数据
+                    node.data.x = newX;
+                    node.data.y = newY;
+                }, index * 100);
+            });
+            
+            // 重新创建连接线
+            setTimeout(() => {
+                connections.forEach(conn => conn.element.remove());
+                connections = [];
+                createConnections();
+            }, nodes.length * 100 + 1000);
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('load', initKnowledgeGraph);
+        
+        // 窗口大小改变时调整布局
+        window.addEventListener('resize', () => {
+            // 可以在这里添加响应式布局逻辑
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API接口测试 - 儒智</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .back-link {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .api-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .api-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .api-method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .method-get {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .method-post {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .api-url {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        
+        .api-desc {
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .test-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .test-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+        
+        .status-success {
+            background: #52c41a;
+        }
+        
+        .status-error {
+            background: #ff4d4f;
+        }
+        
+        .status-pending {
+            background: #faad14;
+        }
+        
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .run-all-btn {
+            background: #52c41a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .run-all-btn:hover {
+            background: #389e0d;
+        }
+        
+        .run-all-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回首页</a>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">API测试</span>
+        </div>
+
+        <div class="page-header">
+            <h1>📊 API接口测试</h1>
+            <p>儒智后端API接口测试工具，验证所有功能接口</p>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📈 测试统计</div>
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalApis">26</div>
+                    <div class="stat-label">总接口数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successCount">0</div>
+                    <div class="stat-label">成功</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="errorCount">0</div>
+                    <div class="stat-label">失败</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successRate">0%</div>
+                    <div class="stat-label">成功率</div>
+                </div>
+            </div>
+            <button id="runAllBtn" class="btn-primary">运行全部测试</button>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">🔧 基础功能API</div>
+            <div class="api-grid" id="basicApis"></div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">🔍 OCR识别API</div>
+            <div class="api-grid" id="ocrApis"></div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">💬 AI对话API</div>
+            <div class="api-grid" id="chatApis"></div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📚 学习中心API</div>
+            <div class="api-grid" id="learningApis"></div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">🔐 用户认证API</div>
+            <div class="api-grid" id="authApis"></div>
+        </div>
+    </div>
+    
+    <script>
+        const baseUrl = 'http://localhost:8000';
+        let testResults = {};
+        
+        const apiGroups = {
+            basic: [
+                { method: 'GET', url: '/', desc: '根路径访问' },
+                { method: 'GET', url: '/health', desc: '健康检查' },
+                { method: 'GET', url: '/api/v1/user/user_001/learning-history', desc: '学习历史' },
+                { method: 'POST', url: '/api/v1/user/user_001/ai-analysis', desc: 'AI分析' }
+            ],
+            ocr: [
+                { method: 'GET', url: '/api/v1/ocr/modes', desc: 'OCR模式列表' },
+                { method: 'GET', url: '/api/v1/ocr/history/user_001', desc: 'OCR历史记录' },
+                { method: 'POST', url: '/api/v1/ocr/save', desc: '保存OCR结果' }
+            ],
+            chat: [
+                { method: 'GET', url: '/api/v1/chat/characters', desc: '对话人物列表' },
+                { method: 'POST', url: '/api/v1/chat/send', desc: '发送对话消息' },
+                { method: 'GET', url: '/api/v1/chat/conversations/user_001', desc: '对话历史' },
+                { method: 'POST', url: '/api/v1/chat/save', desc: '保存对话' }
+            ],
+            learning: [
+                { method: 'GET', url: '/api/v1/learning/stats/user_001', desc: '学习统计' },
+                { method: 'GET', url: '/api/v1/learning/progress/user_001', desc: '学习进度' },
+                { method: 'GET', url: '/api/v1/learning/achievements/user_001', desc: '学习成就' },
+                { method: 'POST', url: '/api/v1/learning/plans', desc: '创建学习计划' }
+            ],
+            auth: [
+                { method: 'POST', url: '/api/v1/auth/register', desc: '用户注册' },
+                { method: 'POST', url: '/api/v1/auth/login', desc: '用户登录' },
+                { method: 'GET', url: '/api/v1/auth/profile/user_001', desc: '用户资料' }
+            ]
+        };
+        
+        function createApiCard(api, groupId) {
+            const cardId = `${groupId}_${api.url.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            return `
+                <div class="api-card" id="${cardId}">
+                    <div class="api-method method-${api.method.toLowerCase()}">${api.method}</div>
+                    <div class="api-url">${api.url}</div>
+                    <div class="api-desc">${api.desc}</div>
+                    <button class="test-btn" onclick="testApi('${groupId}', '${api.method}', '${api.url}', '${cardId}')">
+                        测试
+                    </button>
+                    <span class="status-indicator" id="${cardId}_status"></span>
+                    <div class="test-result" id="${cardId}_result"></div>
+                </div>
+            `;
+        }
+        
+        function renderApiGroups() {
+            Object.keys(apiGroups).forEach(groupId => {
+                const container = document.getElementById(`${groupId}Apis`);
+                if (container) {
+                    container.innerHTML = apiGroups[groupId]
+                        .map(api => createApiCard(api, groupId))
+                        .join('');
+                }
+            });
+        }
+        
+        async function testApi(groupId, method, url, cardId) {
+            const statusEl = document.getElementById(`${cardId}_status`);
+            const resultEl = document.getElementById(`${cardId}_result`);
+            const btnEl = document.querySelector(`#${cardId} .test-btn`);
+            
+            // 设置测试中状态
+            statusEl.className = 'status-indicator status-pending';
+            btnEl.disabled = true;
+            btnEl.textContent = '测试中...';
+            resultEl.style.display = 'none';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                // 为POST请求添加测试数据
+                if (method === 'POST') {
+                    if (url.includes('/chat/send')) {
+                        options.body = JSON.stringify({
+                            userId: 'test_user',
+                            characterId: 'confucius',
+                            message: '什么是仁？',
+                            conversationHistory: []
+                        });
+                    } else if (url.includes('/auth/register')) {
+                        options.body = JSON.stringify({
+                            username: 'test_user_' + Date.now(),
+                            password: 'test123456',
+                            email: 'test@example.com'
+                        });
+                    } else if (url.includes('/auth/login')) {
+                        options.body = JSON.stringify({
+                            username: 'test_user',
+                            password: 'test123456'
+                        });
+                    } else {
+                        options.body = JSON.stringify({
+                            userId: 'test_user',
+                            data: 'test_data'
+                        });
+                    }
+                }
+                
+                const response = await fetch(baseUrl + url, options);
+                const data = await response.json();
+                
+                // 更新结果
+                testResults[cardId] = {
+                    success: response.ok,
+                    status: response.status,
+                    data: data
+                };
+                
+                statusEl.className = `status-indicator ${response.ok ? 'status-success' : 'status-error'}`;
+                resultEl.innerHTML = `
+                    <strong>状态:</strong> ${response.status}<br>
+                    <strong>响应:</strong><br>
+                    ${JSON.stringify(data, null, 2)}
+                `;
+                resultEl.style.display = 'block';
+                
+            } catch (error) {
+                testResults[cardId] = {
+                    success: false,
+                    error: error.message
+                };
+                
+                statusEl.className = 'status-indicator status-error';
+                resultEl.innerHTML = `<strong>错误:</strong> ${error.message}`;
+                resultEl.style.display = 'block';
+            } finally {
+                btnEl.disabled = false;
+                btnEl.textContent = '重新测试';
+                updateStats();
+            }
+        }
+        
+        function updateStats() {
+            const total = Object.keys(testResults).length;
+            const success = Object.values(testResults).filter(r => r.success).length;
+            const error = total - success;
+            const rate = total > 0 ? Math.round((success / total) * 100) : 0;
+            
+            document.getElementById('successCount').textContent = success;
+            document.getElementById('errorCount').textContent = error;
+            document.getElementById('successRate').textContent = rate + '%';
+        }
+        
+        async function runAllTests() {
+            const runAllBtn = document.getElementById('runAllBtn');
+            runAllBtn.disabled = true;
+            runAllBtn.textContent = '测试中...';
+            
+            testResults = {};
+            
+            for (const groupId of Object.keys(apiGroups)) {
+                for (const api of apiGroups[groupId]) {
+                    const cardId = `${groupId}_${api.url.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                    await testApi(groupId, api.method, api.url, cardId);
+                    // 添加小延迟避免请求过快
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+            }
+            
+            runAllBtn.disabled = false;
+            runAllBtn.textContent = '重新运行全部测试';
+        }
+        
+        // 页面加载时执行
+        window.addEventListener('load', function() {
+            renderApiGroups();
+            document.getElementById('runAllBtn').addEventListener('click', runAllTests);
+        });
+    </script>
+</body>
+</html>

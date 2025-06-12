@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典阅读 - 儒智</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', '宋体', serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+        }
+        
+        /* 水墨风格背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g1"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="20" cy="30" r="15" fill="url(%23g1)"/><circle cx="70" cy="60" r="20" fill="url(%23g1)"/><circle cx="40" cy="80" r="10" fill="url(%23g1)"/></svg>') repeat;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            color: #ecf0f1;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: 300;
+        }
+        
+        .back-link {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-5px);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            min-height: 600px;
+        }
+        
+        .sidebar {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            height: fit-content;
+        }
+        
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .classics-list {
+            list-style: none;
+        }
+        
+        .classic-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .classic-item:hover {
+            background: #e3f2fd;
+            border-left-color: #3498db;
+            transform: translateX(5px);
+        }
+        
+        .classic-item.active {
+            background: #e3f2fd;
+            border-left-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .classic-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .classic-author {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .classic-progress {
+            font-size: 0.8rem;
+            color: #27ae60;
+        }
+        
+        .reading-area {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+        
+        .reading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .chapter-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .reading-content {
+            line-height: 2;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            min-height: 300px;
+            padding: 20px;
+            background: #fefefe;
+            border-radius: 10px;
+            border: 1px solid #ecf0f1;
+            position: relative;
+        }
+        
+        .verse {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.05);
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+            position: relative;
+        }
+        
+        .verse-number {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .ai-annotation {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            color: #27ae60;
+        }
+        
+        .ai-annotation-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2ecc71;
+        }
+        
+        .reading-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .tool-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .tool-btn {
+            padding: 8px 16px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .tool-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s ease;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .ai-thinking {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #3498db;
+            font-style: italic;
+        }
+        
+        .ai-thinking::after {
+            content: '...';
+            animation: thinking 1.5s infinite;
+        }
+        
+        @keyframes thinking {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .reading-area {
+                order: 1;
+            }
+            
+            .reading-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .chapter-nav {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回首页</a>
+        
+        <div class="header">
+            <h1>📖 经典阅读</h1>
+            <p>与古代圣贤对话，品味千年智慧</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="sidebar-title">📚 经典文献</div>
+                <ul class="classics-list" id="classicsList">
+                    <li class="classic-item active" data-classic="lunyu">
+                        <div class="classic-title">论语</div>
+                        <div class="classic-author">孔子及其弟子</div>
+                        <div class="classic-progress">阅读进度: 15%</div>
+                    </li>
+                    <li class="classic-item" data-classic="daodejing">
+                        <div class="classic-title">道德经</div>
+                        <div class="classic-author">老子</div>
+                        <div class="classic-progress">阅读进度: 8%</div>
+                    </li>
+                    <li class="classic-item" data-classic="mengzi">
+                        <div class="classic-title">孟子</div>
+                        <div class="classic-author">孟子</div>
+                        <div class="classic-progress">阅读进度: 0%</div>
+                    </li>
+                    <li class="classic-item" data-classic="zhuangzi">
+                        <div class="classic-title">庄子</div>
+                        <div class="classic-author">庄子</div>
+                        <div class="classic-progress">阅读进度: 0%</div>
+                    </li>
+                    <li class="classic-item" data-classic="yijing">
+                        <div class="classic-title">易经</div>
+                        <div class="classic-author">伏羲、文王、孔子</div>
+                        <div class="classic-progress">阅读进度: 0%</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="reading-area">
+                <div class="reading-header">
+                    <div>
+                        <h2 id="currentTitle">论语 · 学而篇</h2>
+                        <p id="currentChapter">第一章</p>
+                    </div>
+                    <div class="chapter-nav">
+                        <button class="nav-btn" id="prevBtn" disabled>上一章</button>
+                        <button class="nav-btn" id="nextBtn">下一章</button>
+                    </div>
+                </div>
+                
+                <div class="reading-content" id="readingContent">
+                    <div class="loading">加载经典内容中...</div>
+                </div>
+                
+                <div class="ai-thinking" id="aiThinking">
+                    AI正在生成智能注释
+                </div>
+                
+                <div class="reading-tools">
+                    <div class="tool-group">
+                        <button class="tool-btn" id="aiAnnotateBtn">🤖 AI注释</button>
+                        <button class="tool-btn" id="askAiBtn">💬 智能问答</button>
+                        <button class="tool-btn" id="relatedBtn">🔗 相关概念</button>
+                    </div>
+                    <div class="tool-group">
+                        <span style="margin-right: 10px; color: #7f8c8d;">阅读进度:</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 15%"></div>
+                        </div>
+                        <span style="margin-left: 10px; color: #7f8c8d;" id="progressText">15%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const baseUrl = 'http://localhost:8000';
+        let currentClassic = 'lunyu';
+        let currentChapter = 1;
+        let totalChapters = 20;
+        
+        // 经典文献数据
+        const classicsData = {
+            lunyu: {
+                title: '论语',
+                author: '孔子及其弟子',
+                chapters: [
+                    {
+                        title: '学而篇第一',
+                        content: [
+                            {
+                                verse: '子曰："学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？"',
+                                translation: '孔子说："学了又时常温习和练习，不是很愉快吗？有志同道合的人从远方来，不是很令人高兴的吗？人家不了解我，我也不怨恨、恼怒，不也是一个有德的君子吗？"'
+                            },
+                            {
+                                verse: '有子曰："其为人也孝弟，而好犯上者，鲜矣；不好犯上，而好作乱者，未之有也。君子务本，本立而道生。孝弟也者，其为仁之本与！"',
+                                translation: '有子说："孝顺父母，顺从兄长，而喜好触犯上层统治者，这样的人是很少见的。不喜好触犯上层统治者，而喜好造反的人是没有的。君子专心致力于根本的事务，根本建立了，治国做人的原则也就有了。孝顺父母、顺从兄长，这就是仁的根本啊！"'
+                            }
+                        ]
+                    }
+                ]
+            },
+            daodejing: {
+                title: '道德经',
+                author: '老子',
+                chapters: [
+                    {
+                        title: '第一章',
+                        content: [
+                            {
+                                verse: '道可道，非常道；名可名，非常名。无名天地之始，有名万物之母。',
+                                translation: '可以说出的道，就不是永恒不变的道；可以叫出的名，就不是永恒不变的名。无名是天地的开始，有名是万物的母亲。'
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+        
+        // 初始化页面
+        function initPage() {
+            loadClassicContent();
+            bindEvents();
+        }
+        
+        // 绑定事件
+        function bindEvents() {
+            // 经典选择
+            document.querySelectorAll('.classic-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.classic-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    currentClassic = this.dataset.classic;
+                    currentChapter = 1;
+                    loadClassicContent();
+                });
+            });
+            
+            // 章节导航
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                if (currentChapter > 1) {
+                    currentChapter--;
+                    loadClassicContent();
+                }
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (currentChapter < totalChapters) {
+                    currentChapter++;
+                    loadClassicContent();
+                }
+            });
+            
+            // AI功能按钮
+            document.getElementById('aiAnnotateBtn').addEventListener('click', generateAIAnnotation);
+            document.getElementById('askAiBtn').addEventListener('click', openAIDialog);
+            document.getElementById('relatedBtn').addEventListener('click', showRelatedConcepts);
+        }
+        
+        // 加载经典内容
+        function loadClassicContent() {
+            const contentEl = document.getElementById('readingContent');
+            const titleEl = document.getElementById('currentTitle');
+            const chapterEl = document.getElementById('currentChapter');
+            
+            contentEl.innerHTML = '<div class="loading">加载经典内容中...</div>';
+            
+            setTimeout(() => {
+                const classic = classicsData[currentClassic];
+                if (classic && classic.chapters[currentChapter - 1]) {
+                    const chapter = classic.chapters[currentChapter - 1];
+                    titleEl.textContent = `${classic.title} · ${chapter.title}`;
+                    chapterEl.textContent = `第${currentChapter}章`;
+                    
+                    let contentHtml = '';
+                    chapter.content.forEach((item, index) => {
+                        contentHtml += `
+                            <div class="verse">
+                                <div class="verse-number">${index + 1}</div>
+                                <div style="margin-bottom: 10px; font-weight: 600;">${item.verse}</div>
+                                <div style="color: #7f8c8d; font-size: 0.95rem;">${item.translation}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    contentEl.innerHTML = contentHtml;
+                } else {
+                    contentEl.innerHTML = '<div class="loading">该章节内容暂未收录</div>';
+                }
+                
+                updateNavigation();
+                updateProgress();
+            }, 500);
+        }
+        
+        // 更新导航按钮状态
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = currentChapter <= 1;
+            document.getElementById('nextBtn').disabled = currentChapter >= totalChapters;
+        }
+        
+        // 更新阅读进度
+        function updateProgress() {
+            const progress = Math.round((currentChapter / totalChapters) * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = progress + '%';
+        }
+        
+        // 生成AI注释
+        async function generateAIAnnotation() {
+            const thinkingEl = document.getElementById('aiThinking');
+            const contentEl = document.getElementById('readingContent');
+
+            thinkingEl.style.display = 'block';
+
+            try {
+                // 获取当前章节的文本内容
+                const classic = classicsData[currentClassic];
+                const chapter = classic.chapters[currentChapter - 1];
+                const fullText = chapter.content.map(item => item.verse).join('');
+
+                // 调用真实AI注释API
+                const response = await fetch(`${baseUrl}/api/v1/classics/annotate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: fullText,
+                        classic: classic.title,
+                        chapter: chapter.title
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const annotation = `
+                        <div class="ai-annotation">
+                            <div class="ai-annotation-title">🤖 AI智能注释</div>
+                            <div class="ai-annotation-content">${data.data.annotation.replace(/\n/g, '<br>')}</div>
+                            <div class="ai-annotation-meta">
+                                <span>置信度: ${(data.data.confidence * 100).toFixed(1)}%</span>
+                                <span>来源: ${data.data.source === 'deepseek_api' ? 'DeepSeek AI' : '备用注释'}</span>
+                                <span>生成时间: ${new Date(data.data.timestamp).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    contentEl.innerHTML += annotation;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('AI注释生成失败:', error);
+                const errorAnnotation = `
+                    <div class="ai-annotation error">
+                        <div class="ai-annotation-title">❌ 注释生成失败</div>
+                        <p>无法生成AI注释: ${error.message}</p>
+                        <p>请检查网络连接或稍后重试。</p>
+                    </div>
+                `;
+                contentEl.innerHTML += errorAnnotation;
+            } finally {
+                thinkingEl.style.display = 'none';
+            }
+        }
+        
+        // 打开AI对话
+        function openAIDialog() {
+            const question = prompt('请输入您想了解的问题：');
+            if (question) {
+                alert('AI回复：这是一个很好的问题！根据当前章节内容，我建议您从以下角度思考...\n\n（此功能将在后续版本中完善）');
+            }
+        }
+        
+        // 显示相关概念
+        function showRelatedConcepts() {
+            const concepts = [
+                '仁 - 儒家核心思想',
+                '礼 - 社会秩序规范', 
+                '义 - 道德行为准则',
+                '智 - 智慧与知识',
+                '信 - 诚信与信任'
+            ];
+            
+            alert('相关概念：\n\n' + concepts.join('\n'));
+        }
+        
+        // 页面加载时初始化
+        window.addEventListener('load', initPage);
+    </script>
+</body>
+</html>

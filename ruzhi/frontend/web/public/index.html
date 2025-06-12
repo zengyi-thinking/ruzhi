@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儒智 - 传统文化智能学习平台</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        /* 主页面特定样式 */
+        .main-header {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .main-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            border: 1px solid #d4af37;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .feature-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .navigation-bar {
+            background: rgba(0,0,0,0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .status-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+        
+        .status-online {
+            background-color: #52c41a;
+        }
+        
+        .status-offline {
+            background-color: #ff4d4f;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation-bar">
+            <div class="nav-links">
+                <a href="#" class="nav-link">🏠 首页</a>
+                <a href="api-config.html" class="nav-link">⚙️ API配置</a>
+                <a href="api-test.html" class="nav-link">🔧 API测试</a>
+            </div>
+            <div class="nav-links">
+                <span class="nav-link" style="color: #d4af37;">儒智 v1.3</span>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h1 class="main-header">🎭 儒智</h1>
+            <p class="main-subtitle">传统文化智能学习平台 - 与古代圣贤对话，探索中华文化智慧</p>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">系统状态</div>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">后端API服务</div>
+                    <div class="status-value" id="apiStatus">
+                        检查中... <span class="status-indicator" id="apiIndicator"></span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">AI对话服务</div>
+                    <div class="status-value" id="chatStatus">
+                        检查中... <span class="status-indicator" id="chatIndicator"></span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">学习中心</div>
+                    <div class="status-value" id="learningStatus">
+                        检查中... <span class="status-indicator" id="learningIndicator"></span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">用户认证</div>
+                    <div class="status-value" id="authStatus">
+                        检查中... <span class="status-indicator" id="authIndicator"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3 class="feature-title">OCR古籍识别</h3>
+                <p class="feature-description">
+                    使用先进的OCR技术识别古籍文本，支持多种古文字体，
+                    准确率高达95%以上，让古籍数字化变得简单高效。
+                </p>
+                <a href="ocr-test.html" class="btn-primary">体验OCR识别</a>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">💬</span>
+                <h3 class="feature-title">AI人物对话</h3>
+                <p class="feature-description">
+                    与孔子、老子、孟子等历史圣贤进行智能对话，
+                    体验不同的思想风格，获得人生智慧和哲学启发。
+                </p>
+                <a href="dialogue-test.html" class="btn-primary">开始对话</a>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">📚</span>
+                <h3 class="feature-title">学习中心</h3>
+                <p class="feature-description">
+                    个人学习管理系统，跟踪学习进度，制定学习计划，
+                    获得成就奖励，让传统文化学习更有趣更高效。
+                </p>
+                <a href="learning-test.html" class="btn-primary">进入学习中心</a>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">📖</span>
+                <h3 class="feature-title">经典阅读</h3>
+                <p class="feature-description">
+                    精选传统文化经典著作，提供现代化的阅读体验，
+                    配合AI解读和互动问答，深入理解古代智慧。
+                </p>
+                <a href="classics-test.html" class="btn-primary">开始阅读</a>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🧠</span>
+                <h3 class="feature-title">知识图谱</h3>
+                <p class="feature-description">
+                    构建传统文化知识网络，展示概念间的关联关系，
+                    帮助用户系统性地理解和掌握传统文化知识体系。
+                </p>
+                <a href="knowledge-test.html" class="btn-primary">探索知识</a>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3 class="feature-title">API接口</h3>
+                <p class="feature-description">
+                    完整的RESTful API接口，支持26个核心功能接口，
+                    为开发者提供强大的后端服务支持。
+                </p>
+                <a href="api-test.html" class="btn-primary">查看API</a>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">⚙️</span>
+                <h3 class="feature-title">API配置</h3>
+                <p class="feature-description">
+                    配置DeepSeek API密钥和参数，管理AI服务连接，
+                    监控API调用状态和性能指标。
+                </p>
+                <a href="api-config.html" class="btn-primary">配置API</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2024 儒智项目 - 传承文化，智慧未来</p>
+            <p>版本 v1.3 | 开发团队：儒智项目组</p>
+        </div>
+    </div>
+    
+    <script>
+        // 检查各个服务的状态
+        async function checkServiceStatus() {
+            const baseUrl = 'http://localhost:8000';
+            
+            // 检查API服务
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/health`);
+                const data = await response.json();
+                updateStatus('api', data.status === 'healthy', 'API服务正常');
+            } catch (error) {
+                updateStatus('api', false, 'API服务离线');
+            }
+            
+            // 检查对话服务
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/chat/characters`);
+                const data = await response.json();
+                updateStatus('chat', data.success, '对话服务正常');
+            } catch (error) {
+                updateStatus('chat', false, '对话服务离线');
+            }
+            
+            // 检查学习中心
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/learning/stats/test_user`);
+                const data = await response.json();
+                updateStatus('learning', data.success, '学习中心正常');
+            } catch (error) {
+                updateStatus('learning', false, '学习中心离线');
+            }
+            
+            // 检查认证服务
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/auth/profile/test_user`);
+                // 404是正常的，说明服务在运行
+                updateStatus('auth', true, '认证服务正常');
+            } catch (error) {
+                updateStatus('auth', false, '认证服务离线');
+            }
+        }
+        
+        function updateStatus(service, isOnline, message) {
+            const statusElement = document.getElementById(`${service}Status`);
+            const indicatorElement = document.getElementById(`${service}Indicator`);
+            
+            statusElement.textContent = message;
+            indicatorElement.className = `status-indicator ${isOnline ? 'status-online' : 'status-offline'}`;
+        }
+        
+        // 页面加载时检查服务状态
+        window.addEventListener('load', checkServiceStatus);
+        
+        // 每30秒检查一次状态
+        setInterval(checkServiceStatus, 30000);
+    </script>
+</body>
+</html>

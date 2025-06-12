@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API配置管理 - 儒智</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .config-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid #d4af37;
+        }
+        
+        .config-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-help {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-addon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+        
+        .input-addon:hover {
+            color: #d4af37;
+        }
+        
+        .config-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .test-success {
+            background: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+        
+        .test-error {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #ecf0f1;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #d4af37;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .config-preset {
+            background: #f8f9fa;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .config-preset:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+        
+        .config-preset.active {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .preset-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .preset-desc {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .config-actions {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回首页</a>
+    
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">API配置</span>
+        </div>
+        
+        <div class="page-header">
+            <h1>⚙️ API配置管理</h1>
+            <p>配置DeepSeek API连接，管理AI服务参数</p>
+        </div>
+        
+        <div class="config-grid">
+            <div class="config-section">
+                <div class="config-title">🔑 API连接配置</div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="apiKey">API密钥</label>
+                    <div class="input-group">
+                        <input type="password" id="apiKey" class="form-input" 
+                               placeholder="请输入DeepSeek API Key">
+                        <button class="input-addon" onclick="togglePassword('apiKey')">👁️</button>
+                    </div>
+                    <div class="form-help">从DeepSeek官网获取API密钥</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="baseUrl">API基础URL</label>
+                    <input type="text" id="baseUrl" class="form-input" 
+                           value="https://api.deepseek.com/v1"
+                           placeholder="API基础URL">
+                    <div class="form-help">DeepSeek API的基础URL地址</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="model">模型名称</label>
+                    <select id="model" class="form-input">
+                        <option value="deepseek-chat">deepseek-chat</option>
+                        <option value="deepseek-coder">deepseek-coder</option>
+                    </select>
+                    <div class="form-help">选择要使用的AI模型</div>
+                </div>
+                
+                <div class="config-actions">
+                    <button class="btn-primary" onclick="testConnection()">🔍 测试连接</button>
+                    <button class="btn-secondary" onclick="saveConfig()">💾 保存配置</button>
+                </div>
+                
+                <div class="test-result" id="testResult"></div>
+            </div>
+            
+            <div class="config-section">
+                <div class="config-title">🎛️ 模型参数配置</div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="temperature">Temperature (创造性)</label>
+                    <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" 
+                           class="form-input" oninput="updateTemperatureValue(this.value)">
+                    <div class="form-help">当前值: <span id="temperatureValue">0.7</span> (0=保守, 1=创造)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="maxTokens">最大Token数</label>
+                    <input type="number" id="maxTokens" class="form-input" 
+                           value="2000" min="100" max="4000" step="100">
+                    <div class="form-help">单次回复的最大长度</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="timeout">请求超时(秒)</label>
+                    <input type="number" id="timeout" class="form-input" 
+                           value="30" min="10" max="120" step="5">
+                    <div class="form-help">API请求的超时时间</div>
+                </div>
+                
+                <div class="config-title" style="margin-top: 30px;">📋 配置预设</div>
+                
+                <div class="config-preset active" onclick="applyPreset('balanced')">
+                    <div class="preset-name">🎯 平衡模式</div>
+                    <div class="preset-desc">适合日常对话，平衡创造性和准确性</div>
+                </div>
+                
+                <div class="config-preset" onclick="applyPreset('creative')">
+                    <div class="preset-name">🎨 创造模式</div>
+                    <div class="preset-desc">高创造性，适合文学创作和头脑风暴</div>
+                </div>
+                
+                <div class="config-preset" onclick="applyPreset('precise')">
+                    <div class="preset-name">🎯 精确模式</div>
+                    <div class="preset-desc">低创造性，适合事实查询和逻辑推理</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <div class="content-card-title">📊 API使用统计</div>
+            <div class="stats-grid" id="apiStats">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalRequests">0</span>
+                    <div class="stat-label">总请求数</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="successRate">0%</span>
+                    <div class="stat-label">成功率</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="avgResponseTime">0ms</span>
+                    <div class="stat-label">平均响应时间</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="todayRequests">0</span>
+                    <div class="stat-label">今日请求</div>
+                </div>
+            </div>
+            
+            <div class="config-actions" style="margin-top: 30px;">
+                <button class="btn-secondary" onclick="refreshStats()">🔄 刷新统计</button>
+                <button class="btn-secondary" onclick="clearStats()">🗑️ 清空统计</button>
+                <button class="btn-secondary" onclick="exportConfig()">📤 导出配置</button>
+                <button class="btn-secondary" onclick="importConfig()">📥 导入配置</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const baseUrl = 'http://localhost:8000';
+        
+        // 配置预设
+        const presets = {
+            balanced: {
+                temperature: 0.7,
+                maxTokens: 2000,
+                timeout: 30
+            },
+            creative: {
+                temperature: 0.9,
+                maxTokens: 3000,
+                timeout: 45
+            },
+            precise: {
+                temperature: 0.3,
+                maxTokens: 1500,
+                timeout: 20
+            }
+        };
+        
+        // 页面加载时初始化
+        window.addEventListener('load', function() {
+            loadConfig();
+            refreshStats();
+        });
+        
+        // 更新温度值显示
+        function updateTemperatureValue(value) {
+            document.getElementById('temperatureValue').textContent = value;
+        }
+        
+        // 切换密码显示
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+        
+        // 应用配置预设
+        function applyPreset(presetName) {
+            const preset = presets[presetName];
+            if (!preset) return;
+            
+            document.getElementById('temperature').value = preset.temperature;
+            document.getElementById('maxTokens').value = preset.maxTokens;
+            document.getElementById('timeout').value = preset.timeout;
+            
+            updateTemperatureValue(preset.temperature);
+            
+            // 更新预设选中状态
+            document.querySelectorAll('.config-preset').forEach(p => p.classList.remove('active'));
+            event.target.closest('.config-preset').classList.add('active');
+        }
+        
+        // 测试API连接
+        async function testConnection() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const baseUrl = document.getElementById('baseUrl').value.trim();
+            const model = document.getElementById('model').value;
+            const resultDiv = document.getElementById('testResult');
+            
+            if (!apiKey) {
+                showTestResult('请输入API密钥', false);
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result';
+            resultDiv.textContent = '正在测试连接...';
+            
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/config/test`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        apiKey: apiKey,
+                        baseUrl: baseUrl,
+                        model: model
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showTestResult(`连接成功！响应时间: ${data.responseTime}ms`, true);
+                } else {
+                    showTestResult(`连接失败: ${data.error}`, false);
+                }
+            } catch (error) {
+                showTestResult(`连接测试失败: ${error.message}`, false);
+            }
+        }
+        
+        // 显示测试结果
+        function showTestResult(message, success) {
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = `test-result ${success ? 'test-success' : 'test-error'}`;
+            resultDiv.textContent = message;
+        }
+        
+        // 保存配置
+        async function saveConfig() {
+            const config = {
+                apiKey: document.getElementById('apiKey').value.trim(),
+                baseUrl: document.getElementById('baseUrl').value.trim(),
+                model: document.getElementById('model').value,
+                temperature: parseFloat(document.getElementById('temperature').value),
+                maxTokens: parseInt(document.getElementById('maxTokens').value),
+                timeout: parseInt(document.getElementById('timeout').value)
+            };
+            
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/config/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('配置保存成功！');
+                } else {
+                    alert(`保存失败: ${data.error}`);
+                }
+            } catch (error) {
+                alert(`保存失败: ${error.message}`);
+            }
+        }
+        
+        // 加载配置
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/config/load`);
+                const data = await response.json();
+                
+                if (data.success && data.config) {
+                    const config = data.config;
+                    document.getElementById('apiKey').value = config.apiKey || '';
+                    document.getElementById('baseUrl').value = config.baseUrl || 'https://api.deepseek.com/v1';
+                    document.getElementById('model').value = config.model || 'deepseek-chat';
+                    document.getElementById('temperature').value = config.temperature || 0.7;
+                    document.getElementById('maxTokens').value = config.maxTokens || 2000;
+                    document.getElementById('timeout').value = config.timeout || 30;
+                    
+                    updateTemperatureValue(config.temperature || 0.7);
+                }
+            } catch (error) {
+                console.error('加载配置失败:', error);
+            }
+        }
+        
+        // 刷新统计数据
+        async function refreshStats() {
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('totalRequests').textContent = stats.totalRequests || 0;
+                    document.getElementById('successRate').textContent = (stats.successRate || 0) + '%';
+                    document.getElementById('avgResponseTime').textContent = (stats.avgResponseTime || 0) + 'ms';
+                    document.getElementById('todayRequests').textContent = stats.todayRequests || 0;
+                }
+            } catch (error) {
+                console.error('刷新统计失败:', error);
+            }
+        }
+        
+        // 清空统计
+        async function clearStats() {
+            if (confirm('确定要清空所有统计数据吗？')) {
+                try {
+                    const response = await fetch(`${baseUrl}/api/v1/stats/clear`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        refreshStats();
+                        alert('统计数据已清空');
+                    }
+                } catch (error) {
+                    alert('清空失败: ' + error.message);
+                }
+            }
+        }
+        
+        // 导出配置
+        function exportConfig() {
+            const config = {
+                apiKey: document.getElementById('apiKey').value.trim(),
+                baseUrl: document.getElementById('baseUrl').value.trim(),
+                model: document.getElementById('model').value,
+                temperature: parseFloat(document.getElementById('temperature').value),
+                maxTokens: parseInt(document.getElementById('maxTokens').value),
+                timeout: parseInt(document.getElementById('timeout').value)
+            };
+            
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ruzhi-api-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // 导入配置
+        function importConfig() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const config = JSON.parse(e.target.result);
+                            document.getElementById('apiKey').value = config.apiKey || '';
+                            document.getElementById('baseUrl').value = config.baseUrl || 'https://api.deepseek.com/v1';
+                            document.getElementById('model').value = config.model || 'deepseek-chat';
+                            document.getElementById('temperature').value = config.temperature || 0.7;
+                            document.getElementById('maxTokens').value = config.maxTokens || 2000;
+                            document.getElementById('timeout').value = config.timeout || 30;
+                            
+                            updateTemperatureValue(config.temperature || 0.7);
+                            alert('配置导入成功！');
+                        } catch (error) {
+                            alert('配置文件格式错误: ' + error.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+    </script>
+</body>
+</html>

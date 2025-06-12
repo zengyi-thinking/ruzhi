@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儒智 - AI智能知识图谱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .graph-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .concept-details, .concept-stories, .recommendations {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .concept-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .concept-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .concept-definition {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .story-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #28a745;
+        }
+
+        .story-type {
+            background: #28a745;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .story-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .story-content {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .expand-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: background 0.3s;
+        }
+
+        .expand-btn:hover {
+            background: #218838;
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fafafa;
+            position: relative;
+        }
+
+        .graph-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 AI智能知识图谱</h1>
+        <p>探索中国传统文化的智慧网络，发现概念间的深层联系</p>
+    </div>
+
+    <div class="container">
+        <!-- 搜索区域 -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索传统文化概念，如：仁、道德、修身...">
+                <button class="search-btn" onclick="searchConcepts()">🔍 智能搜索</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 知识图谱可视化区域 -->
+            <div class="graph-section">
+                <h2 class="section-title">📊 知识图谱可视化</h2>
+                <div class="graph-container" id="graphContainer">
+                    <div class="graph-placeholder">
+                        点击概念或搜索结果查看知识图谱
+                    </div>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <button class="expand-btn" onclick="expandGraph('related')">🔗 扩展相关概念</button>
+                    <button class="expand-btn" onclick="expandGraph('historical')">📚 历史发展</button>
+                    <button class="expand-btn" onclick="expandGraph('practical')">🎯 实践应用</button>
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="sidebar">
+                <!-- 概念详情 -->
+                <div class="concept-details">
+                    <h3 class="section-title">📖 概念详解</h3>
+                    <div id="conceptDetails">
+                        <p style="color: #666; text-align: center; padding: 2rem;">选择一个概念查看详细信息</p>
+                    </div>
+                </div>
+
+                <!-- 相关故事 -->
+                <div class="concept-stories">
+                    <h3 class="section-title">📚 相关故事</h3>
+                    <div id="conceptStories">
+                        <p style="color: #666; text-align: center; padding: 2rem;">选择概念后查看相关故事</p>
+                    </div>
+                </div>
+
+                <!-- 智能推荐 -->
+                <div class="recommendations">
+                    <h3 class="section-title">💡 智能推荐</h3>
+                    <div id="recommendations">
+                        <p style="color: #666; text-align: center; padding: 2rem;">基于您的学习历史推荐相关概念</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = 'http://localhost:8000';
+        let currentConcept = null;
+        let graphData = { nodes: [], edges: [] };
+
+        // 搜索概念
+        async function searchConcepts() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '<div class="loading">🔍 智能搜索中...</div>';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/knowledge/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.success && data.data.results) {
+                    displaySearchResults(data.data.results);
+                } else {
+                    resultsDiv.innerHTML = '<div class="error">搜索失败，请重试</div>';
+                }
+            } catch (error) {
+                console.error('搜索错误:', error);
+                resultsDiv.innerHTML = '<div class="error">搜索失败，请检查网络连接</div>';
+            }
+        }
+
+        // 显示搜索结果
+        function displaySearchResults(results) {
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<p style="color: #666;">未找到相关概念</p>';
+                return;
+            }
+
+            let html = '<h4 style="margin: 1rem 0;">搜索结果：</h4>';
+            results.forEach(result => {
+                html += `
+                    <div class="concept-card" onclick="selectConcept('${result.concept}')">
+                        <div class="concept-name">${result.concept}</div>
+                        <div class="concept-definition">${result.definition}</div>
+                        <div style="margin-top: 0.5rem;">
+                            <span style="background: #667eea; color: white; padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.8rem;">
+                                ${result.category}
+                            </span>
+                            <span style="margin-left: 0.5rem; color: #666; font-size: 0.9rem;">
+                                相关度: ${result.relevance}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // 选择概念
+        async function selectConcept(conceptName) {
+            currentConcept = conceptName;
+            
+            // 更新图谱可视化
+            updateGraphVisualization(conceptName);
+            
+            // 加载概念详情
+            loadConceptDetails(conceptName);
+            
+            // 加载相关故事
+            loadConceptStories(conceptName);
+            
+            // 更新推荐
+            updateRecommendations([conceptName]);
+        }
+
+        // 更新图谱可视化
+        function updateGraphVisualization(conceptName) {
+            const container = document.getElementById('graphContainer');
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🎯</div>
+                    <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">${conceptName}</div>
+                    <div style="color: #666;">知识图谱可视化</div>
+                    <div style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                        点击扩展按钮查看相关概念
+                    </div>
+                </div>
+            `;
+        }
+
+        // 加载概念详情
+        async function loadConceptDetails(conceptName) {
+            const detailsDiv = document.getElementById('conceptDetails');
+            detailsDiv.innerHTML = '<div class="loading">📖 加载概念详情中...</div>';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/knowledge/concept/${encodeURIComponent(conceptName)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const analysis = data.data.analysis;
+                    detailsDiv.innerHTML = `
+                        <div style="line-height: 1.6;">
+                            ${analysis.replace(/\n/g, '<br>')}
+                        </div>
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 0.9rem; color: #666;">
+                            <div>置信度: ${(data.data.confidence * 100).toFixed(1)}%</div>
+                            <div>来源: ${data.data.source === 'deepseek_ai' ? 'DeepSeek AI' : '备用分析'}</div>
+                        </div>
+                    `;
+                } else {
+                    detailsDiv.innerHTML = '<div class="error">加载概念详情失败</div>';
+                }
+            } catch (error) {
+                console.error('加载概念详情错误:', error);
+                detailsDiv.innerHTML = '<div class="error">加载失败，请重试</div>';
+            }
+        }
+
+        // 加载相关故事
+        async function loadConceptStories(conceptName) {
+            const storiesDiv = document.getElementById('conceptStories');
+            storiesDiv.innerHTML = '<div class="loading">📚 加载相关故事中...</div>';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/knowledge/concept/${encodeURIComponent(conceptName)}/stories`);
+                const data = await response.json();
+
+                if (data.success && data.data.stories) {
+                    let html = '';
+                    data.data.stories.forEach(story => {
+                        html += `
+                            <div class="story-card">
+                                <div class="story-type">${story.type}</div>
+                                <div class="story-title">${story.title}</div>
+                                <div class="story-content">${story.content}</div>
+                            </div>
+                        `;
+                    });
+                    storiesDiv.innerHTML = html;
+                } else {
+                    storiesDiv.innerHTML = '<div class="error">加载故事失败</div>';
+                }
+            } catch (error) {
+                console.error('加载故事错误:', error);
+                storiesDiv.innerHTML = '<div class="error">加载失败，请重试</div>';
+            }
+        }
+
+        // 扩展图谱
+        async function expandGraph(type) {
+            if (!currentConcept) {
+                alert('请先选择一个概念');
+                return;
+            }
+
+            const container = document.getElementById('graphContainer');
+            container.innerHTML = '<div class="loading">🔄 正在扩展知识图谱...</div>';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/knowledge/concept/${encodeURIComponent(currentConcept)}/expand`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ type: type })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayExpandedGraph(data.data);
+                } else {
+                    container.innerHTML = '<div class="error">扩展失败，请重试</div>';
+                }
+            } catch (error) {
+                console.error('扩展图谱错误:', error);
+                container.innerHTML = '<div class="error">扩展失败，请检查网络连接</div>';
+            }
+        }
+
+        // 显示扩展的图谱
+        function displayExpandedGraph(data) {
+            const container = document.getElementById('graphContainer');
+            
+            let html = `
+                <div style="padding: 1rem;">
+                    <h4 style="margin-bottom: 1rem;">📊 ${data.source_concept} - ${data.expansion_type} 扩展</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            `;
+
+            data.expanded_concepts.forEach(concept => {
+                html += `
+                    <div class="concept-card" onclick="selectConcept('${concept.name}')" style="margin: 0;">
+                        <div class="concept-name">${concept.name}</div>
+                        <div class="concept-definition">${concept.definition}</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">
+                            关系: ${concept.relation_to_source} | 强度: ${(concept.strength * 100).toFixed(0)}%
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                        置信度: ${(data.confidence * 100).toFixed(1)}% | 
+                        来源: ${data.source === 'deepseek_ai' ? 'DeepSeek AI' : '备用扩展'}
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // 更新推荐
+        function updateRecommendations(concepts) {
+            const recDiv = document.getElementById('recommendations');
+            recDiv.innerHTML = `
+                <div class="concept-card" onclick="selectConcept('道')">
+                    <div class="concept-name">道</div>
+                    <div class="concept-definition">宇宙万物的根本规律</div>
+                </div>
+                <div class="concept-card" onclick="selectConcept('德')">
+                    <div class="concept-name">德</div>
+                    <div class="concept-definition">道德品质和精神修养</div>
+                </div>
+                <div class="concept-card" onclick="selectConcept('礼')">
+                    <div class="concept-name">礼</div>
+                    <div class="concept-definition">规范行为的准则</div>
+                </div>
+            `;
+        }
+
+        // 搜索框回车事件
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchConcepts();
+            }
+        });
+
+        // 页面加载时初始化
+        window.addEventListener('load', function() {
+            updateRecommendations([]);
+        });
+    </script>
+</body>
+</html>

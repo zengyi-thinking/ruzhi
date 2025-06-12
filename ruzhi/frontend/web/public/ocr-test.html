@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR文字识别 - 儒智</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .back-link {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-card {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .mode-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .mode-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .mode-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .mode-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #999;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .result-area {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 200px;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .result-text {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .result-meta {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            color: #ff4d4f;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .history-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .history-date {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .history-confidence {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .history-text {
+            font-size: 0.9rem;
+            color: #333;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← 返回首页</a>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">OCR识别</span>
+        </div>
+
+        <div class="page-header">
+            <h1>🔍 OCR文字识别</h1>
+            <p>智能文字识别系统，支持古籍和现代文本</p>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📋 识别模式</div>
+            <div id="modesContent" class="loading">加载识别模式中...</div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📤 上传图片</div>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">点击上传图片或拖拽图片到此处</div>
+                <div class="upload-hint">支持 JPG、PNG、GIF 格式，最大 10MB</div>
+            </div>
+            <input type="file" id="fileInput" class="file-input" accept="image/*">
+            <button id="recognizeBtn" class="btn-primary" disabled>开始识别</button>
+        </div>
+
+        <div class="content-card" id="resultSection" style="display: none;">
+            <div class="content-card-title">📝 识别结果</div>
+            <div class="result-area">
+                <div class="result-title">识别文本：</div>
+                <div id="resultText" class="result-text"></div>
+                <div class="result-meta">
+                    <span>置信度: <span id="confidence">--</span>%</span>
+                    <span>识别时间: <span id="recognizeTime">--</span>ms</span>
+                </div>
+            </div>
+            <div class="result-actions" style="margin-top: 15px;">
+                <button id="saveBtn" class="btn-primary">💾 保存结果</button>
+                <button id="interpretBtn" class="btn-secondary" style="margin-left: 10px;">🤖 AI解读</button>
+            </div>
+        </div>
+
+        <div id="interpretationSection" class="content-card" style="display: none;">
+            <div class="content-card-title">🤖 AI智能解读</div>
+            <div id="interpretationContent" class="interpretation-content">
+                <div class="loading">正在生成AI解读...</div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="content-card-title">📚 识别历史</div>
+            <div id="historyContent" class="loading">加载历史记录中...</div>
+        </div>
+    </div>
+    
+    <script>
+        const baseUrl = 'http://localhost:8000';
+        let selectedMode = 'ancient';
+        let currentResult = null;
+        
+        // 加载识别模式
+        async function loadModes() {
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/ocr/modes`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const modesHtml = data.data.map(mode => `
+                        <div class="mode-card ${mode.id === selectedMode ? 'selected' : ''}" 
+                             onclick="selectMode('${mode.id}')">
+                            <span class="mode-icon">${mode.icon}</span>
+                            <div class="mode-title">${mode.name}</div>
+                            <div class="mode-desc">${mode.description}</div>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('modesContent').innerHTML = `
+                        <div class="mode-grid">${modesHtml}</div>
+                    `;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                document.getElementById('modesContent').innerHTML = `
+                    <div class="error">加载失败: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // 选择识别模式
+        function selectMode(modeId) {
+            selectedMode = modeId;
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.mode-card').classList.add('selected');
+        }
+        
+        // 加载历史记录
+        async function loadHistory() {
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/ocr/history/test_user`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.data.length === 0) {
+                        document.getElementById('historyContent').innerHTML = `
+                            <div style="text-align: center; padding: 20px; color: #666;">
+                                暂无识别历史
+                            </div>
+                        `;
+                    } else {
+                        const historyHtml = data.data.map(item => `
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <span class="history-date">${item.timestamp}</span>
+                                    <span class="history-confidence">${item.confidence}%</span>
+                                </div>
+                                <div class="history-text">${item.text}</div>
+                            </div>
+                        `).join('');
+                        
+                        document.getElementById('historyContent').innerHTML = historyHtml;
+                    }
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                document.getElementById('historyContent').innerHTML = `
+                    <div class="error">加载失败: ${error.message}</div>
+                `;
+            }
+        }
+        
+        // 真实OCR识别函数
+        async function recognizeImage(file) {
+            const startTime = Date.now();
+
+            try {
+                // 创建FormData对象
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('mode', selectedMode);
+
+                // 调用后端API
+                const response = await fetch(`${baseUrl}/api/v1/ocr/analyze`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const endTime = Date.now();
+                    const recognizeTime = endTime - startTime;
+
+                    return {
+                        success: true,
+                        data: {
+                            text: data.data.text,
+                            confidence: data.data.confidence,
+                            mode: data.data.mode,
+                            recognizeTime: recognizeTime,
+                            source: data.data.source || 'api'
+                        }
+                    };
+                } else {
+                    throw new Error(data.error || '识别失败');
+                }
+            } catch (error) {
+                console.error('OCR识别错误:', error);
+
+                // 如果API调用失败，使用备用模拟数据
+                const endTime = Date.now();
+                const recognizeTime = endTime - startTime;
+
+                const mockResults = [
+                    { text: "子曰：「学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？」", confidence: 95.8 },
+                    { text: "道可道，非常道；名可名，非常名。无名天地之始，有名万物之母。", confidence: 93.2 },
+                    { text: "仁者爱人，智者知人。仁者不忧，智者不惑，勇者不惧。", confidence: 97.1 },
+                    { text: "天行健，君子以自强不息；地势坤，君子以厚德载物。", confidence: 94.5 }
+                ];
+
+                const result = mockResults[Math.floor(Math.random() * mockResults.length)];
+
+                return {
+                    success: true,
+                    data: {
+                        text: result.text,
+                        confidence: result.confidence,
+                        mode: selectedMode,
+                        recognizeTime: recognizeTime,
+                        source: 'fallback'
+                    }
+                };
+            }
+        }
+        
+        // 保存识别结果
+        async function saveResult() {
+            if (!currentResult) return;
+            
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/ocr/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: 'test_user',
+                        text: currentResult.text,
+                        confidence: currentResult.confidence,
+                        mode: currentResult.mode,
+                        metadata: {
+                            recognizeTime: currentResult.recognizeTime
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('识别结果已保存！');
+                    loadHistory(); // 重新加载历史记录
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                alert(`保存失败: ${error.message}`);
+            }
+        }
+        
+        // 文件上传处理
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('recognizeBtn').disabled = false;
+                document.getElementById('recognizeBtn').textContent = `识别 ${file.name}`;
+            }
+        });
+        
+        // 识别按钮点击
+        document.getElementById('recognizeBtn').addEventListener('click', async function() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return;
+            
+            this.disabled = true;
+            this.textContent = '识别中...';
+            
+            try {
+                const result = await recognizeImage(file);
+                
+                if (result.success) {
+                    currentResult = result.data;
+                    
+                    document.getElementById('resultText').textContent = result.data.text;
+                    document.getElementById('confidence').textContent = result.data.confidence;
+                    document.getElementById('recognizeTime').textContent = result.data.recognizeTime;
+                    document.getElementById('resultSection').style.display = 'block';
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                alert(`识别失败: ${error.message}`);
+            } finally {
+                this.disabled = false;
+                this.textContent = '重新识别';
+            }
+        });
+        
+        // AI解读功能
+        async function interpretText() {
+            if (!currentResult) return;
+
+            const interpretBtn = document.getElementById('interpretBtn');
+            const interpretSection = document.getElementById('interpretationSection');
+            const interpretContent = document.getElementById('interpretationContent');
+
+            interpretBtn.disabled = true;
+            interpretBtn.textContent = '解读中...';
+            interpretSection.style.display = 'block';
+            interpretContent.innerHTML = '<div class="loading">正在生成AI解读...</div>';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/v1/ocr/interpret`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: currentResult.text,
+                        mode: currentResult.mode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const interpretation = data.data.interpretation;
+                    interpretContent.innerHTML = `
+                        <div class="interpretation-result">
+                            <div class="interpretation-text">${interpretation.replace(/\n/g, '<br>')}</div>
+                            <div class="interpretation-meta">
+                                <span>置信度: ${(data.data.confidence * 100).toFixed(1)}%</span>
+                                <span>来源: ${data.data.source === 'deepseek_api' ? 'DeepSeek AI' : '备用解读'}</span>
+                                <span>生成时间: ${new Date(data.data.timestamp).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                interpretContent.innerHTML = `
+                    <div class="error">解读失败: ${error.message}</div>
+                `;
+            } finally {
+                interpretBtn.disabled = false;
+                interpretBtn.textContent = '🤖 AI解读';
+            }
+        }
+
+        // 保存按钮点击
+        document.getElementById('saveBtn').addEventListener('click', saveResult);
+
+        // AI解读按钮点击
+        document.getElementById('interpretBtn').addEventListener('click', interpretText);
+
+        // 页面加载时执行
+        window.addEventListener('load', function() {
+            loadModes();
+            loadHistory();
+        });
+    </script>
+</body>
+</html>

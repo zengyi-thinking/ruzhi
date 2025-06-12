@@ -1,0 +1,270 @@
+/* 首页样式 */
+
+.header-section {
+  margin-bottom: 30rpx;
+}
+
+.welcome-card {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.welcome-content {
+  flex: 1;
+}
+
+.welcome-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.welcome-subtitle {
+  font-size: 28rpx;
+  opacity: 0.9;
+  margin-bottom: 15rpx;
+}
+
+.welcome-desc {
+  font-size: 24rpx;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+.welcome-avatar {
+  text-align: center;
+}
+
+.user-name {
+  font-size: 24rpx;
+  margin-top: 10rpx;
+  opacity: 0.9;
+}
+
+/* 统计区域 */
+.stats-section {
+  margin-bottom: 30rpx;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20rpx 10rpx;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 15rpx;
+  color: white;
+}
+
+.stat-number {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 5rpx;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  opacity: 0.9;
+}
+
+/* 功能导航 */
+.features-section {
+  margin-bottom: 30rpx;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 30rpx 20rpx;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 20rpx;
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+.feature-item:active {
+  transform: scale(0.95);
+}
+
+.feature-icon {
+  font-size: 60rpx;
+  margin-bottom: 15rpx;
+}
+
+.feature-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.feature-desc {
+  font-size: 22rpx;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+/* 最近活动 */
+.recent-section {
+  margin-bottom: 30rpx;
+}
+
+.recent-list {
+  margin-top: 20rpx;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.recent-item:last-child {
+  border-bottom: none;
+}
+
+.recent-icon {
+  width: 60rpx;
+  height: 60rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  margin-right: 20rpx;
+}
+
+.recent-content {
+  flex: 1;
+}
+
+.recent-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.recent-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.recent-arrow {
+  color: #ccc;
+  font-size: 30rpx;
+}
+
+/* 推荐内容 */
+.recommend-section {
+  margin-bottom: 30rpx;
+}
+
+.recommend-item {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.recommend-item:last-child {
+  border-bottom: none;
+}
+
+.recommend-item:active {
+  background-color: #f8f9fa;
+}
+
+.recommend-content {
+  flex: 1;
+}
+
+.recommend-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.recommend-desc {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+  line-height: 1.4;
+}
+
+.recommend-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.recommend-arrow {
+  color: #ccc;
+  font-size: 30rpx;
+}
+
+/* 快速操作 */
+.quick-actions {
+  position: fixed;
+  bottom: 120rpx;
+  right: 30rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+  z-index: 100;
+}
+
+.action-btn {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.9);
+}
+
+.action-icon {
+  font-size: 36rpx;
+  margin-bottom: 5rpx;
+}
+
+.action-text {
+  font-size: 20rpx;
+  font-weight: bold;
+}
+
+/* 响应式适配 */
+@media (max-width: 375px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .welcome-title {
+    font-size: 40rpx;
+  }
+}

@@ -492,6 +492,275 @@ def test_chat_save_conversation():
         print(f"✗ 对话保存异常: {e}")
         return False
 
+def test_learning_stats():
+    """测试获取学习统计接口"""
+    print("测试获取学习统计接口...")
+    try:
+        response = requests.get(f"{BASE_URL}/api/v1/learning/stats/{TEST_USER_ID}")
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                stats = data['data']
+                print(f"✓ 学习统计获取成功:")
+                print(f"  - 学习天数: {stats.get('totalDays', 0)}")
+                print(f"  - 学习时长: {stats.get('totalHours', 0)}小时")
+                print(f"  - 总积分: {stats.get('totalPoints', 0)}")
+                return True
+            else:
+                print(f"✗ 学习统计获取失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 学习统计请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 学习统计异常: {e}")
+        return False
+
+def test_learning_progress():
+    """测试获取学习进度接口"""
+    print("测试获取学习进度接口...")
+    try:
+        response = requests.get(f"{BASE_URL}/api/v1/learning/progress/{TEST_USER_ID}")
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                progress = data['data']
+                print(f"✓ 学习进度获取成功，共{len(progress)}个进度项:")
+                for item in progress[:2]:  # 只显示前2项
+                    print(f"  - {item['title']}: {item['progress']}%")
+                return True
+            else:
+                print(f"✗ 学习进度获取失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 学习进度请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 学习进度异常: {e}")
+        return False
+
+def test_today_plans():
+    """测试获取今日计划接口"""
+    print("测试获取今日计划接口...")
+    try:
+        today = "2024-01-15"
+        response = requests.get(f"{BASE_URL}/api/v1/learning/plans/{TEST_USER_ID}/{today}")
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                plans = data['data']
+                print(f"✓ 今日计划获取成功，共{len(plans)}个计划:")
+                for plan in plans:
+                    status = "已完成" if plan['completed'] else "进行中"
+                    print(f"  - {plan['title']}: {status}")
+                return True
+            else:
+                print(f"✗ 今日计划获取失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 今日计划请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 今日计划异常: {e}")
+        return False
+
+def test_achievements():
+    """测试获取成就接口"""
+    print("测试获取成就接口...")
+    try:
+        response = requests.get(f"{BASE_URL}/api/v1/learning/achievements/{TEST_USER_ID}")
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                achievements = data['data']
+                unlocked_count = sum(1 for a in achievements if a.get('unlocked', False))
+                print(f"✓ 成就获取成功，共{len(achievements)}个成就，已解锁{unlocked_count}个:")
+                for achievement in achievements[:3]:  # 只显示前3个
+                    status = "已解锁" if achievement.get('unlocked', False) else "未解锁"
+                    print(f"  - {achievement['title']}: {status}")
+                return True
+            else:
+                print(f"✗ 成就获取失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 成就请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 成就异常: {e}")
+        return False
+
+def test_create_plan():
+    """测试创建学习计划接口"""
+    print("测试创建学习计划接口...")
+    try:
+        plan_data = {
+            "userId": TEST_USER_ID,
+            "title": "测试学习计划",
+            "type": "reading",
+            "duration": 30,
+            "difficulty": "medium",
+            "date": "2024-01-15",
+            "id": f"plan_{int(time.time())}"
+        }
+
+        response = requests.post(
+            f"{BASE_URL}/api/v1/learning/plans",
+            json=plan_data,
+            headers={'Content-Type': 'application/json'}
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                result = data['data']
+                print(f"✓ 学习计划创建成功:")
+                print(f"  - 计划ID: {result['id']}")
+                print(f"  - 创建状态: {result['created']}")
+                return True
+            else:
+                print(f"✗ 学习计划创建失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 学习计划创建请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 学习计划创建异常: {e}")
+        return False
+
+def test_study_records():
+    """测试获取学习记录接口"""
+    print("测试获取学习记录接口...")
+    try:
+        date = "2024-01-15"
+        response = requests.get(f"{BASE_URL}/api/v1/learning/records/{TEST_USER_ID}/{date}")
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                records = data['data']
+                print(f"✓ 学习记录获取成功，共{len(records)}条记录:")
+                for record in records:
+                    print(f"  - {record['title']}: {record['duration']}分钟")
+                return True
+            else:
+                print(f"✗ 学习记录获取失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 学习记录请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 学习记录异常: {e}")
+        return False
+
+def test_auth_register():
+    """测试用户注册接口"""
+    print("测试用户注册接口...")
+    try:
+        user_data = {
+            "username": f"testuser_{int(time.time())}",
+            "password": "test123456",
+            "email": f"test_{int(time.time())}@example.com",
+            "name": "测试用户"
+        }
+
+        response = requests.post(
+            f"{BASE_URL}/api/v1/auth/register",
+            json=user_data,
+            headers={'Content-Type': 'application/json'}
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                result = data['data']
+                print(f"✓ 用户注册成功:")
+                print(f"  - 用户ID: {result['user_id']}")
+                print(f"  - 消息: {result['message']}")
+                return True
+            else:
+                print(f"✗ 用户注册失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 用户注册请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 用户注册异常: {e}")
+        return False
+
+def test_auth_login():
+    """测试用户登录接口"""
+    print("测试用户登录接口...")
+    try:
+        # 先注册一个用户
+        username = f"logintest_{int(time.time())}"
+        password = "test123456"
+
+        register_data = {
+            "username": username,
+            "password": password,
+            "email": f"{username}@example.com",
+            "name": "登录测试用户"
+        }
+
+        requests.post(
+            f"{BASE_URL}/api/v1/auth/register",
+            json=register_data,
+            headers={'Content-Type': 'application/json'}
+        )
+
+        # 然后测试登录
+        login_data = {
+            "username": username,
+            "password": password
+        }
+
+        response = requests.post(
+            f"{BASE_URL}/api/v1/auth/login",
+            json=login_data,
+            headers={'Content-Type': 'application/json'}
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                result = data['data']
+                print(f"✓ 用户登录成功:")
+                print(f"  - 用户名: {result['user']['username']}")
+                print(f"  - 令牌长度: {len(result['token'])}")
+                return True
+            else:
+                print(f"✗ 用户登录失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 用户登录请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 用户登录异常: {e}")
+        return False
+
+def test_auth_profile():
+    """测试获取用户资料接口"""
+    print("测试获取用户资料接口...")
+    try:
+        response = requests.get(f"{BASE_URL}/api/v1/auth/profile/{TEST_USER_ID}")
+        if response.status_code == 200:
+            data = response.json()
+            if data['success']:
+                profile = data['data']
+                print(f"✓ 用户资料获取成功:")
+                print(f"  - 用户ID: {profile['user_id']}")
+                print(f"  - 用户名: {profile.get('username', 'N/A')}")
+                print(f"  - 姓名: {profile.get('name', 'N/A')}")
+                return True
+            else:
+                print(f"✗ 用户资料获取失败: {data['error']}")
+                return False
+        else:
+            print(f"✗ 用户资料请求失败: {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"✗ 用户资料异常: {e}")
+        return False
+
 def main():
     """主测试函数"""
     print("=" * 60)
@@ -524,7 +793,16 @@ def main():
         ("发送对话消息", test_chat_send_message),
         ("对话历史", test_chat_conversation_history),
         ("人物对话历史", test_chat_character_history),
-        ("保存对话", test_chat_save_conversation)
+        ("保存对话", test_chat_save_conversation),
+        ("学习统计", test_learning_stats),
+        ("学习进度", test_learning_progress),
+        ("今日计划", test_today_plans),
+        ("成就系统", test_achievements),
+        ("创建计划", test_create_plan),
+        ("学习记录", test_study_records),
+        ("用户注册", test_auth_register),
+        ("用户登录", test_auth_login),
+        ("用户资料", test_auth_profile)
     ]
     
     passed = 0
