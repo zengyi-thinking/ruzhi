@@ -245,18 +245,18 @@ Page({
 
     switch (item.type) {
       case 'knowledge':
-        wx.navigateTo({
-          url: '/pages/knowledge/concept/concept?concept=' + item.target
+        wx.switchTab({
+          url: '/pages/knowledge/knowledge'
         })
         break
       case 'dialogue':
-        wx.navigateTo({
-          url: '/pages/dialogue/chat/chat?character=' + item.target
+        wx.switchTab({
+          url: '/pages/dialogue/dialogue'
         })
         break
       case 'classics':
         wx.navigateTo({
-          url: '/pages/classics/reader/reader?classic=' + item.target
+          url: '/pages/classics/classics'
         })
         break
       default:
@@ -266,15 +266,9 @@ Page({
 
   // 快速OCR
   quickOCR: function() {
-    CommonUtils.chooseImage({
-      sourceType: ['album', 'camera']
-    }).then(function(tempFilePath) {
-      wx.navigateTo({
-        url: '/pages/ocr/result/result?imagePath=' + encodeURIComponent(tempFilePath)
-      })
-    }).catch(function(error) {
-      console.error('选择图片失败:', error)
-      app.showError('选择图片失败')
+    // 直接跳转到OCR页面，让用户在那里选择图片
+    wx.switchTab({
+      url: '/pages/ocr/ocr'
     })
   },
 

@@ -71,44 +71,36 @@ Page({
   },
 
   // 从相机选择图片
-  chooseFromCamera() {
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
+  chooseFromCamera: function() {
+    const self = this
+    CommonUtils.chooseImage({
       sourceType: ['camera'],
-      camera: 'back',
-      success: (res) => {
-        const tempFilePath = res.tempFiles[0].tempFilePath
-        this.setData({ selectedImage: tempFilePath })
-        console.log('从相机选择图片:', tempFilePath)
-      },
-      fail: (error) => {
-        console.error('选择图片失败:', error)
-        app.showError('选择图片失败')
-      }
+      camera: 'back'
+    }).then(function(tempFilePath) {
+      self.setData({ selectedImage: tempFilePath })
+      console.log('从相机选择图片:', tempFilePath)
+    }).catch(function(error) {
+      console.error('选择图片失败:', error)
+      app.showError('选择图片失败')
     })
   },
 
   // 从相册选择图片
-  chooseFromAlbum() {
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      sourceType: ['album'],
-      success: (res) => {
-        const tempFilePath = res.tempFiles[0].tempFilePath
-        this.setData({ selectedImage: tempFilePath })
-        console.log('从相册选择图片:', tempFilePath)
-      },
-      fail: (error) => {
-        console.error('选择图片失败:', error)
-        app.showError('选择图片失败')
-      }
+  chooseFromAlbum: function() {
+    const self = this
+    CommonUtils.chooseImage({
+      sourceType: ['album']
+    }).then(function(tempFilePath) {
+      self.setData({ selectedImage: tempFilePath })
+      console.log('从相册选择图片:', tempFilePath)
+    }).catch(function(error) {
+      console.error('选择图片失败:', error)
+      app.showError('选择图片失败')
     })
   },
 
   // 重新选择图片
-  reSelectImage() {
+  reSelectImage: function() {
     this.setData({
       selectedImage: '',
       recognitionResult: null,
@@ -117,7 +109,9 @@ Page({
   },
 
   // 开始识别
-  async startRecognition() {
+  startRecognition: function() {
+    const self = this
+
     if (!this.data.selectedImage) {
       app.showError('请先选择图片')
       return
@@ -130,54 +124,35 @@ Page({
       interpretationResult: null
     })
 
-    try {
-      const result = await this.performOCR()
-      
+    this.performOCR().then(function(result) {
       if (result.success) {
-        this.setData({
+        self.setData({
           recognitionResult: result.data,
           loadingText: '识别完成'
         })
-        
+
         // 保存到历史记录
-        this.saveToHistory(result.data)
-        
+        self.saveToHistory(result.data)
+
         app.showSuccess('识别成功')
       } else {
         throw new Error(result.error || '识别失败')
       }
-    } catch (error) {
+    }).catch(function(error) {
       console.error('OCR识别失败:', error)
       app.showError('识别失败: ' + error.message)
-    } finally {
-      this.setData({ loading: false })
-    }
+    }).finally(function() {
+      self.setData({ loading: false })
+    })
   },
 
   // 执行OCR识别
-  async performOCR() {
-    return new Promise((resolve, reject) => {
-      wx.uploadFile({
-        url: app.globalData.baseUrl + '/api/v1/ocr/analyze',
-        filePath: this.data.selectedImage,
-        name: 'file',
-        formData: {
-          mode: this.data.selectedMode
-        },
-        success: (res) => {
-          try {
-            const data = JSON.parse(res.data)
-            resolve(data)
-          } catch (error) {
-            reject(new Error('解析响应失败'))
-          }
-        },
-        fail: (error) => {
-          console.error('上传文件失败:', error)
-          // 使用备用识别结果
-          resolve(this.getFallbackOCRResult())
-        }
-      })
+  performOCR: function() {
+    const self = this
+    return ApiUtils.ocr.analyze(this.data.selectedImage, this.data.selectedMode).catch(function(error) {
+      console.error('上传文件失败:', error)
+      // 使用备用识别结果
+      return self.getFallbackOCRResult()
     })
   },
 
@@ -218,7 +193,9 @@ Page({
   },
 
   // AI解读文本
-  async interpretText() {
+  interpretText: function() {
+    const self = this
+
     if (!this.data.recognitionResult) {
       app.showError('请先进行文本识别')
       return
@@ -229,113 +206,93 @@ Page({
       loadingText: '正在AI解读...'
     })
 
-    try {
-      const result = await app.request({
-        url: '/api/v1/ocr/interpret',
-        method: 'POST',
-        data: {
-          text: this.data.recognitionResult.text,
-          mode: this.data.recognitionResult.mode
-        }
-      })
-
+    ApiUtils.ocr.interpret(this.data.recognitionResult.text, this.data.recognitionResult.mode).then(function(result) {
       if (result.success) {
-        this.setData({ interpretationResult: result.data })
+        self.setData({ interpretationResult: result.data })
         app.showSuccess('解读完成')
       } else {
         throw new Error(result.error || '解读失败')
       }
-    } catch (error) {
+    }).catch(function(error) {
       console.error('AI解读失败:', error)
       app.showError('解读失败: ' + error.message)
-    } finally {
-      this.setData({ loading: false })
-    }
+    }).finally(function() {
+      self.setData({ loading: false })
+    })
   },
 
   // 复制文本
-  copyText() {
+  copyText: function() {
     if (!this.data.recognitionResult) {
       app.showError('没有可复制的文本')
       return
     }
 
-    wx.setClipboardData({
-      data: this.data.recognitionResult.text,
-      success: () => {
-        app.showSuccess('文本已复制到剪贴板')
-      },
-      fail: () => {
-        app.showError('复制失败')
-      }
+    CommonUtils.copyToClipboard(this.data.recognitionResult.text, function() {
+      app.showSuccess('文本已复制到剪贴板')
+    }, function() {
+      app.showError('复制失败')
     })
   },
 
   // 保存结果
-  async saveResult() {
+  saveResult: function() {
     if (!this.data.recognitionResult) {
       app.showError('没有可保存的结果')
       return
     }
 
-    try {
-      const result = await app.request({
-        url: '/api/v1/ocr/save',
-        method: 'POST',
-        data: {
-          userId: app.globalData.currentUser.id,
-          text: this.data.recognitionResult.text,
-          confidence: this.data.recognitionResult.confidence,
-          mode: this.data.recognitionResult.mode,
-          metadata: {
-            timestamp: new Date().toISOString(),
-            source: 'miniprogram'
-          }
-        }
-      })
+    const metadata = {
+      timestamp: new Date().toISOString(),
+      source: 'miniprogram'
+    }
 
+    ApiUtils.ocr.save(
+      app.globalData.currentUser.id,
+      this.data.recognitionResult.text,
+      this.data.recognitionResult.confidence,
+      this.data.recognitionResult.mode,
+      metadata
+    ).then(function(result) {
       if (result.success) {
         app.showSuccess('保存成功')
       } else {
         throw new Error(result.error || '保存失败')
       }
-    } catch (error) {
+    }).catch(function(error) {
       console.error('保存结果失败:', error)
       app.showError('保存失败: ' + error.message)
-    }
+    })
   },
 
   // 加载OCR历史
-  async loadOCRHistory() {
-    try {
-      const result = await app.request({
-        url: `/api/v1/ocr/history?userId=${app.globalData.currentUser.id}&limit=10`
-      })
-
+  loadOCRHistory: function() {
+    const self = this
+    return ApiUtils.ocr.getHistory(app.globalData.currentUser.id, 10).then(function(result) {
       if (result.success) {
-        this.setData({ ocrHistory: result.data })
+        self.setData({ ocrHistory: result.data })
       }
-    } catch (error) {
+    }).catch(function(error) {
       console.error('加载OCR历史失败:', error)
-    }
+    })
   },
 
   // 保存到历史记录
-  saveToHistory(data) {
+  saveToHistory: function(data) {
     const historyItem = {
       id: Date.now().toString(),
       text: data.text,
       confidence: data.confidence,
       mode: data.mode,
-      timestamp: this.formatTime(new Date())
+      timestamp: CommonUtils.formatTime(new Date())
     }
 
-    const history = [historyItem, ...this.data.ocrHistory.slice(0, 9)]
+    const history = [historyItem].concat(this.data.ocrHistory.slice(0, 9))
     this.setData({ ocrHistory: history })
   },
 
   // 加载历史项目
-  loadHistoryItem(e) {
+  loadHistoryItem: function(e) {
     const item = e.currentTarget.dataset.item
     this.setData({
       recognitionResult: {
@@ -349,29 +306,15 @@ Page({
   },
 
   // 根据ID获取模式名称
-  getModeNameById(id) {
-    const mode = this.data.ocrModes.find(m => m.id === id)
+  getModeNameById: function(id) {
+    const mode = this.data.ocrModes.find(function(m) {
+      return m.id === id
+    })
     return mode ? mode.name : id
   },
 
-  // 格式化时间
-  formatTime(date) {
-    const now = new Date()
-    const diff = now - date
-    
-    if (diff < 60000) { // 1分钟内
-      return '刚刚'
-    } else if (diff < 3600000) { // 1小时内
-      return Math.floor(diff / 60000) + '分钟前'
-    } else if (diff < 86400000) { // 1天内
-      return Math.floor(diff / 3600000) + '小时前'
-    } else {
-      return date.toLocaleDateString()
-    }
-  },
-
   // 分享功能
-  onShareAppMessage() {
+  onShareAppMessage: function() {
     return {
       title: '儒智OCR - 古籍文本智能识别',
       desc: '使用AI技术识别古籍文本，深度解读传统文化',

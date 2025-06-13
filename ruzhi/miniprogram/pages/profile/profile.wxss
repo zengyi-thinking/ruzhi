@@ -1,0 +1,292 @@
+/* 个人中心页面样式 */
+.profile-container {
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  padding-bottom: 20rpx;
+}
+
+/* 用户信息区域 */
+.user-info-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 40rpx 40rpx;
+  display: flex;
+  align-items: center;
+  color: white;
+  position: relative;
+}
+
+.user-avatar {
+  margin-right: 30rpx;
+}
+
+.avatar-image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.user-level {
+  font-size: 28rpx;
+  opacity: 0.9;
+  margin-bottom: 8rpx;
+}
+
+.user-points {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.login-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 20rpx 40rpx;
+  border-radius: 50rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+}
+
+/* 学习统计区域 */
+.stats-section {
+  background-color: white;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.stats-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.stats-toggle {
+  font-size: 28rpx;
+  color: #3498db;
+}
+
+.stats-grid {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 10rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #7f8c8d;
+}
+
+.stats-detail {
+  margin-top: 30rpx;
+  padding-top: 30rpx;
+  border-top: 2rpx solid #ecf0f1;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.detail-label {
+  font-size: 28rpx;
+  color: #7f8c8d;
+}
+
+.detail-value {
+  font-size: 28rpx;
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+/* 成就区域 */
+.achievements-section {
+  background-color: white;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.section-more {
+  font-size: 28rpx;
+  color: #3498db;
+}
+
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f8f9fa;
+  border-radius: 15rpx;
+}
+
+.achievement-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+}
+
+.achievement-desc {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  margin-bottom: 8rpx;
+}
+
+.achievement-date {
+  font-size: 22rpx;
+  color: #95a5a6;
+}
+
+/* 功能菜单区域 */
+.menu-section {
+  margin: 20rpx;
+}
+
+.menu-group {
+  background-color: white;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 2rpx solid #f8f9fa;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-icon {
+  font-size: 36rpx;
+  margin-right: 30rpx;
+  width: 60rpx;
+  text-align: center;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: 30rpx;
+  color: #2c3e50;
+}
+
+.menu-arrow {
+  font-size: 28rpx;
+  color: #bdc3c7;
+}
+
+/* 历史活动区域 */
+.history-section {
+  background-color: white;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f8f9fa;
+  border-radius: 15rpx;
+}
+
+.history-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+}
+
+.history-info {
+  flex: 1;
+}
+
+.history-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+}
+
+.history-desc {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  margin-bottom: 8rpx;
+}
+
+.history-time {
+  font-size: 22rpx;
+  color: #95a5a6;
+}
+
+.history-points {
+  font-size: 24rpx;
+  color: #27ae60;
+  font-weight: bold;
+}
