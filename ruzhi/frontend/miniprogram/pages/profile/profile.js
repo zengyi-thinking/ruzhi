@@ -15,7 +15,8 @@ Page({
     },
     recentAchievements: [],
     historyRecords: [],
-    showStatsDetail: false
+    showStatsDetail: false,
+    averageDailyHours: '0.0'
   },
 
   onLoad: function() {
@@ -101,7 +102,14 @@ Page({
       try {
         // 直接使用模拟数据
         const mockStats = LearningUtils.generateMockStats()
-        self.setData({ learningStats: mockStats })
+        // 计算平均每日学习时长
+        const averageDailyHours = mockStats.totalDays > 0 ?
+          (mockStats.totalHours / mockStats.totalDays).toFixed(1) : '0.0'
+
+        self.setData({
+          learningStats: mockStats,
+          averageDailyHours: averageDailyHours
+        })
         resolve()
       } catch (error) {
         console.error('加载学习统计失败:', error)

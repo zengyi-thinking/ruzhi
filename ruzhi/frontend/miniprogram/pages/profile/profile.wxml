@@ -1,2 +1,180 @@
-<!--pages/profile/profile.wxml-->
-<text>pages/profile/profile.wxml</text>
+<!--个人中心页面-->
+<view class="page-container traditional-bg">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-avatar-section">
+      <image
+        class="user-avatar"
+        src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}"
+        mode="aspectFill"
+      ></image>
+      <view class="user-info">
+        <view class="user-name">{{userInfo.nickName || '文化学者'}}</view>
+        <view class="user-desc">传统文化学习者</view>
+      </view>
+      <view class="login-section" wx:if="{{!hasUserInfo}}">
+        <button class="login-btn" bindtap="getUserProfile">登录</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习统计卡片 -->
+  <view class="stats-card">
+    <view class="card-header">
+      <view class="card-title">📊 学习统计</view>
+      <view class="stats-toggle" bindtap="toggleStatsDetail">
+        <text class="toggle-text">{{showStatsDetail ? '收起' : '详情'}}</text>
+        <text class="toggle-icon">{{showStatsDetail ? '▲' : '▼'}}</text>
+      </view>
+    </view>
+
+    <view class="stats-overview">
+      <view class="stat-item">
+        <view class="stat-number">{{learningStats.totalDays}}</view>
+        <view class="stat-label">学习天数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number">{{learningStats.totalHours}}</view>
+        <view class="stat-label">学习时长</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number">{{learningStats.totalPoints}}</view>
+        <view class="stat-label">积分</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number">{{learningStats.currentStreak}}</view>
+        <view class="stat-label">连续天数</view>
+      </view>
+    </view>
+
+    <view class="stats-detail" wx:if="{{showStatsDetail}}">
+      <view class="detail-item">
+        <text class="detail-label">平均每日学习：</text>
+        <text class="detail-value">{{averageDailyHours}}小时</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">学习效率：</text>
+        <text class="detail-value">优秀</text>
+      </view>
+    </view>
+
+    <view class="stats-action">
+      <button class="action-btn" bindtap="viewLearningStats">查看详细统计</button>
+    </view>
+  </view>
+
+  <!-- 最近成就 -->
+  <view class="achievements-card" wx:if="{{recentAchievements.length > 0}}">
+    <view class="card-header">
+      <view class="card-title">🏆 最近成就</view>
+      <view class="view-all" bindtap="viewAllAchievements">查看全部</view>
+    </view>
+
+    <view class="achievements-list">
+      <view
+        class="achievement-item"
+        wx:for="{{recentAchievements}}"
+        wx:key="id"
+      >
+        <view class="achievement-icon">{{item.icon}}</view>
+        <view class="achievement-info">
+          <view class="achievement-name">{{item.name}}</view>
+          <view class="achievement-desc">{{item.description}}</view>
+          <view class="achievement-date">{{item.unlockedDate}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习历史 -->
+  <view class="history-card" wx:if="{{historyRecords.length > 0}}">
+    <view class="card-header">
+      <view class="card-title">📖 最近学习</view>
+    </view>
+
+    <view class="history-list">
+      <view
+        class="history-item"
+        wx:for="{{historyRecords}}"
+        wx:key="id"
+      >
+        <view class="history-icon">{{item.icon}}</view>
+        <view class="history-content">
+          <view class="history-title">{{item.title}}</view>
+          <view class="history-desc">{{item.description}}</view>
+          <view class="history-time">{{item.time}}</view>
+        </view>
+        <view class="history-points">+{{item.points}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-card">
+    <view class="card-title">⚙️ 功能菜单</view>
+
+    <view class="menu-list">
+      <view class="menu-item" bindtap="viewLearningStats">
+        <view class="menu-icon">📊</view>
+        <view class="menu-content">
+          <view class="menu-title">学习统计</view>
+          <view class="menu-desc">查看详细的学习数据和进度</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+
+      <view class="menu-item" bindtap="viewAllAchievements">
+        <view class="menu-icon">🏆</view>
+        <view class="menu-content">
+          <view class="menu-title">成就中心</view>
+          <view class="menu-desc">查看解锁的成就和徽章</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+
+      <view class="menu-item">
+        <view class="menu-icon">⭐</view>
+        <view class="menu-content">
+          <view class="menu-title">我的收藏</view>
+          <view class="menu-desc">管理收藏的内容和笔记</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+
+      <view class="menu-item">
+        <view class="menu-icon">⚙️</view>
+        <view class="menu-content">
+          <view class="menu-title">设置</view>
+          <view class="menu-desc">个性化设置和偏好配置</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+
+      <view class="menu-item">
+        <view class="menu-icon">💬</view>
+        <view class="menu-content">
+          <view class="menu-title">意见反馈</view>
+          <view class="menu-desc">帮助我们改进产品体验</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+
+      <view class="menu-item">
+        <view class="menu-icon">ℹ️</view>
+        <view class="menu-content">
+          <view class="menu-title">关于我们</view>
+          <view class="menu-desc">了解儒智的使命和愿景</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态提示 -->
+  <view class="empty-state" wx:if="{{recentAchievements.length === 0 && historyRecords.length === 0}}">
+    <view class="empty-icon">📚</view>
+    <view class="empty-title">开始您的学习之旅</view>
+    <view class="empty-desc">探索传统文化的智慧宝库，记录您的成长足迹</view>
+    <button class="start-btn" bindtap="viewLearningStats">开始学习</button>
+  </view>
+</view>
