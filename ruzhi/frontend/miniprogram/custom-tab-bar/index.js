@@ -13,21 +13,21 @@ Component({
       },
       {
         pagePath: "/pages/ocr/ocr",
-        text: "古籍识别",
+        text: "识别",
         icon: "📷",
         selectedIcon: "📷"
       },
       {
         pagePath: "/pages/chat/chat",
-        text: "人物对话",
+        text: "对话",
         icon: "💬",
         selectedIcon: "💬"
       },
       {
-        pagePath: "/pages/classics/classics",
-        text: "经典库",
-        icon: "📚",
-        selectedIcon: "📚"
+        pagePath: "/pages/knowledge/knowledge",
+        text: "知识",
+        icon: "🧠",
+        selectedIcon: "🧠"
       },
       {
         pagePath: "/pages/profile/profile",

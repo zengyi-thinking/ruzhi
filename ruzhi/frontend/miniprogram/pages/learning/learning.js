@@ -1,7 +1,6 @@
 // 学习中心页面逻辑
 const app = getApp()
 const CommonUtils = require('../../utils/common.js')
-const ApiUtils = require('../../utils/api.js')
 const LearningUtils = require('../../utils/learning.js')
 
 Page({
@@ -57,93 +56,84 @@ Page({
   // 加载学习统计
   loadLearningStats: function() {
     const self = this
-    return ApiUtils.learning.getStats(app.globalData.currentUser.id).then(function(result) {
-      if (result.success) {
-        self.setData({ learningStats: result.data })
-      } else {
+    return new Promise(function(resolve) {
+      try {
         // 使用模拟数据
         self.setData({
           learningStats: LearningUtils.generateMockStats()
         })
+        resolve()
+      } catch (error) {
+        console.error('加载学习统计失败:', error)
+        resolve()
       }
-    }).catch(function(error) {
-      console.error('加载学习统计失败:', error)
-      // 使用模拟数据
-      self.setData({
-        learningStats: LearningUtils.generateMockStats()
-      })
     })
   },
 
   // 加载学习进度
   loadLearningProgress: function() {
     const self = this
-    return ApiUtils.learning.getProgress(app.globalData.currentUser.id).then(function(result) {
-      if (result.success) {
-        self.setData({ learningProgress: result.data })
-      } else {
-        // 使用模拟数据
-        self.setData({
-          learningProgress: LearningUtils.generateMockProgress()
+    return new Promise(function(resolve) {
+      try {
+        // 使用模拟数据并计算百分比
+        const progressData = LearningUtils.generateMockProgress()
+        const processedData = progressData.map(function(item) {
+          return Object.assign({}, item, {
+            progressPercentage: Math.round(item.progress * 100)
+          })
         })
+        self.setData({
+          learningProgress: processedData
+        })
+        resolve()
+      } catch (error) {
+        console.error('加载学习进度失败:', error)
+        resolve()
       }
-    }).catch(function(error) {
-      console.error('加载学习进度失败:', error)
-      // 使用模拟数据
-      self.setData({
-        learningProgress: LearningUtils.generateMockProgress()
-      })
     })
   },
 
   // 加载成就
   loadAchievements: function() {
     const self = this
-    return ApiUtils.learning.getAchievements(app.globalData.currentUser.id).then(function(result) {
-      if (result.success) {
-        self.setData({ achievements: result.data })
-      } else {
-        // 使用模拟数据
-        self.setData({
-          achievements: LearningUtils.generateMockAchievements()
+    return new Promise(function(resolve) {
+      try {
+        // 使用模拟数据并计算百分比
+        const achievementsData = LearningUtils.generateMockAchievements()
+        const processedData = achievementsData.map(function(item) {
+          const result = Object.assign({}, item)
+          if (!item.unlocked && item.current && item.required) {
+            result.achievementPercentage = Math.round((item.current / item.required) * 100)
+          }
+          return result
         })
+        self.setData({
+          achievements: processedData
+        })
+        resolve()
+      } catch (error) {
+        console.error('加载成就失败:', error)
+        resolve()
       }
-    }).catch(function(error) {
-      console.error('加载成就失败:', error)
-      // 使用模拟数据
-      self.setData({
-        achievements: LearningUtils.generateMockAchievements()
-      })
     })
   },
 
   // 加载推荐
   loadRecommendations: function() {
     const self = this
-
-    // 加载概念推荐
-    return ApiUtils.knowledge.getRecommendations([], 'learning').then(function(conceptResult) {
-      if (conceptResult.success) {
-        self.setData({ conceptRecommendations: conceptResult.data.recommendations })
-      } else {
+    return new Promise(function(resolve) {
+      try {
+        // 使用模拟数据
         self.setData({
-          conceptRecommendations: LearningUtils.generateConceptRecommendations()
+          conceptRecommendations: LearningUtils.generateConceptRecommendations(),
+          classicsRecommendations: LearningUtils.generateClassicsRecommendations(),
+          dialogueRecommendations: LearningUtils.generateDialogueRecommendations()
         })
+        resolve()
+      } catch (error) {
+        console.error('加载推荐失败:', error)
+        resolve()
       }
-
-      // 设置其他推荐数据
-      self.setData({
-        classicsRecommendations: LearningUtils.generateClassicsRecommendations(),
-        dialogueRecommendations: LearningUtils.generateDialogueRecommendations()
-      })
-    }).catch(function(error) {
-      console.error('加载推荐失败:', error)
-      // 使用模拟数据
-      self.setData({
-        conceptRecommendations: LearningUtils.generateConceptRecommendations(),
-        classicsRecommendations: LearningUtils.generateClassicsRecommendations(),
-        dialogueRecommendations: LearningUtils.generateDialogueRecommendations()
-      })
     })
   },
 
@@ -215,8 +205,8 @@ Page({
   // 学习概念
   learnConcept: function(e) {
     const concept = e.currentTarget.dataset.concept
-    wx.navigateTo({
-      url: '/pages/knowledge/concept/concept?concept=' + encodeURIComponent(concept)
+    wx.switchTab({
+      url: '/pages/knowledge/knowledge'
     })
   },
 
@@ -224,7 +214,7 @@ Page({
   readClassic: function(e) {
     const classic = e.currentTarget.dataset.classic
     wx.navigateTo({
-      url: '/pages/classics/reader/reader?classic=' + encodeURIComponent(classic)
+      url: '/pages/classics/classics'
     })
   },
 
@@ -232,8 +222,8 @@ Page({
   startDialogue: function(e) {
     const character = e.currentTarget.dataset.character
     const topic = e.currentTarget.dataset.topic
-    wx.navigateTo({
-      url: '/pages/dialogue/chat/chat?character=' + character + '&topic=' + encodeURIComponent(topic)
+    wx.switchTab({
+      url: '/pages/chat/chat'
     })
   },
 
@@ -249,8 +239,10 @@ Page({
       return item.id === id
     })
     if (completedItem && completedItem.completed) {
-      app.showSuccess('任务完成！获得积分奖励')
-      // 这里可以调用API更新用户积分
+      wx.showToast({
+        title: '任务完成！获得积分奖励',
+        icon: 'success'
+      })
     }
   },
 

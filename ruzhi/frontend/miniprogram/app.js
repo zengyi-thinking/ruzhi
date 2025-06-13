@@ -59,21 +59,32 @@ App({
 
   // 初始化全局数据
   initGlobalData: function() {
-    // 获取系统信息
-    const systemInfo = wx.getSystemInfoSync()
-    this.globalData.systemInfo = systemInfo
-    
-    // 设置状态栏高度
-    this.globalData.statusBarHeight = systemInfo.statusBarHeight
-    
-    // 获取胶囊按钮位置信息
-    const menuButtonInfo = wx.getMenuButtonBoundingClientRect()
-    this.globalData.menuButtonInfo = menuButtonInfo
-    
-    // 计算导航栏高度
-    this.globalData.navBarHeight = menuButtonInfo.bottom + menuButtonInfo.top - systemInfo.statusBarHeight
-    
-    console.log('全局数据初始化完成:', this.globalData)
+    const self = this
+
+    // 获取系统信息 - 使用新的异步API
+    wx.getSystemInfo({
+      success: function(systemInfo) {
+        self.globalData.systemInfo = systemInfo
+
+        // 设置状态栏高度
+        self.globalData.statusBarHeight = systemInfo.statusBarHeight
+
+        // 获取胶囊按钮位置信息
+        const menuButtonInfo = wx.getMenuButtonBoundingClientRect()
+        self.globalData.menuButtonInfo = menuButtonInfo
+
+        // 计算导航栏高度
+        self.globalData.navBarHeight = menuButtonInfo.bottom + menuButtonInfo.top - systemInfo.statusBarHeight
+
+        console.log('全局数据初始化完成:', self.globalData)
+      },
+      fail: function(error) {
+        console.error('获取系统信息失败:', error)
+        // 设置默认值
+        self.globalData.statusBarHeight = 20
+        self.globalData.navBarHeight = 44
+      }
+    })
   },
 
   // 检查网络状态
