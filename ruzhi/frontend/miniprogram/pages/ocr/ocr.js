@@ -1,6 +1,7 @@
 // OCR识别页面
 const app = getApp()
 const { ocrAPI } = require('../../api/index')
+const { aiService } = require('../../utils/ai.js')
 
 Page({
   data: {
@@ -198,18 +199,40 @@ Page({
       enhance_options: this.data.ocrSettings.enhance_options
     }
 
-    ocrAPI.analyze(this.data.imageUrl, options).then((result) => {
+    ocrAPI.analyze(this.data.imageUrl, options).then(async (result) => {
       console.log('OCR识别成功:', result)
-      
+
+      // 初始化AI服务
+      await aiService.initialize()
+
+      // 获取AI智能解释
+      let aiExplanation = null
+      try {
+        const explanationResult = await aiService.explainOCRText(result.text)
+        if (explanationResult.success) {
+          aiExplanation = explanationResult.explanation
+          console.log('AI解释成功:', aiExplanation)
+        }
+      } catch (error) {
+        console.error('AI解释失败:', error)
+      }
+
+      // 合并结果
+      const enhancedResult = {
+        ...result,
+        aiExplanation: aiExplanation,
+        hasAIExplanation: !!aiExplanation
+      }
+
       this.setData({
-        ocrResult: result,
+        ocrResult: enhancedResult,
         hasResult: true,
         recognizing: false
       })
-      
+
       // 保存到历史记录
-      this.saveToHistory(result)
-      
+      this.saveToHistory(enhancedResult)
+
       // 跳转到结果页面
       wx.navigateTo({
         url: '/pages/ocr/result/result',
@@ -217,10 +240,10 @@ Page({
           // 将结果传递给结果页面
           const pages = getCurrentPages()
           const currentPage = pages[pages.length - 1]
-          currentPage.setData({ ocrResult: result })
+          currentPage.setData({ ocrResult: enhancedResult })
         }
       })
-      
+
     }).catch((error) => {
       console.error('OCR识别失败:', error)
       this.setData({ recognizing: false })

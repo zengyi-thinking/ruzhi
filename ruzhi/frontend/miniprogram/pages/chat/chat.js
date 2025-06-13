@@ -1,6 +1,7 @@
 // AI人物对话页面
 const app = getApp()
 const { chatAPI, userAPI } = require('../../api/index')
+const { aiService } = require('../../utils/ai.js')
 
 Page({
 
@@ -294,9 +295,67 @@ Page({
         settings: this.data.chatSettings
       }
 
-      await chatAPI.saveConversation(conversationData)
+      // 尝试保存到服务器
+      try {
+        await chatAPI.saveConversation(conversationData)
+      } catch (apiError) {
+        console.log('服务器保存失败，使用本地存储:', apiError)
+        this.saveConversationToLocal(this.data.messages)
+      }
     } catch (error) {
       console.error('保存对话失败:', error)
+    }
+  },
+
+  // 保存对话到本地存储
+  saveConversationToLocal: function(messages) {
+    try {
+      const storageKey = `chat_${this.data.selectedCharacter.id}`
+      const conversationData = {
+        characterId: this.data.selectedCharacter.id,
+        character: this.data.selectedCharacter.name,
+        messages: messages,
+        timestamp: new Date().toISOString(),
+        settings: this.data.chatSettings
+      }
+
+      wx.setStorageSync(storageKey, conversationData)
+
+      // 更新对话历史列表
+      this.updateConversationHistory(conversationData)
+    } catch (error) {
+      console.error('本地保存对话失败:', error)
+    }
+  },
+
+  // 更新对话历史列表
+  updateConversationHistory: function(conversationData) {
+    try {
+      let conversations = wx.getStorageSync('chat_history') || []
+
+      // 移除同一人物的旧对话
+      conversations = conversations.filter(conv => conv.characterId !== conversationData.characterId)
+
+      // 添加新对话到开头
+      conversations.unshift({
+        characterId: conversationData.characterId,
+        character: conversationData.character,
+        lastMessage: conversationData.messages[conversationData.messages.length - 1]?.content || '',
+        timestamp: conversationData.timestamp,
+        messageCount: conversationData.messages.length
+      })
+
+      // 限制历史记录数量
+      conversations = conversations.slice(0, 20)
+
+      wx.setStorageSync('chat_history', conversations)
+
+      this.setData({
+        recentConversations: conversations,
+        filteredConversations: conversations
+      })
+    } catch (error) {
+      console.error('更新对话历史失败:', error)
     }
   },
 
@@ -333,23 +392,31 @@ Page({
     this.scrollToBottom()
 
     try {
-      // 调用AI对话API
-      const response = await chatAPI.sendMessage({
-        userId: app.globalData.userId || 'anonymous',
-        characterId: this.data.selectedCharacter.id,
-        message: message,
-        conversationHistory: messages.slice(-10), // 只发送最近10条消息作为上下文
-        settings: this.data.chatSettings
-      })
+      // 初始化AI服务
+      await aiService.initialize()
+
+      // 构建对话历史
+      const conversationHistory = messages.slice(-10).map(msg => ({
+        user: msg.role === 'user' ? msg.content : '',
+        assistant: msg.role === 'assistant' ? msg.content : ''
+      })).filter(item => item.user || item.assistant)
+
+      // 调用AI对话服务
+      const response = await aiService.chatWithHistoricalFigure(
+        this.data.selectedCharacter.name,
+        message,
+        conversationHistory
+      )
 
       if (response.success) {
         const assistantMessage = {
           id: Date.now() + 1,
           role: 'assistant',
-          content: response.data.reply,
-          thinking: response.data.thinking,
+          content: response.message,
+          character: response.character,
           timestamp: this.formatTime(new Date()),
-          liked: false
+          liked: false,
+          isMock: response.isMock || false
         }
 
         // 模拟打字机效果
@@ -367,24 +434,39 @@ Page({
 
         // 播放提示音
         if (this.data.chatSettings.soundEnabled) {
-          wx.playBackgroundAudio({
-            dataUrl: '/audio/message.mp3'
-          })
+          wx.vibrateShort() // 使用震动代替音频
         }
 
+        // 保存对话到本地存储
+        this.saveConversationToLocal(messages.concat([assistantMessage]))
+
       } else {
-        throw new Error(response.message || '发送失败')
+        throw new Error('AI服务响应失败')
       }
     } catch (error) {
       console.error('发送消息失败:', error)
 
+      // 使用降级方案
+      const fallbackMessage = {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: '抱歉，我现在无法回应您的问题。请稍后再试，或者换个问题与我交流。',
+        character: this.data.selectedCharacter.name,
+        timestamp: this.formatTime(new Date()),
+        liked: false,
+        isError: true
+      }
+
       this.setData({
+        messages: [...messages, fallbackMessage],
         isTyping: false,
         isSending: false
       })
 
+      this.scrollToBottom()
+
       wx.showToast({
-        title: '发送失败，请重试',
+        title: '网络异常，已使用离线回复',
         icon: 'none',
         duration: 3000
       })

@@ -228,18 +228,38 @@ Page({
   onFeatureClick: function (e) {
     const { feature } = e.currentTarget.dataset
     console.log('点击功能模块:', feature)
-    
+
     // 记录使用历史
     this.recordRecentUsed(feature)
-    
-    // 跳转页面
-    wx.navigateTo({
-      url: feature.path,
-      fail: (error) => {
-        console.error('页面跳转失败:', error)
-        app.showError('页面跳转失败')
-      }
-    })
+
+    // 检查是否为TabBar页面
+    const tabBarPages = [
+      '/pages/home/home',
+      '/pages/ocr/ocr',
+      '/pages/chat/chat',
+      '/pages/knowledge/knowledge',
+      '/pages/profile/profile'
+    ]
+
+    if (tabBarPages.includes(feature.path)) {
+      // TabBar页面使用switchTab
+      wx.switchTab({
+        url: feature.path,
+        fail: (error) => {
+          console.error('TabBar页面跳转失败:', error)
+          app.showError('页面跳转失败')
+        }
+      })
+    } else {
+      // 普通页面使用navigateTo
+      wx.navigateTo({
+        url: feature.path,
+        fail: (error) => {
+          console.error('页面跳转失败:', error)
+          app.showError('页面跳转失败')
+        }
+      })
+    }
   },
 
   // 记录最近使用
@@ -284,7 +304,7 @@ Page({
   // 点击用户头像
   onUserAvatarClick: function () {
     if (this.data.hasUserInfo) {
-      wx.navigateTo({
+      wx.switchTab({
         url: '/pages/profile/profile'
       })
     } else {
@@ -316,14 +336,14 @@ Page({
 
   // 查看更多推荐
   onViewMoreRecommend: function () {
-    wx.navigateTo({
+    wx.switchTab({
       url: '/pages/classics/classics'
     })
   },
 
   // 查看学习统计
   onViewStudyStats: function () {
-    wx.navigateTo({
+    wx.switchTab({
       url: '/pages/profile/profile'
     })
   }
