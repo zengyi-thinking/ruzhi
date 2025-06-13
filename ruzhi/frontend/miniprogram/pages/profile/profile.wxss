@@ -378,6 +378,278 @@
   font-size: 28rpx;
 }
 
+/* AI设置弹窗样式 */
+.ai-settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20rpx;
+  width: 90%;
+  max-width: 600rpx;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+  z-index: 1001;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.modal-close {
+  font-size: 32rpx;
+  color: #7f8c8d;
+  padding: 10rpx;
+}
+
+.modal-body {
+  padding: 30rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.setting-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 10rpx;
+}
+
+.section-desc {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  margin-bottom: 20rpx;
+  line-height: 1.5;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 15rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.api-key-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #2c3e50;
+  background: transparent;
+  border: none;
+}
+
+.toggle-visibility {
+  font-size: 32rpx;
+  padding: 10rpx;
+  color: #7f8c8d;
+}
+
+.api-key-help {
+  background: #e8f4fd;
+  border-radius: 15rpx;
+  padding: 20rpx;
+  margin-top: 20rpx;
+}
+
+.help-text {
+  font-size: 26rpx;
+  color: #3498db;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.help-step {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  display: block;
+  margin-bottom: 5rpx;
+  padding-left: 20rpx;
+}
+
+.connection-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 15rpx;
+  padding: 20rpx;
+  margin-bottom: 15rpx;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.status-icon {
+  font-size: 24rpx;
+}
+
+.status-text {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.status-indicator.connected .status-text {
+  color: #27ae60;
+}
+
+.status-indicator.disconnected .status-text {
+  color: #e74c3c;
+}
+
+.test-btn {
+  background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+  color: white;
+  border: none;
+  border-radius: 20rpx;
+  padding: 15rpx 25rpx;
+  font-size: 26rpx;
+}
+
+.test-btn[disabled] {
+  background: #bdc3c7;
+  color: #7f8c8d;
+}
+
+.connection-info {
+  background: #f8f9fa;
+  border-radius: 10rpx;
+  padding: 15rpx;
+}
+
+.info-text {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-info {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.setting-name {
+  font-size: 30rpx;
+  color: #2c3e50;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.setting-desc {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  line-height: 1.4;
+}
+
+.usage-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+}
+
+.stat-item {
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 15rpx;
+  padding: 20rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #3498db;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #ecf0f1;
+  color: #7f8c8d;
+  border: none;
+  border-radius: 25rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+}
+
+.save-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+}
+
+.save-btn[disabled] {
+  background: #bdc3c7;
+  color: #7f8c8d;
+}
+
 /* 响应式适配 */
 @media (max-width: 375px) {
   .stats-overview {
@@ -391,5 +663,13 @@
 
   .stat-number {
     font-size: 40rpx;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+
+  .usage-stats {
+    grid-template-columns: 1fr;
   }
 }

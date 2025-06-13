@@ -141,6 +141,15 @@
         <view class="menu-arrow">›</view>
       </view>
 
+      <view class="menu-item" bindtap="onAISettings">
+        <view class="menu-icon">🤖</view>
+        <view class="menu-content">
+          <view class="menu-title">AI设置</view>
+          <view class="menu-desc">配置AI服务和API密钥</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+
       <view class="menu-item">
         <view class="menu-icon">⚙️</view>
         <view class="menu-content">
@@ -176,5 +185,132 @@
     <view class="empty-title">开始您的学习之旅</view>
     <view class="empty-desc">探索传统文化的智慧宝库，记录您的成长足迹</view>
     <button class="start-btn" bindtap="viewLearningStats">开始学习</button>
+  </view>
+
+  <!-- AI设置弹窗 -->
+  <view class="ai-settings-modal" wx:if="{{showAISettings}}">
+    <view class="modal-mask" bindtap="onCloseAISettings"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">🤖 AI服务配置</text>
+        <text class="modal-close" bindtap="onCloseAISettings">✕</text>
+      </view>
+
+      <view class="modal-body">
+        <!-- API密钥配置 -->
+        <view class="setting-section">
+          <view class="section-title">DeepSeek API 密钥</view>
+          <view class="section-desc">配置您的DeepSeek API密钥以启用AI功能</view>
+
+          <view class="input-group">
+            <input
+              class="api-key-input"
+              type="text"
+              placeholder="请输入您的API密钥 (sk-...)"
+              value="{{aiConfig.apiKey}}"
+              bindinput="onAPIKeyInput"
+              password="{{!showAPIKey}}"
+            />
+            <text class="toggle-visibility" bindtap="onToggleAPIKeyVisibility">
+              {{showAPIKey ? '🙈' : '👁️'}}
+            </text>
+          </view>
+
+          <view class="api-key-help">
+            <text class="help-text">💡 如何获取API密钥：</text>
+            <text class="help-step">1. 访问 platform.deepseek.com</text>
+            <text class="help-step">2. 注册并登录账号</text>
+            <text class="help-step">3. 在API管理页面创建密钥</text>
+            <text class="help-step">4. 复制密钥并粘贴到上方输入框</text>
+          </view>
+        </view>
+
+        <!-- 连接状态 -->
+        <view class="setting-section">
+          <view class="section-title">连接状态</view>
+          <view class="connection-status">
+            <view class="status-indicator {{aiConfig.connected ? 'connected' : 'disconnected'}}">
+              <text class="status-icon">{{aiConfig.connected ? '🟢' : '🔴'}}</text>
+              <text class="status-text">{{aiConfig.connected ? '已连接' : '未连接'}}</text>
+            </view>
+            <button class="test-btn" bindtap="onTestConnection" disabled="{{testing}}">
+              {{testing ? '测试中...' : '测试连接'}}
+            </button>
+          </view>
+
+          <view class="connection-info" wx:if="{{aiConfig.lastTestTime}}">
+            <text class="info-text">上次测试：{{aiConfig.lastTestTime}}</text>
+            <text class="info-text" wx:if="{{aiConfig.errorMessage}}">错误：{{aiConfig.errorMessage}}</text>
+          </view>
+        </view>
+
+        <!-- AI功能开关 -->
+        <view class="setting-section">
+          <view class="section-title">功能设置</view>
+
+          <view class="setting-item">
+            <view class="setting-info">
+              <text class="setting-name">历史人物对话</text>
+              <text class="setting-desc">与孔子、老子等历史人物智能对话</text>
+            </view>
+            <switch
+              checked="{{aiConfig.features.historicalChat}}"
+              bindchange="onFeatureToggle"
+              data-feature="historicalChat"
+            />
+          </view>
+
+          <view class="setting-item">
+            <view class="setting-info">
+              <text class="setting-name">OCR智能解释</text>
+              <text class="setting-desc">对识别的古籍文字提供AI解释</text>
+            </view>
+            <switch
+              checked="{{aiConfig.features.ocrExplanation}}"
+              bindchange="onFeatureToggle"
+              data-feature="ocrExplanation"
+            />
+          </view>
+
+          <view class="setting-item">
+            <view class="setting-info">
+              <text class="setting-name">知识问答</text>
+              <text class="setting-desc">传统文化相关问题的智能回答</text>
+            </view>
+            <switch
+              checked="{{aiConfig.features.knowledgeQA}}"
+              bindchange="onFeatureToggle"
+              data-feature="knowledgeQA"
+            />
+          </view>
+        </view>
+
+        <!-- 使用统计 -->
+        <view class="setting-section" wx:if="{{aiConfig.usage}}">
+          <view class="section-title">使用统计</view>
+          <view class="usage-stats">
+            <view class="stat-item">
+              <text class="stat-label">今日调用</text>
+              <text class="stat-value">{{aiConfig.usage.todayCalls}}</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-label">本月调用</text>
+              <text class="stat-value">{{aiConfig.usage.monthCalls}}</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-label">总计调用</text>
+              <text class="stat-value">{{aiConfig.usage.totalCalls}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="onCloseAISettings">取消</button>
+        <button class="save-btn" bindtap="onSaveAISettings" disabled="{{!aiConfig.apiKey}}">
+          保存配置
+        </button>
+      </view>
+    </view>
   </view>
 </view>

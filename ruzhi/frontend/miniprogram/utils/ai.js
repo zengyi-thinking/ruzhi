@@ -57,6 +57,12 @@ class AIService {
   constructor() {
     this.config = AI_CONFIG
     this.isInitialized = false
+    this.userConfig = null
+    this.usageStats = {
+      todayCalls: 0,
+      monthCalls: 0,
+      totalCalls: 0
+    }
   }
 
   /**
@@ -64,16 +70,155 @@ class AIService {
    */
   async initialize() {
     try {
+      // 加载用户配置
+      this.loadUserConfig()
+
       // 检查网络状态
       const networkType = await this.checkNetwork()
       console.log('网络状态:', networkType)
-      
+
+      // 加载使用统计
+      this.loadUsageStats()
+
       this.isInitialized = true
       return true
     } catch (error) {
       console.error('AI服务初始化失败:', error)
       return false
     }
+  }
+
+  /**
+   * 加载用户配置
+   */
+  loadUserConfig() {
+    try {
+      const savedConfig = wx.getStorageSync('ai_config') || {}
+
+      // 解密API密钥
+      if (savedConfig.encrypted && savedConfig.apiKey) {
+        try {
+          const decoded = new TextDecoder().decode(
+            wx.base64ToArrayBuffer(savedConfig.apiKey)
+          )
+          savedConfig.apiKey = decoded
+        } catch (error) {
+          console.error('解密API密钥失败:', error)
+          savedConfig.apiKey = ''
+        }
+      }
+
+      this.userConfig = {
+        apiKey: savedConfig.apiKey || '',
+        features: savedConfig.features || {
+          historicalChat: true,
+          ocrExplanation: true,
+          knowledgeQA: true
+        },
+        connected: savedConfig.connected || false
+      }
+
+      console.log('用户AI配置已加载:', {
+        hasApiKey: !!this.userConfig.apiKey,
+        features: this.userConfig.features
+      })
+    } catch (error) {
+      console.error('加载用户配置失败:', error)
+      this.userConfig = {
+        apiKey: '',
+        features: {
+          historicalChat: true,
+          ocrExplanation: true,
+          knowledgeQA: true
+        },
+        connected: false
+      }
+    }
+  }
+
+  /**
+   * 更新用户配置
+   */
+  updateConfig(newConfig) {
+    try {
+      this.userConfig = {
+        ...this.userConfig,
+        ...newConfig
+      }
+
+      console.log('AI服务配置已更新:', {
+        hasApiKey: !!this.userConfig.apiKey,
+        features: this.userConfig.features
+      })
+    } catch (error) {
+      console.error('更新配置失败:', error)
+    }
+  }
+
+  /**
+   * 加载使用统计
+   */
+  loadUsageStats() {
+    try {
+      const stats = wx.getStorageSync('ai_usage') || {
+        todayCalls: 0,
+        monthCalls: 0,
+        totalCalls: 0,
+        lastUpdateDate: new Date().toDateString(),
+        lastUpdateMonth: new Date().getMonth()
+      }
+
+      // 检查是否需要重置统计
+      const today = new Date().toDateString()
+      const currentMonth = new Date().getMonth()
+
+      if (stats.lastUpdateDate !== today) {
+        stats.todayCalls = 0
+        stats.lastUpdateDate = today
+      }
+
+      if (stats.lastUpdateMonth !== currentMonth) {
+        stats.monthCalls = 0
+        stats.lastUpdateMonth = currentMonth
+      }
+
+      this.usageStats = stats
+    } catch (error) {
+      console.error('加载使用统计失败:', error)
+    }
+  }
+
+  /**
+   * 更新使用统计
+   */
+  updateUsageStats() {
+    try {
+      this.usageStats.todayCalls += 1
+      this.usageStats.monthCalls += 1
+      this.usageStats.totalCalls += 1
+
+      wx.setStorageSync('ai_usage', this.usageStats)
+    } catch (error) {
+      console.error('更新使用统计失败:', error)
+    }
+  }
+
+  /**
+   * 检查功能是否启用
+   */
+  isFeatureEnabled(featureName) {
+    if (!this.userConfig) return false
+    return this.userConfig.features[featureName] || false
+  }
+
+  /**
+   * 检查是否有有效的API密钥
+   */
+  hasValidApiKey() {
+    return this.userConfig &&
+           this.userConfig.apiKey &&
+           this.userConfig.apiKey.startsWith('sk-') &&
+           this.userConfig.apiKey.length > 20
   }
 
   /**
@@ -96,11 +241,30 @@ class AIService {
    */
   async chatWithHistoricalFigure(character, message, history = []) {
     try {
+      // 检查功能是否启用
+      if (!this.isFeatureEnabled('historicalChat')) {
+        return {
+          success: false,
+          error: '历史人物对话功能未启用',
+          message: '请在设置中启用历史人物对话功能'
+        }
+      }
+
+      // 检查API密钥
+      if (!this.hasValidApiKey()) {
+        console.log('无有效API密钥，使用模拟回答')
+        return this.generateMockResponse(character, message)
+      }
+
+      // 更新使用统计
+      this.updateUsageStats()
+
       // 尝试调用后端API
       const response = await this.callBackendAPI('/ai/chat', {
         character: character,
         message: message,
         history: history,
+        apiKey: this.userConfig.apiKey,
         settings: {}
       })
 
@@ -110,7 +274,8 @@ class AIService {
           message: response.data.reply,
           character: character,
           timestamp: new Date().toISOString(),
-          usage: response.data.usage
+          usage: response.data.usage,
+          source: 'ai'
         }
       }
 
@@ -130,10 +295,29 @@ class AIService {
    */
   async explainOCRText(ocrText, context = '') {
     try {
+      // 检查功能是否启用
+      if (!this.isFeatureEnabled('ocrExplanation')) {
+        return {
+          success: false,
+          error: 'OCR智能解释功能未启用',
+          explanation: '请在设置中启用OCR智能解释功能'
+        }
+      }
+
+      // 检查API密钥
+      if (!this.hasValidApiKey()) {
+        console.log('无有效API密钥，使用模拟解释')
+        return this.generateMockExplanation(ocrText)
+      }
+
+      // 更新使用统计
+      this.updateUsageStats()
+
       // 尝试调用后端API
       const response = await this.callBackendAPI('/ai/explain', {
         text: ocrText,
-        context: context
+        context: context,
+        apiKey: this.userConfig.apiKey
       })
 
       if (response && response.success) {
@@ -142,7 +326,8 @@ class AIService {
           explanation: response.data.explanation,
           originalText: ocrText,
           timestamp: new Date().toISOString(),
-          usage: response.data.usage
+          usage: response.data.usage,
+          source: 'ai'
         }
       }
 
@@ -162,10 +347,29 @@ class AIService {
    */
   async answerQuestion(question, category = 'general') {
     try {
+      // 检查功能是否启用
+      if (!this.isFeatureEnabled('knowledgeQA')) {
+        return {
+          success: false,
+          error: '知识问答功能未启用',
+          answer: '请在设置中启用知识问答功能'
+        }
+      }
+
+      // 检查API密钥
+      if (!this.hasValidApiKey()) {
+        console.log('无有效API密钥，使用模拟回答')
+        return this.generateMockAnswer(question, category)
+      }
+
+      // 更新使用统计
+      this.updateUsageStats()
+
       // 尝试调用后端API
       const response = await this.callBackendAPI('/ai/qa', {
         question: question,
-        category: category
+        category: category,
+        apiKey: this.userConfig.apiKey
       })
 
       if (response && response.success) {
@@ -175,7 +379,8 @@ class AIService {
           question: question,
           category: category,
           timestamp: new Date().toISOString(),
-          usage: response.data.usage
+          usage: response.data.usage,
+          source: 'ai'
         }
       }
 
@@ -184,6 +389,158 @@ class AIService {
     } catch (error) {
       console.error('知识问答失败:', error)
       return this.generateMockAnswer(question, category)
+    }
+  }
+
+  /**
+   * 智能古籍资料查找
+   * @param {string} query - 查询内容
+   * @param {string} type - 查找类型 (book, author, concept, quote)
+   */
+  async searchAncientTexts(query, type = 'general') {
+    try {
+      if (!this.hasValidApiKey()) {
+        return this.generateMockSearchResults(query, type)
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/search', {
+        query: query,
+        type: type,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          results: response.data.results,
+          query: query,
+          type: type,
+          timestamp: new Date().toISOString(),
+          source: 'ai'
+        }
+      }
+
+      return this.generateMockSearchResults(query, type)
+    } catch (error) {
+      console.error('古籍资料查找失败:', error)
+      return this.generateMockSearchResults(query, type)
+    }
+  }
+
+  /**
+   * 文化典籍故事生成
+   * @param {string} theme - 主题
+   * @param {string} style - 故事风格
+   */
+  async generateCulturalStory(theme, style = 'traditional') {
+    try {
+      if (!this.hasValidApiKey()) {
+        return this.generateMockStory(theme, style)
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/story', {
+        theme: theme,
+        style: style,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          story: response.data.story,
+          theme: theme,
+          style: style,
+          timestamp: new Date().toISOString(),
+          source: 'ai'
+        }
+      }
+
+      return this.generateMockStory(theme, style)
+    } catch (error) {
+      console.error('文化故事生成失败:', error)
+      return this.generateMockStory(theme, style)
+    }
+  }
+
+  /**
+   * 互动式学习体验
+   * @param {string} topic - 学习主题
+   * @param {string} level - 学习水平
+   * @param {Object} userProgress - 用户进度
+   */
+  async generateInteractiveLearning(topic, level = 'beginner', userProgress = {}) {
+    try {
+      if (!this.hasValidApiKey()) {
+        return this.generateMockLearningContent(topic, level)
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/learning', {
+        topic: topic,
+        level: level,
+        userProgress: userProgress,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          content: response.data.content,
+          questions: response.data.questions,
+          recommendations: response.data.recommendations,
+          topic: topic,
+          level: level,
+          timestamp: new Date().toISOString(),
+          source: 'ai'
+        }
+      }
+
+      return this.generateMockLearningContent(topic, level)
+    } catch (error) {
+      console.error('互动学习内容生成失败:', error)
+      return this.generateMockLearningContent(topic, level)
+    }
+  }
+
+  /**
+   * 深度文化解析
+   * @param {string} text - 待解析文本
+   * @param {Array} analysisTypes - 解析类型
+   */
+  async deepCulturalAnalysis(text, analysisTypes = ['literal', 'cultural', 'philosophical', 'modern']) {
+    try {
+      if (!this.hasValidApiKey()) {
+        return this.generateMockAnalysis(text, analysisTypes)
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/analysis', {
+        text: text,
+        analysisTypes: analysisTypes,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          analysis: response.data.analysis,
+          text: text,
+          analysisTypes: analysisTypes,
+          timestamp: new Date().toISOString(),
+          source: 'ai'
+        }
+      }
+
+      return this.generateMockAnalysis(text, analysisTypes)
+    } catch (error) {
+      console.error('深度文化解析失败:', error)
+      return this.generateMockAnalysis(text, analysisTypes)
     }
   }
 
@@ -319,6 +676,141 @@ class AIService {
       answer: `关于"${question}"这个问题，涉及到中国传统文化的重要内容。建议您深入学习相关经典，或咨询专业的文化学者以获得更准确的答案。`,
       question: question,
       category: category,
+      timestamp: new Date().toISOString(),
+      isMock: true
+    }
+  }
+
+  /**
+   * 生成模拟搜索结果
+   */
+  generateMockSearchResults(query, type) {
+    const mockResults = [
+      {
+        id: 1,
+        title: '论语·学而篇',
+        content: '子曰："学而时习之，不亦说乎？"',
+        source: '论语',
+        author: '孔子',
+        relevance: 0.95
+      },
+      {
+        id: 2,
+        title: '道德经·第一章',
+        content: '道可道，非常道。名可名，非常名。',
+        source: '道德经',
+        author: '老子',
+        relevance: 0.88
+      }
+    ]
+
+    return {
+      success: true,
+      results: mockResults.filter(item =>
+        item.title.includes(query) ||
+        item.content.includes(query) ||
+        item.author.includes(query)
+      ),
+      query: query,
+      type: type,
+      timestamp: new Date().toISOString(),
+      isMock: true
+    }
+  }
+
+  /**
+   * 生成模拟故事
+   */
+  generateMockStory(theme, style) {
+    const stories = {
+      '仁': '春秋时期，孔子周游列国，传播仁爱思想。有一次，他看到一个孩子跌倒，立即上前扶起，并教导弟子："仁者爱人，这是做人的根本。"',
+      '道': '老子骑青牛西出函谷关，关令尹喜请他留下智慧。老子遂著《道德经》五千言，其中"道法自然"四字，道尽了宇宙万物的根本规律。',
+      '义': '孟子曰："生，亦我所欲也；义，亦我所欲也。二者不可得兼，舍生而取义者也。"这体现了古代圣贤对道德品格的坚持。'
+    }
+
+    return {
+      success: true,
+      story: stories[theme] || `关于"${theme}"的故事正在整理中，敬请期待。`,
+      theme: theme,
+      style: style,
+      timestamp: new Date().toISOString(),
+      isMock: true
+    }
+  }
+
+  /**
+   * 生成模拟学习内容
+   */
+  generateMockLearningContent(topic, level) {
+    return {
+      success: true,
+      content: {
+        introduction: `欢迎学习"${topic}"相关内容。这是一个重要的传统文化主题。`,
+        keyPoints: [
+          '理解基本概念和内涵',
+          '掌握历史发展脉络',
+          '学习经典文献选段',
+          '思考现代应用价值'
+        ],
+        examples: [
+          '经典原文示例',
+          '历史故事案例',
+          '现代应用实例'
+        ]
+      },
+      questions: [
+        {
+          id: 1,
+          question: `请简述"${topic}"的基本含义？`,
+          type: 'text',
+          difficulty: level
+        },
+        {
+          id: 2,
+          question: `"${topic}"在现代社会有什么意义？`,
+          type: 'text',
+          difficulty: level
+        }
+      ],
+      recommendations: [
+        '建议阅读相关经典原文',
+        '可以结合历史背景理解',
+        '尝试在生活中实践应用'
+      ],
+      topic: topic,
+      level: level,
+      timestamp: new Date().toISOString(),
+      isMock: true
+    }
+  }
+
+  /**
+   * 生成模拟深度解析
+   */
+  generateMockAnalysis(text, analysisTypes) {
+    const analysis = {}
+
+    if (analysisTypes.includes('literal')) {
+      analysis.literal = `"${text}"的字面意思是...（需要AI深度解析）`
+    }
+
+    if (analysisTypes.includes('cultural')) {
+      analysis.cultural = `从文化角度看，这段文字体现了中国传统文化的...（需要AI深度解析）`
+    }
+
+    if (analysisTypes.includes('philosophical')) {
+      analysis.philosophical = `从哲学层面分析，这里蕴含着...（需要AI深度解析）`
+    }
+
+    if (analysisTypes.includes('modern')) {
+      analysis.modern = `在现代社会中，这段话的意义在于...（需要AI深度解析）`
+    }
+
+    return {
+      success: true,
+      analysis: analysis,
+      text: text,
+      analysisTypes: analysisTypes,
       timestamp: new Date().toISOString(),
       isMock: true
     }

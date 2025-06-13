@@ -1,2 +1,163 @@
-<!--pages/classics/classics.wxml-->
-<text>pages/classics/classics.wxml</text>
+<!--经典库页面-->
+<view class="classics-container">
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <view class="search-bar">
+      <input
+        class="search-input"
+        placeholder="搜索经典、章节或内容..."
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+      />
+      <view class="search-btn" bindtap="onSearchConfirm">
+        <text class="search-icon">🔍</text>
+      </view>
+    </view>
+
+    <!-- 搜索建议 -->
+    <view class="search-suggestions" wx:if="{{showSuggestions && searchSuggestions.length > 0}}">
+      <view
+        class="suggestion-item"
+        wx:for="{{searchSuggestions}}"
+        wx:key="id"
+        bindtap="onSuggestionClick"
+        data-suggestion="{{item}}"
+      >
+        <text class="suggestion-text">{{item.text}}</text>
+        <text class="suggestion-type">{{item.type}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类筛选 -->
+  <view class="category-section">
+    <scroll-view class="category-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="category-list">
+        <view
+          class="category-item {{selectedCategory === item.id ? 'active' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="id"
+          bindtap="onCategorySelect"
+          data-category="{{item}}"
+        >
+          <text class="category-icon">{{item.icon}}</text>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 经典书籍列表 -->
+  <view class="classics-section">
+    <!-- 推荐经典 -->
+    <view class="section-header" wx:if="{{recommendedBooks.length > 0}}">
+      <text class="section-title">📚 推荐经典</text>
+      <text class="section-more" bindtap="onViewAllRecommended">查看全部</text>
+    </view>
+
+    <scroll-view class="recommended-scroll" scroll-x="true" show-scrollbar="false" wx:if="{{recommendedBooks.length > 0}}">
+      <view class="recommended-list">
+        <view
+          class="recommended-book"
+          wx:for="{{recommendedBooks}}"
+          wx:key="id"
+          bindtap="onBookClick"
+          data-book="{{item}}"
+        >
+          <image class="book-cover" src="{{item.cover}}" mode="aspectFill" />
+          <view class="book-info">
+            <text class="book-title">{{item.title}}</text>
+            <text class="book-author">{{item.author}}</text>
+            <view class="book-stats">
+              <text class="stat-item">{{item.chapters}}章</text>
+              <text class="stat-item">{{item.readCount}}人读过</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 全部经典 -->
+    <view class="section-header">
+      <text class="section-title">📖 全部经典</text>
+      <view class="sort-options">
+        <text
+          class="sort-item {{sortBy === 'default' ? 'active' : ''}}"
+          bindtap="onSortChange"
+          data-sort="default"
+        >默认</text>
+        <text
+          class="sort-item {{sortBy === 'popular' ? 'active' : ''}}"
+          bindtap="onSortChange"
+          data-sort="popular"
+        >热门</text>
+        <text
+          class="sort-item {{sortBy === 'latest' ? 'active' : ''}}"
+          bindtap="onSortChange"
+          data-sort="latest"
+        >最新</text>
+      </view>
+    </view>
+
+    <view class="books-grid">
+      <view
+        class="book-card"
+        wx:for="{{filteredBooks}}"
+        wx:key="id"
+        bindtap="onBookClick"
+        data-book="{{item}}"
+      >
+        <image class="book-cover-large" src="{{item.cover}}" mode="aspectFill" />
+        <view class="book-content">
+          <view class="book-header">
+            <text class="book-title-large">{{item.title}}</text>
+            <view class="book-tags">
+              <text class="book-tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+            </view>
+          </view>
+
+          <view class="book-meta">
+            <text class="book-author-large">{{item.author}}</text>
+            <text class="book-dynasty">{{item.dynasty}}</text>
+          </view>
+
+          <text class="book-description">{{item.description}}</text>
+
+          <view class="book-footer">
+            <view class="book-progress" wx:if="{{item.progress > 0}}">
+              <text class="progress-text">已读 {{item.progress}}%</text>
+              <view class="progress-bar">
+                <view class="progress-fill" style="width: {{item.progress}}%"></view>
+              </view>
+            </view>
+
+            <view class="book-actions">
+              <text class="action-btn read-btn">{{item.progress > 0 ? '继续阅读' : '开始阅读'}}</text>
+              <text class="action-btn favorite-btn {{item.isFavorite ? 'active' : ''}}"
+                    bindtap="onToggleFavorite"
+                    data-book="{{item}}"
+                    catchtap="true">
+                {{item.isFavorite ? '❤️' : '🤍'}}
+              </text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner">⏳</view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && filteredBooks.length === 0}}">
+    <view class="empty-icon">📚</view>
+    <text class="empty-title">暂无相关经典</text>
+    <text class="empty-desc">{{searchKeyword ? '尝试其他关键词搜索' : '敬请期待更多经典内容'}}</text>
+    <button class="empty-btn" bindtap="onClearSearch" wx:if="{{searchKeyword}}">清除搜索</button>
+  </view>
+</view>

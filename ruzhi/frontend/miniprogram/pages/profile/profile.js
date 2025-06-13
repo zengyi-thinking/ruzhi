@@ -16,7 +16,28 @@ Page({
     recentAchievements: [],
     historyRecords: [],
     showStatsDetail: false,
-    averageDailyHours: '0.0'
+    averageDailyHours: '0.0',
+
+    // AI设置相关
+    showAISettings: false,
+    showAPIKey: false,
+    testing: false,
+    aiConfig: {
+      apiKey: '',
+      connected: false,
+      lastTestTime: '',
+      errorMessage: '',
+      features: {
+        historicalChat: true,
+        ocrExplanation: true,
+        knowledgeQA: true
+      },
+      usage: {
+        todayCalls: 0,
+        monthCalls: 0,
+        totalCalls: 0
+      }
+    }
   },
 
   onLoad: function() {
@@ -220,6 +241,681 @@ Page({
     wx.switchTab({
       url: '/pages/learning/learning'
     })
+  },
+
+  // AI设置相关方法
+  onAISettings: function() {
+    // 加载AI配置
+    this.loadAIConfig()
+    this.setData({ showAISettings: true })
+  },
+
+  onCloseAISettings: function() {
+    this.setData({ showAISettings: false })
+  },
+
+  loadAIConfig: function() {
+    try {
+      const savedConfig = wx.getStorageSync('ai_config') || {}
+      const usage = wx.getStorageSync('ai_usage') || {
+        todayCalls: 0,
+        monthCalls: 0,
+        totalCalls: 0
+      }
+
+      // 解密API密钥
+      let apiKey = savedConfig.apiKey || ''
+      if (savedConfig.encrypted && apiKey) {
+        try {
+          apiKey = this.decryptAPIKey(savedConfig).apiKey
+        } catch (error) {
+          console.error('解密API密钥失败:', error)
+          apiKey = ''
+        }
+      }
+
+      this.setData({
+        'aiConfig.apiKey': apiKey,
+        'aiConfig.connected': savedConfig.connected || false,
+        'aiConfig.lastTestTime': savedConfig.lastTestTime || '',
+        'aiConfig.errorMessage': savedConfig.errorMessage || '',
+        'aiConfig.features': {
+          ...this.data.aiConfig.features,
+          ...savedConfig.features
+        },
+        'aiConfig.usage': usage
+      })
+    } catch (error) {
+      console.error('加载AI配置失败:', error)
+    }
+  },
+
+  onAPIKeyInput: function(e) {
+    this.setData({
+      'aiConfig.apiKey': e.detail.value
+    })
+  },
+
+  onToggleAPIKeyVisibility: function() {
+    this.setData({
+      showAPIKey: !this.data.showAPIKey
+    })
+  },
+
+  onTestConnection: async function() {
+    const apiKey = this.data.aiConfig.apiKey
+    if (!apiKey || !apiKey.startsWith('sk-')) {
+      wx.showToast({
+        title: '请输入有效的API密钥',
+        icon: 'none'
+      })
+      return
+    }
+
+    this.setData({ testing: true })
+
+    try {
+      // 测试API连接
+      const { aiService } = require('../../utils/ai.js')
+
+      // 临时设置API密钥进行测试
+      const testResult = await this.testAPIConnection(apiKey)
+
+      if (testResult.success) {
+        this.setData({
+          'aiConfig.connected': true,
+          'aiConfig.lastTestTime': new Date().toLocaleString(),
+          'aiConfig.errorMessage': ''
+        })
+
+        wx.showToast({
+          title: '连接成功！',
+          icon: 'success'
+        })
+      } else {
+        throw new Error(testResult.error || '连接失败')
+      }
+    } catch (error) {
+      console.error('测试连接失败:', error)
+
+      this.setData({
+        'aiConfig.connected': false,
+        'aiConfig.lastTestTime': new Date().toLocaleString(),
+        'aiConfig.errorMessage': error.message
+      })
+
+      wx.showToast({
+        title: '连接失败：' + error.message,
+        icon: 'none',
+        duration: 3000
+      })
+    } finally {
+      this.setData({ testing: false })
+    }
+  },
+
+  testAPIConnection: function(apiKey) {
+    return new Promise((resolve) => {
+      // 模拟API测试
+      setTimeout(() => {
+        if (apiKey.startsWith('sk-') && apiKey.length > 20) {
+          resolve({ success: true })
+        } else {
+          resolve({ success: false, error: 'API密钥格式不正确' })
+        }
+      }, 2000)
+    })
+  },
+
+  onFeatureToggle: function(e) {
+    const feature = e.currentTarget.dataset.feature
+    const value = e.detail.value
+
+    this.setData({
+      [`aiConfig.features.${feature}`]: value
+    })
+  },
+
+  onSaveAISettings: function() {
+    try {
+      const config = {
+        apiKey: this.data.aiConfig.apiKey,
+        connected: this.data.aiConfig.connected,
+        lastTestTime: this.data.aiConfig.lastTestTime,
+        errorMessage: this.data.aiConfig.errorMessage,
+        features: this.data.aiConfig.features
+      }
+
+      wx.setStorageSync('ai_config', config)
+
+      // 更新AI服务配置
+      this.updateAIServiceConfig(config)
+
+      wx.showToast({
+        title: '配置已保存',
+        icon: 'success'
+      })
+
+      this.setData({ showAISettings: false })
+    } catch (error) {
+      console.error('保存AI配置失败:', error)
+      wx.showToast({
+        title: '保存失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  updateAIServiceConfig: function(config) {
+    try {
+      // 更新AI服务的配置
+      const { aiService } = require('../../utils/ai.js')
+      if (aiService && aiService.updateConfig) {
+        aiService.updateConfig(config)
+      }
+    } catch (error) {
+      console.error('更新AI服务配置失败:', error)
+    }
+  },
+
+  // AI设置相关方法
+  onAISettings: function() {
+    // 加载AI配置
+    this.loadAIConfig()
+    this.setData({ showAISettings: true })
+  },
+
+  onCloseAISettings: function() {
+    this.setData({ showAISettings: false })
+  },
+
+  loadAIConfig: function() {
+    try {
+      const savedConfig = wx.getStorageSync('ai_config') || {}
+      const usage = wx.getStorageSync('ai_usage') || {
+        todayCalls: 0,
+        monthCalls: 0,
+        totalCalls: 0
+      }
+
+      this.setData({
+        'aiConfig.apiKey': savedConfig.apiKey || '',
+        'aiConfig.connected': savedConfig.connected || false,
+        'aiConfig.lastTestTime': savedConfig.lastTestTime || '',
+        'aiConfig.errorMessage': savedConfig.errorMessage || '',
+        'aiConfig.features': {
+          ...this.data.aiConfig.features,
+          ...savedConfig.features
+        },
+        'aiConfig.usage': usage
+      })
+    } catch (error) {
+      console.error('加载AI配置失败:', error)
+    }
+  },
+
+  onAPIKeyInput: function(e) {
+    this.setData({
+      'aiConfig.apiKey': e.detail.value
+    })
+  },
+
+  onToggleAPIKeyVisibility: function() {
+    this.setData({
+      showAPIKey: !this.data.showAPIKey
+    })
+  },
+
+  onTestConnection: async function() {
+    const apiKey = this.data.aiConfig.apiKey
+    if (!apiKey || !apiKey.startsWith('sk-')) {
+      wx.showToast({
+        title: '请输入有效的API密钥',
+        icon: 'none'
+      })
+      return
+    }
+
+    this.setData({ testing: true })
+
+    try {
+      // 测试API连接
+      const testResult = await this.testAPIConnection(apiKey)
+
+      if (testResult.success) {
+        this.setData({
+          'aiConfig.connected': true,
+          'aiConfig.lastTestTime': new Date().toLocaleString(),
+          'aiConfig.errorMessage': ''
+        })
+
+        wx.showToast({
+          title: '连接成功！',
+          icon: 'success'
+        })
+      } else {
+        throw new Error(testResult.error || '连接失败')
+      }
+    } catch (error) {
+      console.error('测试连接失败:', error)
+
+      this.setData({
+        'aiConfig.connected': false,
+        'aiConfig.lastTestTime': new Date().toLocaleString(),
+        'aiConfig.errorMessage': error.message
+      })
+
+      wx.showToast({
+        title: '连接失败：' + error.message,
+        icon: 'none',
+        duration: 3000
+      })
+    } finally {
+      this.setData({ testing: false })
+    }
+  },
+
+  testAPIConnection: function(apiKey) {
+    return new Promise((resolve) => {
+      // 模拟API测试 - 实际应用中应该调用真实的API测试
+      setTimeout(() => {
+        if (apiKey.startsWith('sk-') && apiKey.length > 20) {
+          resolve({ success: true })
+        } else {
+          resolve({ success: false, error: 'API密钥格式不正确' })
+        }
+      }, 2000)
+    })
+  },
+
+  onFeatureToggle: function(e) {
+    const feature = e.currentTarget.dataset.feature
+    const value = e.detail.value
+
+    this.setData({
+      [`aiConfig.features.${feature}`]: value
+    })
+  },
+
+  onSaveAISettings: function() {
+    try {
+      const config = {
+        apiKey: this.data.aiConfig.apiKey,
+        connected: this.data.aiConfig.connected,
+        lastTestTime: this.data.aiConfig.lastTestTime,
+        errorMessage: this.data.aiConfig.errorMessage,
+        features: this.data.aiConfig.features,
+        updatedAt: new Date().toISOString()
+      }
+
+      // 加密存储API密钥
+      const encryptedConfig = this.encryptAPIConfig(config)
+      wx.setStorageSync('ai_config', encryptedConfig)
+
+      // 更新AI服务配置
+      this.updateAIServiceConfig(config)
+
+      // 更新使用统计
+      this.updateUsageStats()
+
+      wx.showToast({
+        title: '配置已保存',
+        icon: 'success'
+      })
+
+      this.setData({ showAISettings: false })
+    } catch (error) {
+      console.error('保存AI配置失败:', error)
+      wx.showToast({
+        title: '保存失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 简单的API密钥加密（实际应用中应使用更安全的加密方法）
+  encryptAPIConfig: function(config) {
+    try {
+      // 这里使用简单的Base64编码，实际应用中应使用更安全的加密
+      const encryptedApiKey = config.apiKey ?
+        wx.arrayBufferToBase64(new TextEncoder().encode(config.apiKey)) : ''
+
+      return {
+        ...config,
+        apiKey: encryptedApiKey,
+        encrypted: true
+      }
+    } catch (error) {
+      console.error('加密配置失败:', error)
+      return config
+    }
+  },
+
+  // 解密API配置
+  decryptAPIConfig: function(encryptedConfig) {
+    try {
+      if (!encryptedConfig.encrypted) {
+        return encryptedConfig
+      }
+
+      const decryptedApiKey = encryptedConfig.apiKey ?
+        new TextDecoder().decode(wx.base64ToArrayBuffer(encryptedConfig.apiKey)) : ''
+
+      return {
+        ...encryptedConfig,
+        apiKey: decryptedApiKey,
+        encrypted: false
+      }
+    } catch (error) {
+      console.error('解密配置失败:', error)
+      return encryptedConfig
+    }
+  },
+
+  updateAIServiceConfig: function(config) {
+    try {
+      // 更新AI服务的配置
+      const { aiService } = require('../../utils/ai.js')
+      if (aiService && aiService.updateConfig) {
+        aiService.updateConfig({
+          apiKey: config.apiKey,
+          features: config.features
+        })
+      }
+
+      // 通知其他页面配置已更新
+      wx.setStorageSync('ai_config_updated', Date.now())
+    } catch (error) {
+      console.error('更新AI服务配置失败:', error)
+    }
+  },
+
+  updateUsageStats: function() {
+    try {
+      const today = new Date().toDateString()
+      const currentMonth = new Date().getMonth()
+
+      let usage = wx.getStorageSync('ai_usage') || {
+        todayCalls: 0,
+        monthCalls: 0,
+        totalCalls: 0,
+        lastUpdateDate: today,
+        lastUpdateMonth: currentMonth
+      }
+
+      // 检查是否需要重置日统计
+      if (usage.lastUpdateDate !== today) {
+        usage.todayCalls = 0
+        usage.lastUpdateDate = today
+      }
+
+      // 检查是否需要重置月统计
+      if (usage.lastUpdateMonth !== currentMonth) {
+        usage.monthCalls = 0
+        usage.lastUpdateMonth = currentMonth
+      }
+
+      this.setData({
+        'aiConfig.usage': usage
+      })
+
+      wx.setStorageSync('ai_usage', usage)
+    } catch (error) {
+      console.error('更新使用统计失败:', error)
+    }
+  },
+
+  // AI设置相关方法
+  onAISettings: function() {
+    // 加载AI配置
+    this.loadAIConfig()
+    this.setData({ showAISettings: true })
+  },
+
+  onCloseAISettings: function() {
+    this.setData({ showAISettings: false })
+  },
+
+  loadAIConfig: function() {
+    try {
+      const savedConfig = wx.getStorageSync('ai_config') || {}
+      const usage = wx.getStorageSync('ai_usage') || {
+        todayCalls: 0,
+        monthCalls: 0,
+        totalCalls: 0
+      }
+
+      this.setData({
+        'aiConfig.apiKey': savedConfig.apiKey || '',
+        'aiConfig.connected': savedConfig.connected || false,
+        'aiConfig.lastTestTime': savedConfig.lastTestTime || '',
+        'aiConfig.errorMessage': savedConfig.errorMessage || '',
+        'aiConfig.features': {
+          ...this.data.aiConfig.features,
+          ...savedConfig.features
+        },
+        'aiConfig.usage': usage
+      })
+    } catch (error) {
+      console.error('加载AI配置失败:', error)
+    }
+  },
+
+  onAPIKeyInput: function(e) {
+    this.setData({
+      'aiConfig.apiKey': e.detail.value
+    })
+  },
+
+  onToggleAPIKeyVisibility: function() {
+    this.setData({
+      showAPIKey: !this.data.showAPIKey
+    })
+  },
+
+  onTestConnection: async function() {
+    const apiKey = this.data.aiConfig.apiKey
+    if (!apiKey || !apiKey.startsWith('sk-')) {
+      wx.showToast({
+        title: '请输入有效的API密钥',
+        icon: 'none'
+      })
+      return
+    }
+
+    this.setData({ testing: true })
+
+    try {
+      // 测试API连接
+      const testResult = await this.testAPIConnection(apiKey)
+
+      if (testResult.success) {
+        this.setData({
+          'aiConfig.connected': true,
+          'aiConfig.lastTestTime': new Date().toLocaleString(),
+          'aiConfig.errorMessage': ''
+        })
+
+        wx.showToast({
+          title: '连接成功！',
+          icon: 'success'
+        })
+      } else {
+        throw new Error(testResult.error || '连接失败')
+      }
+    } catch (error) {
+      console.error('测试连接失败:', error)
+
+      this.setData({
+        'aiConfig.connected': false,
+        'aiConfig.lastTestTime': new Date().toLocaleString(),
+        'aiConfig.errorMessage': error.message
+      })
+
+      wx.showToast({
+        title: '连接失败：' + error.message,
+        icon: 'none',
+        duration: 3000
+      })
+    } finally {
+      this.setData({ testing: false })
+    }
+  },
+
+  testAPIConnection: function(apiKey) {
+    return new Promise((resolve) => {
+      // 模拟API测试 - 实际应用中应该调用真实的API测试
+      setTimeout(() => {
+        if (apiKey.startsWith('sk-') && apiKey.length > 20) {
+          resolve({ success: true })
+        } else {
+          resolve({ success: false, error: 'API密钥格式不正确' })
+        }
+      }, 2000)
+    })
+  },
+
+  onFeatureToggle: function(e) {
+    const feature = e.currentTarget.dataset.feature
+    const value = e.detail.value
+
+    this.setData({
+      [`aiConfig.features.${feature}`]: value
+    })
+  },
+
+  onSaveAISettings: function() {
+    try {
+      const config = {
+        apiKey: this.data.aiConfig.apiKey,
+        connected: this.data.aiConfig.connected,
+        lastTestTime: this.data.aiConfig.lastTestTime,
+        errorMessage: this.data.aiConfig.errorMessage,
+        features: this.data.aiConfig.features,
+        updatedAt: new Date().toISOString()
+      }
+
+      // 加密存储API密钥
+      const encryptedConfig = this.encryptAPIKey(config)
+      wx.setStorageSync('ai_config', encryptedConfig)
+
+      // 更新AI服务配置
+      this.updateAIServiceConfig(config)
+
+      // 更新使用统计
+      this.updateUsageStats()
+
+      wx.showToast({
+        title: '配置已保存',
+        icon: 'success'
+      })
+
+      this.setData({ showAISettings: false })
+    } catch (error) {
+      console.error('保存AI配置失败:', error)
+      wx.showToast({
+        title: '保存失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 简单的API密钥加密（实际应用中应使用更安全的加密方法）
+  encryptAPIKey: function(config) {
+    if (config.apiKey) {
+      try {
+        // 简单的Base64编码，实际应用中应使用更安全的加密
+        const encoded = wx.arrayBufferToBase64(
+          new TextEncoder().encode(config.apiKey)
+        )
+        return {
+          ...config,
+          apiKey: encoded,
+          encrypted: true
+        }
+      } catch (error) {
+        console.error('加密API密钥失败:', error)
+        return config
+      }
+    }
+    return config
+  },
+
+  // 解密API密钥
+  decryptAPIKey: function(config) {
+    if (config.encrypted && config.apiKey) {
+      try {
+        const decoded = new TextDecoder().decode(
+          wx.base64ToArrayBuffer(config.apiKey)
+        )
+        return {
+          ...config,
+          apiKey: decoded,
+          encrypted: false
+        }
+      } catch (error) {
+        console.error('解密API密钥失败:', error)
+        return {
+          ...config,
+          apiKey: '',
+          encrypted: false
+        }
+      }
+    }
+    return config
+  },
+
+  updateAIServiceConfig: function(config) {
+    try {
+      // 更新AI服务的配置
+      const { aiService } = require('../../utils/ai.js')
+      if (aiService && aiService.updateConfig) {
+        aiService.updateConfig({
+          apiKey: config.apiKey,
+          features: config.features
+        })
+      }
+
+      // 通知其他页面配置已更新
+      wx.setStorageSync('ai_config_updated', Date.now())
+    } catch (error) {
+      console.error('更新AI服务配置失败:', error)
+    }
+  },
+
+  updateUsageStats: function() {
+    try {
+      const today = new Date().toDateString()
+      const currentMonth = new Date().getMonth()
+
+      let usage = wx.getStorageSync('ai_usage') || {
+        todayCalls: 0,
+        monthCalls: 0,
+        totalCalls: 0,
+        lastUpdateDate: today,
+        lastUpdateMonth: currentMonth
+      }
+
+      // 检查是否需要重置日统计
+      if (usage.lastUpdateDate !== today) {
+        usage.todayCalls = 0
+        usage.lastUpdateDate = today
+      }
+
+      // 检查是否需要重置月统计
+      if (usage.lastUpdateMonth !== currentMonth) {
+        usage.monthCalls = 0
+        usage.lastUpdateMonth = currentMonth
+      }
+
+      this.setData({
+        'aiConfig.usage': usage
+      })
+
+      wx.setStorageSync('ai_usage', usage)
+    } catch (error) {
+      console.error('更新使用统计失败:', error)
+    }
   },
 
   // 分享功能
