@@ -1,0 +1,245 @@
+<!--学习中心页面-->
+<view class="page-container traditional-bg">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">📚 智能学习中心</view>
+    <view class="page-subtitle">个性化学习统计与智能推荐</view>
+  </view>
+
+  <!-- 学习统计卡片 -->
+  <view class="stats-section">
+    <view class="card">
+      <view class="card-title">📊 学习统计</view>
+      <view class="stats-overview">
+        <view class="stat-main">
+          <view class="stat-number">{{learningStats.totalDays}}</view>
+          <view class="stat-label">学习天数</view>
+        </view>
+        <view class="stat-grid">
+          <view class="stat-item">
+            <view class="stat-value">{{learningStats.totalHours}}</view>
+            <view class="stat-name">总时长(小时)</view>
+          </view>
+          <view class="stat-item">
+            <view class="stat-value">{{learningStats.totalPoints}}</view>
+            <view class="stat-name">积分</view>
+          </view>
+          <view class="stat-item">
+            <view class="stat-value">{{learningStats.currentStreak}}</view>
+            <view class="stat-name">连续天数</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习进度 -->
+  <view class="progress-section">
+    <view class="card">
+      <view class="card-title">🎯 学习进度</view>
+      <view class="progress-list">
+        <view class="progress-item" wx:for="{{learningProgress}}" wx:key="id">
+          <view class="progress-header">
+            <view class="progress-icon">{{item.icon}}</view>
+            <view class="progress-info">
+              <view class="progress-name">{{item.name}}</view>
+              <view class="progress-desc">{{item.description}}</view>
+            </view>
+            <view class="progress-percentage">{{(item.progress * 100).toFixed(0)}}%</view>
+          </view>
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.progress * 100}}%"></view>
+          </view>
+          <view class="progress-meta">
+            <text class="progress-current">{{item.current}}/{{item.total}}</text>
+            <text class="progress-category">{{item.category}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成就系统 -->
+  <view class="achievements-section">
+    <view class="card">
+      <view class="card-title">🏆 成就徽章</view>
+      <view class="achievements-grid">
+        <view 
+          class="achievement-item {{item.unlocked ? 'unlocked' : 'locked'}}" 
+          wx:for="{{achievements}}" 
+          wx:key="id"
+          bindtap="viewAchievement"
+          data-achievement="{{item}}"
+        >
+          <view class="achievement-icon">{{item.icon}}</view>
+          <view class="achievement-name">{{item.name}}</view>
+          <view class="achievement-desc">{{item.description}}</view>
+          <view class="achievement-progress" wx:if="{{!item.unlocked}}">
+            <view class="achievement-bar">
+              <view class="achievement-fill" style="width: {{(item.current / item.required * 100)}}%"></view>
+            </view>
+            <text class="achievement-text">{{item.current}}/{{item.required}}</text>
+          </view>
+          <view class="achievement-date" wx:if="{{item.unlocked}}">
+            {{item.unlockedDate}}
+          </view>
+        </view>
+      </view>
+      <view class="achievements-more" bindtap="viewAllAchievements">
+        <text>查看全部成就 ›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 个性化推荐 -->
+  <view class="recommendations-section">
+    <view class="card">
+      <view class="card-title">💡 为您推荐</view>
+      <view class="recommendation-tabs">
+        <view 
+          class="tab-item {{activeTab === 'concepts' ? 'active' : ''}}" 
+          bindtap="switchTab" 
+          data-tab="concepts"
+        >
+          概念学习
+        </view>
+        <view 
+          class="tab-item {{activeTab === 'classics' ? 'active' : ''}}" 
+          bindtap="switchTab" 
+          data-tab="classics"
+        >
+          经典阅读
+        </view>
+        <view 
+          class="tab-item {{activeTab === 'dialogues' ? 'active' : ''}}" 
+          bindtap="switchTab" 
+          data-tab="dialogues"
+        >
+          AI对话
+        </view>
+      </view>
+      
+      <view class="recommendation-content">
+        <!-- 概念推荐 -->
+        <view class="recommendation-list" wx:if="{{activeTab === 'concepts'}}">
+          <view 
+            class="recommendation-item" 
+            wx:for="{{conceptRecommendations}}" 
+            wx:key="id"
+            bindtap="learnConcept"
+            data-concept="{{item.concept}}"
+          >
+            <view class="recommendation-icon">🧠</view>
+            <view class="recommendation-content">
+              <view class="recommendation-title">学习"{{item.concept}}"</view>
+              <view class="recommendation-desc">{{item.reason}}</view>
+              <view class="recommendation-meta">
+                <text class="recommendation-difficulty">{{item.difficulty}}</text>
+                <text class="recommendation-time">{{item.estimated_time}}</text>
+              </view>
+            </view>
+            <view class="recommendation-arrow">›</view>
+          </view>
+        </view>
+
+        <!-- 经典推荐 -->
+        <view class="recommendation-list" wx:if="{{activeTab === 'classics'}}">
+          <view 
+            class="recommendation-item" 
+            wx:for="{{classicsRecommendations}}" 
+            wx:key="id"
+            bindtap="readClassic"
+            data-classic="{{item.classic}}"
+          >
+            <view class="recommendation-icon">📚</view>
+            <view class="recommendation-content">
+              <view class="recommendation-title">阅读《{{item.classic}}》</view>
+              <view class="recommendation-desc">{{item.description}}</view>
+              <view class="recommendation-meta">
+                <text class="recommendation-difficulty">{{item.difficulty}}</text>
+                <text class="recommendation-time">{{item.estimated_time}}</text>
+              </view>
+            </view>
+            <view class="recommendation-arrow">›</view>
+          </view>
+        </view>
+
+        <!-- 对话推荐 -->
+        <view class="recommendation-list" wx:if="{{activeTab === 'dialogues'}}">
+          <view 
+            class="recommendation-item" 
+            wx:for="{{dialogueRecommendations}}" 
+            wx:key="id"
+            bindtap="startDialogue"
+            data-character="{{item.character}}"
+            data-topic="{{item.topic}}"
+          >
+            <view class="recommendation-icon">💬</view>
+            <view class="recommendation-content">
+              <view class="recommendation-title">与{{item.character}}对话</view>
+              <view class="recommendation-desc">{{item.topic}}</view>
+              <view class="recommendation-meta">
+                <text class="recommendation-difficulty">{{item.difficulty}}</text>
+                <text class="recommendation-time">{{item.estimated_time}}</text>
+              </view>
+            </view>
+            <view class="recommendation-arrow">›</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习计划 -->
+  <view class="plan-section">
+    <view class="card">
+      <view class="card-title">📅 今日学习计划</view>
+      <view class="plan-list" wx:if="{{todayPlan.length > 0}}">
+        <view 
+          class="plan-item {{item.completed ? 'completed' : ''}}" 
+          wx:for="{{todayPlan}}" 
+          wx:key="id"
+          bindtap="togglePlanItem"
+          data-id="{{item.id}}"
+        >
+          <view class="plan-checkbox">
+            <text class="checkbox-icon">{{item.completed ? '✅' : '⭕'}}</text>
+          </view>
+          <view class="plan-content">
+            <view class="plan-title">{{item.title}}</view>
+            <view class="plan-desc">{{item.description}}</view>
+            <view class="plan-time">预计时间: {{item.estimatedTime}}</view>
+          </view>
+        </view>
+      </view>
+      <view class="empty-plan" wx:else>
+        <view class="empty-icon">📝</view>
+        <view class="empty-text">暂无学习计划</view>
+        <view class="empty-desc">系统将根据您的学习情况自动生成个性化计划</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习历史 -->
+  <view class="history-section">
+    <view class="card">
+      <view class="card-title">📖 最近学习</view>
+      <view class="history-list" wx:if="{{recentHistory.length > 0}}">
+        <view class="history-item" wx:for="{{recentHistory}}" wx:key="id">
+          <view class="history-icon">{{item.icon}}</view>
+          <view class="history-content">
+            <view class="history-title">{{item.title}}</view>
+            <view class="history-desc">{{item.description}}</view>
+            <view class="history-time">{{item.time}}</view>
+          </view>
+          <view class="history-points">+{{item.points}}</view>
+        </view>
+      </view>
+      <view class="empty-history" wx:else>
+        <view class="empty-icon">📚</view>
+        <view class="empty-text">暂无学习记录</view>
+        <view class="empty-desc">开始您的传统文化学习之旅吧</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,134 @@
+<!--AI对话页面-->
+<view class="page-container traditional-bg">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">💬 AI古代先贤对话</view>
+    <view class="page-subtitle">与历史上的智者进行深度交流</view>
+  </view>
+
+  <!-- 人物选择 -->
+  <view class="characters-section">
+    <view class="card">
+      <view class="card-title">🎭 选择对话人物</view>
+      <view class="characters-grid">
+        <view 
+          class="character-item {{selectedCharacter === item.id ? 'active' : ''}}" 
+          wx:for="{{characters}}" 
+          wx:key="id"
+          bindtap="selectCharacter"
+          data-character="{{item.id}}"
+        >
+          <view class="character-avatar">
+            <image src="{{item.avatar}}" mode="aspectFill"></image>
+          </view>
+          <view class="character-info">
+            <view class="character-name">{{item.name}}</view>
+            <view class="character-title">{{item.title}}</view>
+            <view class="character-period">{{item.period}}</view>
+          </view>
+          <view class="character-specialty">
+            <view class="specialty-tag" wx:for="{{item.specialties}}" wx:key="*this" wx:for-item="specialty">
+              {{specialty}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 对话历史 -->
+  <view class="conversations-section" wx:if="{{conversations.length > 0}}">
+    <view class="card">
+      <view class="card-title">📚 最近对话</view>
+      <view class="conversations-list">
+        <view 
+          class="conversation-item" 
+          wx:for="{{conversations}}" 
+          wx:key="id"
+          bindtap="continueConversation"
+          data-conversation="{{item}}"
+        >
+          <view class="conversation-avatar">
+            <image src="{{getCharacterById(item.characterId).avatar}}" mode="aspectFill"></image>
+          </view>
+          <view class="conversation-content">
+            <view class="conversation-title">
+              与{{getCharacterById(item.characterId).name}}的对话
+            </view>
+            <view class="conversation-preview">{{item.lastMessage}}</view>
+            <view class="conversation-meta">
+              <text class="conversation-time">{{item.lastTime}}</text>
+              <text class="conversation-count">{{item.messageCount}}条消息</text>
+            </view>
+          </view>
+          <view class="conversation-arrow">›</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快速话题 -->
+  <view class="topics-section" wx:if="{{selectedCharacter}}">
+    <view class="card">
+      <view class="card-title">💡 推荐话题</view>
+      <view class="topics-grid">
+        <view 
+          class="topic-item" 
+          wx:for="{{getTopicsByCharacter(selectedCharacter)}}" 
+          wx:key="id"
+          bindtap="startTopicChat"
+          data-topic="{{item}}"
+        >
+          <view class="topic-icon">{{item.icon}}</view>
+          <view class="topic-title">{{item.title}}</view>
+          <view class="topic-desc">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 人物介绍 -->
+  <view class="character-intro" wx:if="{{selectedCharacter}}">
+    <view class="card">
+      <view class="card-title">📖 人物介绍</view>
+      <view class="intro-content">
+        <view class="intro-header">
+          <view class="intro-avatar">
+            <image src="{{getCharacterById(selectedCharacter).avatar}}" mode="aspectFill"></image>
+          </view>
+          <view class="intro-basic">
+            <view class="intro-name">{{getCharacterById(selectedCharacter).name}}</view>
+            <view class="intro-title">{{getCharacterById(selectedCharacter).title}}</view>
+            <view class="intro-period">{{getCharacterById(selectedCharacter).period}}</view>
+          </view>
+        </view>
+        <view class="intro-description">
+          {{getCharacterById(selectedCharacter).description}}
+        </view>
+        <view class="intro-achievements">
+          <view class="achievement-title">主要成就：</view>
+          <view class="achievement-list">
+            <view class="achievement-item" wx:for="{{getCharacterById(selectedCharacter).achievements}}" wx:key="*this">
+              • {{item}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 开始对话按钮 -->
+  <view class="start-chat-section" wx:if="{{selectedCharacter}}">
+    <view class="start-chat-btn btn-primary" bindtap="startNewChat">
+      <view class="chat-icon">💭</view>
+      <view class="chat-text">开始与{{getCharacterById(selectedCharacter).name}}对话</view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!selectedCharacter}}">
+    <view class="empty-icon">🎭</view>
+    <view class="empty-text">请选择一位古代先贤开始对话</view>
+    <view class="empty-desc">每位先贤都有独特的思想和智慧等待您的探索</view>
+  </view>
+</view>
