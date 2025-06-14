@@ -1,0 +1,245 @@
+<!--网络连接测试页面-->
+<view class="network-test-container">
+  <!-- 页面头部 -->
+  <view class="header-section">
+    <view class="header-content">
+      <text class="page-title">🌐 网络连接测试</text>
+      <text class="page-desc">检测小程序与后端服务的连接状态</text>
+    </view>
+  </view>
+
+  <!-- 连接状态概览 -->
+  <view class="status-overview">
+    <view class="status-card {{overallStatus === 'success' ? 'success' : overallStatus === 'warning' ? 'warning' : 'error'}}">
+      <view class="status-icon">
+        <text wx:if="{{overallStatus === 'success'}}">✅</text>
+        <text wx:elif="{{overallStatus === 'warning'}}">⚠️</text>
+        <text wx:else>❌</text>
+      </view>
+      <view class="status-content">
+        <text class="status-title">{{statusTitle}}</text>
+        <text class="status-desc">{{statusDesc}}</text>
+      </view>
+      <view class="status-score">
+        <text class="score-number">{{successRate}}</text>
+        <text class="score-unit">%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 测试项目列表 -->
+  <view class="test-items-section">
+    <view class="section-header">
+      <text class="section-title">📋 测试项目</text>
+      <button class="refresh-btn" bindtap="onRunAllTests" disabled="{{testing}}">
+        {{testing ? '测试中...' : '重新测试'}}
+      </button>
+    </view>
+
+    <view class="test-items-list">
+      <!-- 基础连接测试 -->
+      <view class="test-item">
+        <view class="test-header" bindtap="onToggleDetails" data-test="basic">
+          <view class="test-info">
+            <text class="test-icon">🔗</text>
+            <view class="test-content">
+              <text class="test-title">基础连接</text>
+              <text class="test-desc">后端服务连接状态</text>
+            </view>
+          </view>
+          <view class="test-status">
+            <text class="status-icon {{testResults.basic.status}}">
+              {{testResults.basic.status === 'success' ? '✅' : testResults.basic.status === 'loading' ? '⏳' : '❌'}}
+            </text>
+            <text class="expand-icon {{testResults.basic.expanded ? 'expanded' : ''}}">▼</text>
+          </view>
+        </view>
+        
+        <view class="test-details {{testResults.basic.expanded ? 'show' : ''}}">
+          <view class="detail-item">
+            <text class="detail-label">服务地址:</text>
+            <text class="detail-value">{{apiBase}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">响应时间:</text>
+            <text class="detail-value">{{testResults.basic.responseTime || '--'}}ms</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">状态码:</text>
+            <text class="detail-value">{{testResults.basic.statusCode || '--'}}</text>
+          </view>
+          <view class="detail-item" wx:if="{{testResults.basic.error}}">
+            <text class="detail-label">错误信息:</text>
+            <text class="detail-value error">{{testResults.basic.error}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- AI服务测试 -->
+      <view class="test-item">
+        <view class="test-header" bindtap="onToggleDetails" data-test="ai">
+          <view class="test-info">
+            <text class="test-icon">🤖</text>
+            <view class="test-content">
+              <text class="test-title">AI服务</text>
+              <text class="test-desc">DeepSeek API连接测试</text>
+            </view>
+          </view>
+          <view class="test-status">
+            <text class="status-icon {{testResults.ai.status}}">
+              {{testResults.ai.status === 'success' ? '✅' : testResults.ai.status === 'loading' ? '⏳' : '❌'}}
+            </text>
+            <text class="expand-icon {{testResults.ai.expanded ? 'expanded' : ''}}">▼</text>
+          </view>
+        </view>
+        
+        <view class="test-details {{testResults.ai.expanded ? 'show' : ''}}">
+          <view class="detail-item">
+            <text class="detail-label">API状态:</text>
+            <text class="detail-value">{{testResults.ai.apiStatus || '--'}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">模型:</text>
+            <text class="detail-value">{{testResults.ai.model || '--'}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">测试回复:</text>
+            <text class="detail-value">{{testResults.ai.testResponse || '--'}}</text>
+          </view>
+          <view class="detail-item" wx:if="{{testResults.ai.error}}">
+            <text class="detail-label">错误信息:</text>
+            <text class="detail-value error">{{testResults.ai.error}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- OCR服务测试 -->
+      <view class="test-item">
+        <view class="test-header" bindtap="onToggleDetails" data-test="ocr">
+          <view class="test-info">
+            <text class="test-icon">📷</text>
+            <view class="test-content">
+              <text class="test-title">OCR服务</text>
+              <text class="test-desc">图片识别功能测试</text>
+            </view>
+          </view>
+          <view class="test-status">
+            <text class="status-icon {{testResults.ocr.status}}">
+              {{testResults.ocr.status === 'success' ? '✅' : testResults.ocr.status === 'loading' ? '⏳' : '❌'}}
+            </text>
+            <text class="expand-icon {{testResults.ocr.expanded ? 'expanded' : ''}}">▼</text>
+          </view>
+        </view>
+        
+        <view class="test-details {{testResults.ocr.expanded ? 'show' : ''}}">
+          <view class="detail-item">
+            <text class="detail-label">服务状态:</text>
+            <text class="detail-value">{{testResults.ocr.serviceStatus || '--'}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">支持格式:</text>
+            <text class="detail-value">{{testResults.ocr.supportedFormats || '--'}}</text>
+          </view>
+          <view class="detail-item" wx:if="{{testResults.ocr.error}}">
+            <text class="detail-label">错误信息:</text>
+            <text class="detail-value error">{{testResults.ocr.error}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 数据库连接测试 -->
+      <view class="test-item">
+        <view class="test-header" bindtap="onToggleDetails" data-test="database">
+          <view class="test-info">
+            <text class="test-icon">🗄️</text>
+            <view class="test-content">
+              <text class="test-title">数据库</text>
+              <text class="test-desc">数据存储服务测试</text>
+            </view>
+          </view>
+          <view class="test-status">
+            <text class="status-icon {{testResults.database.status}}">
+              {{testResults.database.status === 'success' ? '✅' : testResults.database.status === 'loading' ? '⏳' : '❌'}}
+            </text>
+            <text class="expand-icon {{testResults.database.expanded ? 'expanded' : ''}}">▼</text>
+          </view>
+        </view>
+        
+        <view class="test-details {{testResults.database.expanded ? 'show' : ''}}">
+          <view class="detail-item">
+            <text class="detail-label">连接状态:</text>
+            <text class="detail-value">{{testResults.database.connectionStatus || '--'}}</text>
+          </view>
+          <view class="detail-item">
+            <text class="detail-label">数据库类型:</text>
+            <text class="detail-value">{{testResults.database.dbType || '--'}}</text>
+          </view>
+          <view class="detail-item" wx:if="{{testResults.database.error}}">
+            <text class="detail-label">错误信息:</text>
+            <text class="detail-value error">{{testResults.database.error}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 网络信息 -->
+  <view class="network-info-section">
+    <view class="section-title">📊 网络信息</view>
+    <view class="info-grid">
+      <view class="info-item">
+        <text class="info-label">网络类型</text>
+        <text class="info-value">{{networkInfo.networkType}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">信号强度</text>
+        <text class="info-value">{{networkInfo.signalStrength}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">延迟</text>
+        <text class="info-value">{{networkInfo.latency}}ms</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">带宽</text>
+        <text class="info-value">{{networkInfo.bandwidth}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="action-btn secondary-btn" bindtap="onExportReport">导出报告</button>
+    <button class="action-btn primary-btn" bindtap="onRunAllTests" disabled="{{testing}}">
+      {{testing ? '测试中...' : '重新测试'}}
+    </button>
+  </view>
+
+  <!-- 测试历史 -->
+  <view class="test-history-section" wx:if="{{testHistory.length > 0}}">
+    <view class="section-title">📈 测试历史</view>
+    <view class="history-list">
+      <view class="history-item" wx:for="{{testHistory}}" wx:key="timestamp">
+        <view class="history-time">{{item.time}}</view>
+        <view class="history-result">
+          <text class="result-text {{item.success ? 'success' : 'error'}}">
+            {{item.success ? '成功' : '失败'}}
+          </text>
+          <text class="result-rate">{{item.successRate}}%</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 帮助信息 -->
+  <view class="help-section">
+    <view class="help-card">
+      <text class="help-title">💡 测试说明</text>
+      <view class="help-content">
+        <text class="help-text">• 基础连接：测试小程序与后端服务的网络连接</text>
+        <text class="help-text">• AI服务：验证DeepSeek API的可用性和响应</text>
+        <text class="help-text">• OCR服务：检查图片识别功能的服务状态</text>
+        <text class="help-text">• 数据库：确认数据存储服务的连接状态</text>
+      </view>
+    </view>
+  </view>
+</view>

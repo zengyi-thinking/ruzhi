@@ -1,0 +1,416 @@
+/* 网络连接测试页面样式 */
+.network-test-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding-bottom: 100rpx;
+}
+
+/* 页面头部 */
+.header-section {
+  padding: 40rpx 30rpx;
+  color: white;
+}
+
+.header-content {
+  text-align: center;
+}
+
+.page-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.page-desc {
+  font-size: 28rpx;
+  opacity: 0.9;
+  display: block;
+}
+
+/* 状态概览 */
+.status-overview {
+  padding: 0 30rpx 30rpx;
+}
+
+.status-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+}
+
+.status-card.success::before {
+  background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.status-card.warning::before {
+  background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%);
+}
+
+.status-card.error::before {
+  background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.status-icon {
+  font-size: 60rpx;
+  margin-right: 20rpx;
+}
+
+.status-content {
+  flex: 1;
+}
+
+.status-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.status-desc {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  display: block;
+}
+
+.status-score {
+  display: flex;
+  align-items: baseline;
+  gap: 5rpx;
+}
+
+.score-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.score-unit {
+  font-size: 24rpx;
+  color: #7f8c8d;
+}
+
+/* 测试项目 */
+.test-items-section {
+  padding: 0 30rpx 30rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: white;
+}
+
+.refresh-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 20rpx;
+  padding: 15rpx 25rpx;
+  font-size: 26rpx;
+}
+
+.refresh-btn[disabled] {
+  opacity: 0.5;
+}
+
+.test-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.test-item {
+  background: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.test-header {
+  padding: 25rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.test-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.test-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.test-content {
+  flex: 1;
+}
+
+.test-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.test-desc {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  display: block;
+}
+
+.test-status {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+}
+
+.status-icon {
+  font-size: 32rpx;
+}
+
+.status-icon.success {
+  color: #27ae60;
+}
+
+.status-icon.error {
+  color: #e74c3c;
+}
+
+.status-icon.loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.expand-icon {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.test-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #f8f9fa;
+}
+
+.test-details.show {
+  max-height: 500rpx;
+  padding: 25rpx;
+  border-top: 1rpx solid #ecf0f1;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 26rpx;
+  color: #2c3e50;
+  font-weight: 500;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-all;
+}
+
+.detail-value.error {
+  color: #e74c3c;
+}
+
+/* 网络信息 */
+.network-info-section {
+  padding: 0 30rpx 30rpx;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.info-item {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15rpx;
+  padding: 25rpx;
+  text-align: center;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  display: block;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  padding: 0 30rpx 30rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 25rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  border: none;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
+}
+
+.action-btn[disabled] {
+  opacity: 0.5;
+}
+
+/* 测试历史 */
+.test-history-section {
+  padding: 0 30rpx 30rpx;
+}
+
+.history-list {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin-top: 20rpx;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15rpx 0;
+  border-bottom: 1rpx solid #ecf0f1;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-time {
+  font-size: 24rpx;
+  color: #7f8c8d;
+}
+
+.history-result {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+}
+
+.result-text {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.result-text.success {
+  color: #27ae60;
+}
+
+.result-text.error {
+  color: #e74c3c;
+}
+
+.result-rate {
+  font-size: 24rpx;
+  color: #667eea;
+  font-weight: bold;
+}
+
+/* 帮助信息 */
+.help-section {
+  padding: 0 30rpx;
+}
+
+.help-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  padding: 30rpx;
+}
+
+.help-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.help-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.help-text {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  line-height: 1.5;
+  display: block;
+}

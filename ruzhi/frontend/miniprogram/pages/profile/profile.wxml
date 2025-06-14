@@ -141,6 +141,15 @@
         <view class="menu-arrow">›</view>
       </view>
 
+      <view class="menu-item" bindtap="onNetworkTest">
+        <view class="menu-icon">🌐</view>
+        <view class="menu-content">
+          <view class="menu-title">网络测试</view>
+          <view class="menu-desc">检测网络连接和服务状态</view>
+        </view>
+        <view class="menu-arrow">›</view>
+      </view>
+
       <view class="menu-item" bindtap="onAISettings">
         <view class="menu-icon">🤖</view>
         <view class="menu-content">

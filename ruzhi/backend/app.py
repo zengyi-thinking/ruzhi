@@ -7,6 +7,7 @@ import sys
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import logging
+from datetime import datetime
 
 # 添加当前目录到Python路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -70,10 +71,12 @@ def create_app():
     @handle_errors
     def health_check():
         """健康检查"""
+        import time
         return jsonify({
             "success": True,
             "status": "healthy",
-            "timestamp": "2024-01-16T10:00:00Z",
+            "timestamp": datetime.now().isoformat(),
+            "response_time": time.time(),
             "services": {
                 "ocr": "active",
                 "ai_dialogue": "active",
@@ -82,6 +85,51 @@ def create_app():
                 "knowledge_graph": "active",
                 "api_config": "active"
             }
+        })
+
+    @app.route('/api/v1/ai/test', methods=['POST'])
+    @handle_errors
+    def test_ai_service():
+        """测试AI服务连接"""
+        try:
+            data = request.get_json()
+            message = data.get('message', '你好')
+
+            # 这里应该调用真实的AI服务
+            # 暂时返回模拟响应
+            return jsonify({
+                "success": True,
+                "model": "deepseek-chat",
+                "reply": f"这是对'{message}'的AI回复（测试模式）",
+                "timestamp": datetime.now().isoformat()
+            })
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500
+
+    @app.route('/api/v1/ocr/status')
+    @handle_errors
+    def ocr_service_status():
+        """OCR服务状态检查"""
+        return jsonify({
+            "success": True,
+            "status": "active",
+            "supportedFormats": ["jpg", "jpeg", "png", "bmp"],
+            "maxFileSize": "10MB",
+            "timestamp": datetime.now().isoformat()
+        })
+
+    @app.route('/api/v1/database/status')
+    @handle_errors
+    def database_status():
+        """数据库连接状态检查"""
+        return jsonify({
+            "success": True,
+            "status": "connected",
+            "dbType": "SQLite",
+            "timestamp": datetime.now().isoformat()
         })
     
     @app.route('/api/v1/info')

@@ -243,6 +243,13 @@ Page({
     })
   },
 
+  // 网络测试
+  onNetworkTest: function() {
+    wx.navigateTo({
+      url: '/pages/network-test/network-test'
+    })
+  },
+
   // AI设置相关方法
   onAISettings: function() {
     // 加载AI配置

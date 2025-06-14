@@ -17,7 +17,8 @@
     "pages/modernize/modernize",
     "pages/immersive/immersive",
     "pages/challenge/history/history",
-    "pages/recommend/report/report"
+    "pages/recommend/report/report",
+    "pages/network-test/network-test"
   ],
   "window": {
     "backgroundTextStyle": "light",
