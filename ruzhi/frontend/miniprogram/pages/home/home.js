@@ -61,7 +61,30 @@ Page({
       completedChapters: 0,
       ocrCount: 0
     },
-    
+
+    // 每日一句
+    dailyQuote: null,
+
+    // 学习打卡
+    weekDays: [],
+    learningStreak: 0,
+    todayChecked: false,
+    dailyPoints: 10,
+
+    // AI功能统计数据
+    challengeStats: {
+      totalUsers: 1256,
+      highestScore: 2580
+    },
+    recommendStats: {
+      accuracy: 95,
+      totalBooks: 128
+    },
+    modernizeStats: {
+      totalTexts: 456,
+      satisfaction: 92
+    },
+
     // 加载状态
     loading: true,
     refreshing: false
@@ -129,7 +152,9 @@ Page({
     Promise.all([
       this.loadTodayRecommend(),
       this.loadRecentUsed(),
-      this.loadStudyStats()
+      this.loadStudyStats(),
+      this.loadDailyQuote(),
+      this.loadCheckinData()
     ]).then(() => {
       this.setData({ loading: false })
     }).catch((error) => {
@@ -147,7 +172,9 @@ Page({
     Promise.all([
       this.loadTodayRecommend(),
       this.loadRecentUsed(),
-      this.loadStudyStats()
+      this.loadStudyStats(),
+      this.loadDailyQuote(),
+      this.loadCheckinData()
     ]).then(() => {
       if (isPullRefresh) {
         wx.stopPullDownRefresh()
@@ -412,6 +439,86 @@ Page({
     }
   },
 
+  // 点击AI功能
+  onAIFeatureClick: function(e) {
+    const { feature } = e.currentTarget.dataset
+    console.log('点击AI功能:', feature)
+
+    // 记录AI功能使用
+    this.recordAIFeatureUsage(feature)
+
+    // 根据功能类型跳转
+    const featureRoutes = {
+      challenge: '/pages/challenge/challenge',
+      recommend: '/pages/recommend/recommend',
+      modernize: '/pages/modernize/modernize',
+      immersive: '/pages/immersive/immersive'
+    }
+
+    const route = featureRoutes[feature]
+    if (route) {
+      wx.navigateTo({
+        url: route,
+        fail: (error) => {
+          console.error('AI功能页面跳转失败:', error)
+          wx.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          })
+        }
+      })
+    } else {
+      wx.showToast({
+        title: '功能开发中',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 记录AI功能使用
+  recordAIFeatureUsage: function(feature) {
+    try {
+      let aiUsageHistory = wx.getStorageSync('ai_usage_history') || []
+
+      aiUsageHistory.unshift({
+        feature: feature,
+        timestamp: new Date().toISOString(),
+        date: new Date().toDateString()
+      })
+
+      // 限制记录数量
+      aiUsageHistory = aiUsageHistory.slice(0, 100)
+
+      wx.setStorageSync('ai_usage_history', aiUsageHistory)
+
+      // 更新统计数据
+      this.updateAIStats(feature)
+    } catch (error) {
+      console.error('记录AI功能使用失败:', error)
+    }
+  },
+
+  // 更新AI统计数据
+  updateAIStats: function(feature) {
+    const updates = {}
+
+    switch (feature) {
+      case 'challenge':
+        updates['challengeStats.totalUsers'] = this.data.challengeStats.totalUsers + 1
+        break
+      case 'recommend':
+        updates['recommendStats.totalBooks'] = this.data.recommendStats.totalBooks + 1
+        break
+      case 'modernize':
+        updates['modernizeStats.totalTexts'] = this.data.modernizeStats.totalTexts + 1
+        break
+    }
+
+    if (Object.keys(updates).length > 0) {
+      this.setData(updates)
+    }
+  },
+
   // 记录最近使用
   recordRecentUsed: function (feature) {
     try {
@@ -576,6 +683,232 @@ Page({
   onViewStudyStats: function () {
     wx.switchTab({
       url: '/pages/profile/profile'
+    })
+  },
+
+  // 加载每日一句
+  loadDailyQuote: function() {
+    return new Promise((resolve) => {
+      try {
+        const today = new Date().toDateString()
+        const savedQuote = wx.getStorageSync('daily_quote')
+
+        // 检查是否是今天的句子
+        if (savedQuote && savedQuote.date === today) {
+          this.setData({ dailyQuote: savedQuote })
+          resolve()
+          return
+        }
+
+        // 生成今天的句子
+        const quotes = [
+          {
+            content: '学而时习之，不亦说乎？',
+            author: '孔子',
+            source: '论语·学而',
+            explanation: '学习知识并时常温习，不是很快乐的事情吗？'
+          },
+          {
+            content: '道可道，非常道。',
+            author: '老子',
+            source: '道德经',
+            explanation: '可以言说的道，就不是永恒不变的道。'
+          },
+          {
+            content: '仁者爱人，智者知人。',
+            author: '孟子',
+            source: '孟子·离娄下',
+            explanation: '仁德的人爱护他人，智慧的人了解他人。'
+          },
+          {
+            content: '知己知彼，百战不殆。',
+            author: '孙子',
+            source: '孙子兵法',
+            explanation: '了解自己也了解敌人，就能百战百胜。'
+          },
+          {
+            content: '天行健，君子以自强不息。',
+            author: '周易',
+            source: '易经·乾卦',
+            explanation: '天道运行刚健不息，君子应效法天道，自强不息。'
+          }
+        ]
+
+        // 基于日期选择句子
+        const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000)
+        const selectedQuote = quotes[dayOfYear % quotes.length]
+
+        const dailyQuote = {
+          ...selectedQuote,
+          date: today,
+          dayOfYear: dayOfYear
+        }
+
+        // 保存到本地
+        wx.setStorageSync('daily_quote', dailyQuote)
+        this.setData({ dailyQuote: dailyQuote })
+        resolve()
+      } catch (error) {
+        console.error('加载每日一句失败:', error)
+        resolve()
+      }
+    })
+  },
+
+  // 加载打卡数据
+  loadCheckinData: function() {
+    return new Promise((resolve) => {
+      try {
+        const today = new Date()
+        const checkinData = wx.getStorageSync('checkin_data') || {
+          streak: 0,
+          lastCheckinDate: null,
+          totalDays: 0,
+          checkinHistory: []
+        }
+
+        // 生成本周数据
+        const weekDays = this.generateWeekDays(today, checkinData.checkinHistory)
+
+        // 检查今天是否已打卡
+        const todayStr = today.toDateString()
+        const todayChecked = checkinData.checkinHistory.includes(todayStr)
+
+        this.setData({
+          weekDays: weekDays,
+          learningStreak: checkinData.streak,
+          todayChecked: todayChecked
+        })
+
+        resolve()
+      } catch (error) {
+        console.error('加载打卡数据失败:', error)
+        resolve()
+      }
+    })
+  },
+
+  // 生成本周数据
+  generateWeekDays: function(today, checkinHistory) {
+    const weekDays = []
+    const dayLabels = ['日', '一', '二', '三', '四', '五', '六']
+
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today)
+      date.setDate(date.getDate() - i)
+
+      const dateStr = date.toDateString()
+      const isChecked = checkinHistory.includes(dateStr)
+      const isToday = dateStr === today.toDateString()
+
+      let status = 'normal'
+      if (isToday) status = 'today'
+      if (isChecked) status = 'checked'
+      if (isToday && isChecked) status = 'today-checked'
+
+      weekDays.push({
+        date: dateStr,
+        label: dayLabels[date.getDay()],
+        status: status,
+        isToday: isToday,
+        isChecked: isChecked
+      })
+    }
+
+    return weekDays
+  },
+
+  // 每日打卡
+  onDailyCheckin: function() {
+    if (this.data.todayChecked) return
+
+    try {
+      const today = new Date()
+      const todayStr = today.toDateString()
+
+      let checkinData = wx.getStorageSync('checkin_data') || {
+        streak: 0,
+        lastCheckinDate: null,
+        totalDays: 0,
+        checkinHistory: []
+      }
+
+      // 更新打卡数据
+      checkinData.checkinHistory.push(todayStr)
+      checkinData.totalDays += 1
+
+      // 计算连续天数
+      const yesterday = new Date(today)
+      yesterday.setDate(yesterday.getDate() - 1)
+      const yesterdayStr = yesterday.toDateString()
+
+      if (checkinData.lastCheckinDate === yesterdayStr) {
+        checkinData.streak += 1
+      } else {
+        checkinData.streak = 1
+      }
+
+      checkinData.lastCheckinDate = todayStr
+
+      // 保存数据
+      wx.setStorageSync('checkin_data', checkinData)
+
+      // 更新页面
+      this.setData({
+        todayChecked: true,
+        learningStreak: checkinData.streak
+      })
+
+      // 重新生成本周数据
+      const weekDays = this.generateWeekDays(today, checkinData.checkinHistory)
+      this.setData({ weekDays: weekDays })
+
+      // 显示奖励
+      wx.showToast({
+        title: `打卡成功！连续${checkinData.streak}天`,
+        icon: 'success'
+      })
+
+      // 更新学习统计
+      this.updateStudyStats()
+
+    } catch (error) {
+      console.error('打卡失败:', error)
+      wx.showToast({
+        title: '打卡失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 更新学习统计
+  updateStudyStats: function() {
+    try {
+      let stats = wx.getStorageSync('studyStats') || {
+        totalDays: 0,
+        totalHours: 0,
+        completedChapters: 0,
+        ocrCount: 0
+      }
+
+      stats.totalDays += 1
+      wx.setStorageSync('studyStats', stats)
+      this.setData({ studyStats: stats })
+    } catch (error) {
+      console.error('更新学习统计失败:', error)
+    }
+  },
+
+  // 点击每日一句
+  onQuoteClick: function() {
+    const quote = this.data.dailyQuote
+    if (!quote) return
+
+    wx.showModal({
+      title: quote.content,
+      content: `${quote.explanation}\n\n—— ${quote.author}《${quote.source}》`,
+      showCancel: false,
+      confirmText: '知道了'
     })
   }
 })

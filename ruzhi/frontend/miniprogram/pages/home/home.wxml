@@ -85,10 +85,130 @@
           <view class="recommend-content">
             <text class="recommend-title">{{item.title}}</text>
             <text class="recommend-text ancient-text">{{item.content}}</text>
+            <view class="recommend-meta">
+              <text class="recommend-reason">{{item.reason}}</text>
+              <text class="recommend-time">{{item.readTime}}</text>
+            </view>
           </view>
+          <view class="recommend-badge" wx:if="{{item.isNew}}">新</view>
         </view>
       </view>
     </scroll-view>
+  </view>
+
+  <!-- 每日一句 -->
+  <view class="daily-quote-section" wx:if="{{dailyQuote}}">
+    <view class="quote-card" bindtap="onQuoteClick">
+      <view class="quote-header">
+        <text class="quote-label">📖 每日一句</text>
+        <text class="quote-date">{{dailyQuote.date}}</text>
+      </view>
+      <text class="quote-content">{{dailyQuote.content}}</text>
+      <view class="quote-footer">
+        <text class="quote-author">—— {{dailyQuote.author}}</text>
+        <text class="quote-source">《{{dailyQuote.source}}》</text>
+      </view>
+      <view class="quote-action">
+        <text class="action-text">点击查看详解</text>
+        <text class="action-icon">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习打卡 -->
+  <view class="checkin-section">
+    <view class="section-header">
+      <text class="section-title">📅 学习打卡</text>
+      <text class="checkin-streak">连续{{learningStreak}}天</text>
+    </view>
+
+    <view class="checkin-card">
+      <view class="checkin-calendar">
+        <view
+          class="calendar-day {{item.status}}"
+          wx:for="{{weekDays}}"
+          wx:key="date"
+        >
+          <text class="day-label">{{item.label}}</text>
+          <view class="day-dot"></view>
+        </view>
+      </view>
+
+      <view class="checkin-actions">
+        <button
+          class="checkin-btn {{todayChecked ? 'checked' : ''}}"
+          bindtap="onDailyCheckin"
+          disabled="{{todayChecked}}"
+        >
+          {{todayChecked ? '今日已打卡' : '立即打卡'}}
+        </button>
+        <view class="checkin-reward" wx:if="{{todayChecked}}">
+          <text class="reward-text">获得积分 +{{dailyPoints}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- AI创新功能 -->
+  <view class="ai-features-section">
+    <view class="section-header">
+      <text class="section-title">✨ AI创新体验</text>
+      <text class="section-subtitle">让传统文化学习更有趣</text>
+    </view>
+
+    <view class="ai-features-list">
+      <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="challenge">
+        <view class="ai-feature-header">
+          <view class="ai-feature-icon">🎯</view>
+          <view class="ai-feature-badge">热门</view>
+        </view>
+        <text class="ai-feature-title">典籍问答挑战</text>
+        <text class="ai-feature-desc">AI生成题目，游戏化学习典籍知识</text>
+        <view class="ai-feature-stats">
+          <text class="stat-item">📊 已有{{challengeStats.totalUsers}}人参与</text>
+          <text class="stat-item">🏆 最高分{{challengeStats.highestScore}}</text>
+        </view>
+      </view>
+
+      <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="recommend">
+        <view class="ai-feature-header">
+          <view class="ai-feature-icon">🤖</view>
+          <view class="ai-feature-badge">智能</view>
+        </view>
+        <text class="ai-feature-title">智能典籍推荐</text>
+        <text class="ai-feature-desc">AI分析偏好，个性化推荐学习内容</text>
+        <view class="ai-feature-stats">
+          <text class="stat-item">🎯 匹配度{{recommendStats.accuracy}}%</text>
+          <text class="stat-item">📚 推荐{{recommendStats.totalBooks}}本</text>
+        </view>
+      </view>
+
+      <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="modernize">
+        <view class="ai-feature-header">
+          <view class="ai-feature-icon">✨</view>
+          <view class="ai-feature-badge">创新</view>
+        </view>
+        <text class="ai-feature-title">古文现代化改写</text>
+        <text class="ai-feature-desc">AI将古文改写为现代文，保持原意更易懂</text>
+        <view class="ai-feature-stats">
+          <text class="stat-item">🔄 已改写{{modernizeStats.totalTexts}}篇</text>
+          <text class="stat-item">⭐ 满意度{{modernizeStats.satisfaction}}%</text>
+        </view>
+      </view>
+
+      <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="immersive">
+        <view class="ai-feature-header">
+          <view class="ai-feature-icon">🎵</view>
+          <view class="ai-feature-badge">沉浸</view>
+        </view>
+        <text class="ai-feature-title">沉浸式阅读</text>
+        <text class="ai-feature-desc">AI朗读、背景音乐、视觉效果的多感官体验</text>
+        <view class="ai-feature-stats">
+          <text class="stat-item">🎧 支持多种语音</text>
+          <text class="stat-item">🎨 丰富视觉效果</text>
+        </view>
+      </view>
+    </view>
   </view>
 
   <!-- 最近使用 -->

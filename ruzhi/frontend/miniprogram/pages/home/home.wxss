@@ -379,3 +379,325 @@
     color: #ccc;
   }
 }
+
+/* 推荐内容元信息 */
+.recommend-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10rpx;
+}
+
+.recommend-reason {
+  font-size: 22rpx;
+  color: #95a5a6;
+  flex: 1;
+}
+
+.recommend-time {
+  font-size: 22rpx;
+  color: #3498db;
+}
+
+.recommend-badge {
+  position: absolute;
+  top: 15rpx;
+  right: 15rpx;
+  background: #e74c3c;
+  color: white;
+  font-size: 20rpx;
+  padding: 5rpx 10rpx;
+  border-radius: 10rpx;
+}
+
+/* 每日一句 */
+.daily-quote-section {
+  margin: 30rpx 20rpx;
+}
+
+.quote-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  animation: float 8s ease-in-out infinite;
+}
+
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.quote-label {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.quote-date {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.quote-content {
+  font-size: 36rpx;
+  font-weight: bold;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+  display: block;
+  text-align: center;
+}
+
+.quote-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.quote-author,
+.quote-source {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.quote-action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10rpx;
+  opacity: 0.8;
+}
+
+.action-text {
+  font-size: 24rpx;
+}
+
+.action-icon {
+  font-size: 28rpx;
+}
+
+/* 学习打卡 */
+.checkin-section {
+  margin: 30rpx 20rpx;
+}
+
+.checkin-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.checkin-streak {
+  font-size: 28rpx;
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.checkin-calendar {
+  display: flex;
+  justify-content: space-between;
+  margin: 30rpx 0;
+}
+
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.day-label {
+  font-size: 24rpx;
+  color: #7f8c8d;
+}
+
+.day-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: #ecf0f1;
+}
+
+.calendar-day.checked .day-dot {
+  background: #27ae60;
+}
+
+.calendar-day.today .day-label {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.calendar-day.today .day-dot {
+  border: 3rpx solid #3498db;
+}
+
+.calendar-day.today-checked .day-dot {
+  background: #3498db;
+}
+
+.checkin-actions {
+  text-align: center;
+}
+
+.checkin-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  border: none;
+  border-radius: 25rpx;
+  padding: 20rpx 60rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.checkin-btn.checked {
+  background: #95a5a6;
+}
+
+.checkin-reward {
+  margin-top: 15rpx;
+}
+
+.reward-text {
+  font-size: 24rpx;
+  color: #f39c12;
+  font-weight: bold;
+}
+
+/* AI创新功能 */
+.ai-features-section {
+  margin: 30rpx 20rpx;
+}
+
+.section-subtitle {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  text-align: center;
+  margin-top: 10rpx;
+  display: block;
+}
+
+.ai-features-list {
+  margin-top: 30rpx;
+}
+
+.ai-feature-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ai-feature-card:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.ai-feature-card:last-child {
+  margin-bottom: 0;
+}
+
+.ai-feature-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.ai-feature-icon {
+  font-size: 48rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.3);
+}
+
+.ai-feature-badge {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  font-size: 20rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-weight: bold;
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 107, 0.3);
+}
+
+.ai-feature-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.ai-feature-desc {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.ai-feature-stats {
+  display: flex;
+  gap: 20rpx;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  font-size: 22rpx;
+  color: #3498db;
+  background: rgba(52, 152, 219, 0.1);
+  padding: 8rpx 12rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid rgba(52, 152, 219, 0.2);
+}
+
+/* 特殊效果 */
+.ai-feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+}
+
+.ai-feature-card:nth-child(2)::before {
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.ai-feature-card:nth-child(3)::before {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.ai-feature-card:nth-child(4)::before {
+  background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+}

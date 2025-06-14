@@ -1,0 +1,309 @@
+<!--AI古文现代化改写页面-->
+<view class="modernize-container">
+  <!-- 页面头部 -->
+  <view class="header-section">
+    <view class="header-content">
+      <text class="page-title">✨ 古文现代化</text>
+      <text class="page-desc">AI让古文焕发现代光彩</text>
+    </view>
+  </view>
+
+  <!-- 输入区域 -->
+  <view class="input-section">
+    <view class="input-card">
+      <view class="input-header">
+        <text class="input-title">📝 输入古文</text>
+        <view class="input-actions">
+          <text class="action-btn" bindtap="onSelectFromClassics">从经典选择</text>
+          <text class="action-btn" bindtap="onClearInput">清空</text>
+        </view>
+      </view>
+      
+      <textarea 
+        class="ancient-input"
+        placeholder="请输入您想要现代化改写的古文内容..."
+        value="{{ancientText}}"
+        bindinput="onAncientTextInput"
+        maxlength="500"
+        auto-height
+      />
+      
+      <view class="input-footer">
+        <text class="char-count">{{ancientText.length}}/500</text>
+        <view class="quick-examples">
+          <text class="example-label">快速示例：</text>
+          <text 
+            class="example-item"
+            wx:for="{{quickExamples}}"
+            wx:key="*this"
+            bindtap="onSelectExample"
+            data-text="{{item}}"
+          >
+            {{item}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 改写设置 -->
+  <view class="settings-section">
+    <view class="settings-card">
+      <text class="settings-title">🎨 改写设置</text>
+      
+      <!-- 改写风格 -->
+      <view class="setting-group">
+        <text class="group-title">改写风格</text>
+        <view class="style-options">
+          <view 
+            class="style-option {{selectedStyle === item.value ? 'active' : ''}}"
+            wx:for="{{styleOptions}}"
+            wx:key="value"
+            bindtap="onStyleChange"
+            data-style="{{item.value}}"
+          >
+            <text class="style-icon">{{item.icon}}</text>
+            <text class="style-name">{{item.name}}</text>
+            <text class="style-desc">{{item.description}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 目标受众 -->
+      <view class="setting-group">
+        <text class="group-title">目标受众</text>
+        <view class="audience-options">
+          <view 
+            class="audience-option {{selectedAudience === item.value ? 'active' : ''}}"
+            wx:for="{{audienceOptions}}"
+            wx:key="value"
+            bindtap="onAudienceChange"
+            data-audience="{{item.value}}"
+          >
+            <text class="audience-icon">{{item.icon}}</text>
+            <text class="audience-name">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 保留程度 -->
+      <view class="setting-group">
+        <text class="group-title">文化内涵保留程度</text>
+        <view class="preserve-slider">
+          <slider 
+            value="{{preserveLevel}}" 
+            min="1" 
+            max="5" 
+            step="1"
+            show-value
+            bindchange="onPreserveLevelChange"
+            activeColor="#667eea"
+          />
+          <view class="preserve-labels">
+            <text class="preserve-label">简化</text>
+            <text class="preserve-label">保留</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 改写按钮 -->
+  <view class="action-section">
+    <button 
+      class="modernize-btn {{!ancientText.trim() ? 'disabled' : ''}}"
+      bindtap="onStartModernize"
+      disabled="{{!ancientText.trim() || loading}}"
+    >
+      <text class="btn-icon">{{loading ? '⏳' : '✨'}}</text>
+      <text class="btn-text">{{loading ? 'AI正在改写中...' : '开始现代化改写'}}</text>
+    </button>
+  </view>
+
+  <!-- 改写结果 -->
+  <view class="result-section" wx:if="{{modernizeResult}}">
+    <view class="result-card">
+      <view class="result-header">
+        <text class="result-title">🎯 改写结果</text>
+        <view class="result-actions">
+          <text class="action-btn" bindtap="onCopyResult">复制</text>
+          <text class="action-btn" bindtap="onShareResult">分享</text>
+          <text class="action-btn" bindtap="onSaveResult">保存</text>
+        </view>
+      </view>
+
+      <!-- 对比显示 -->
+      <view class="comparison-view">
+        <view class="comparison-item original">
+          <text class="comparison-label">📜 原文</text>
+          <view class="text-content">
+            <text class="text-display">{{ancientText}}</text>
+          </view>
+        </view>
+        
+        <view class="comparison-arrow">
+          <text class="arrow-icon">→</text>
+        </view>
+        
+        <view class="comparison-item modern">
+          <text class="comparison-label">✨ 现代文</text>
+          <view class="text-content">
+            <text class="text-display">{{modernizeResult.modernText}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 改写说明 -->
+      <view class="explanation-section" wx:if="{{modernizeResult.explanation}}">
+        <text class="explanation-title">💡 改写说明</text>
+        <text class="explanation-text">{{modernizeResult.explanation}}</text>
+      </view>
+
+      <!-- 关键变化 -->
+      <view class="changes-section" wx:if="{{modernizeResult.keyChanges}}">
+        <text class="changes-title">🔄 关键变化</text>
+        <view class="changes-list">
+          <view 
+            class="change-item"
+            wx:for="{{modernizeResult.keyChanges}}"
+            wx:key="*this"
+          >
+            <text class="change-bullet">•</text>
+            <text class="change-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 质量评估 -->
+      <view class="quality-section">
+        <text class="quality-title">📊 改写质量</text>
+        <view class="quality-metrics">
+          <view class="metric-item">
+            <text class="metric-label">可读性</text>
+            <view class="metric-bar">
+              <view class="metric-fill" style="width: {{modernizeResult.readability || 85}}%"></view>
+            </view>
+            <text class="metric-value">{{modernizeResult.readability || 85}}%</text>
+          </view>
+          <view class="metric-item">
+            <text class="metric-label">准确性</text>
+            <view class="metric-bar">
+              <view class="metric-fill" style="width: {{modernizeResult.accuracy || 92}}%"></view>
+            </view>
+            <text class="metric-value">{{modernizeResult.accuracy || 92}}%</text>
+          </view>
+          <view class="metric-item">
+            <text class="metric-label">文化保留</text>
+            <view class="metric-bar">
+              <view class="metric-fill" style="width: {{modernizeResult.culturalPreservation || 78}}%"></view>
+            </view>
+            <text class="metric-value">{{modernizeResult.culturalPreservation || 78}}%</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 相关推荐 -->
+      <view class="related-section" wx:if="{{relatedTexts.length > 0}}">
+        <text class="related-title">📚 相关内容</text>
+        <view class="related-list">
+          <view 
+            class="related-item"
+            wx:for="{{relatedTexts}}"
+            wx:key="id"
+            bindtap="onRelatedClick"
+            data-item="{{item}}"
+          >
+            <text class="related-text">{{item.text}}</text>
+            <text class="related-source">《{{item.source}}》</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="history-section" wx:if="{{!modernizeResult && historyList.length > 0}}">
+    <view class="history-card">
+      <view class="history-header">
+        <text class="history-title">📋 改写历史</text>
+        <text class="clear-history" bindtap="onClearHistory">清空</text>
+      </view>
+      
+      <view class="history-list">
+        <view 
+          class="history-item"
+          wx:for="{{historyList}}"
+          wx:key="id"
+          bindtap="onHistoryClick"
+          data-item="{{item}}"
+        >
+          <view class="history-content">
+            <text class="history-original">{{item.originalText}}</text>
+            <text class="history-modern">{{item.modernText}}</text>
+          </view>
+          <view class="history-meta">
+            <text class="history-time">{{item.createTime}}</text>
+            <text class="history-style">{{item.style}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 使用技巧 -->
+  <view class="tips-section" wx:if="{{!modernizeResult && !ancientText}}">
+    <view class="tips-card">
+      <text class="tips-title">💡 使用技巧</text>
+      <view class="tips-list">
+        <view class="tip-item">
+          <text class="tip-icon">📝</text>
+          <text class="tip-text">输入完整的句子或段落，效果更佳</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-icon">🎯</text>
+          <text class="tip-text">选择合适的目标受众，获得最佳改写效果</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-icon">⚖️</text>
+          <text class="tip-text">调整保留程度，平衡现代性和文化内涵</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-icon">🔄</text>
+          <text class="tip-text">尝试不同风格，发现古文的多种表达方式</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 经典选择弹窗 -->
+  <view class="classics-modal" wx:if="{{showClassicsModal}}" bindtap="onCloseClassicsModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">选择经典片段</text>
+        <text class="modal-close" bindtap="onCloseClassicsModal">×</text>
+      </view>
+      
+      <view class="classics-list">
+        <view 
+          class="classic-item"
+          wx:for="{{classicTexts}}"
+          wx:key="id"
+          bindtap="onSelectClassicText"
+          data-text="{{item.text}}"
+        >
+          <text class="classic-text">{{item.text}}</text>
+          <text class="classic-source">《{{item.source}}》</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-overlay" wx:if="{{loading}}">
+    <view class="loading-content">
+      <view class="loading-spinner">🤖</view>
+      <text class="loading-text">AI正在进行现代化改写...</text>
+      <text class="loading-desc">请稍候，这可能需要几秒钟</text>
+    </view>
+  </view>
+</view>

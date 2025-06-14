@@ -1,0 +1,346 @@
+<!--沉浸式典籍阅读页面-->
+<view class="immersive-container {{immersiveMode ? 'fullscreen' : ''}}">
+  <!-- 顶部控制栏 -->
+  <view class="top-controls {{hideControls ? 'hidden' : ''}}" wx:if="{{!immersiveMode}}">
+    <view class="control-left">
+      <text class="back-btn" bindtap="onBack">‹ 返回</text>
+      <text class="book-title">{{currentBook.title}}</text>
+    </view>
+    <view class="control-right">
+      <text class="control-btn" bindtap="onToggleImmersive">
+        {{immersiveMode ? '退出沉浸' : '沉浸模式'}}
+      </text>
+      <text class="control-btn" bindtap="onShowSettings">设置</text>
+    </view>
+  </view>
+
+  <!-- 沉浸式阅读区域 -->
+  <view class="reading-area" bindtap="onToggleControls">
+    <!-- 背景层 -->
+    <view class="background-layer">
+      <!-- 动态背景 -->
+      <view class="dynamic-background {{backgroundTheme}}" wx:if="{{enableBackground}}">
+        <view class="bg-element bg-element-1"></view>
+        <view class="bg-element bg-element-2"></view>
+        <view class="bg-element bg-element-3"></view>
+      </view>
+      
+      <!-- 粒子效果 -->
+      <canvas 
+        class="particle-canvas" 
+        canvas-id="particleCanvas"
+        wx:if="{{enableParticles}}"
+      ></canvas>
+    </view>
+
+    <!-- 内容层 -->
+    <view class="content-layer">
+      <!-- 章节标题 -->
+      <view class="chapter-header" wx:if="{{currentChapter}}">
+        <text class="chapter-title">{{currentChapter.title}}</text>
+        <text class="chapter-subtitle">{{currentChapter.subtitle}}</text>
+      </view>
+
+      <!-- 文本内容 -->
+      <view class="text-content">
+        <view 
+          class="text-paragraph {{item.highlighted ? 'highlighted' : ''}} {{item.current ? 'current' : ''}}"
+          wx:for="{{textParagraphs}}"
+          wx:key="id"
+          bindtap="onParagraphTap"
+          data-index="{{index}}"
+        >
+          <!-- 段落文本 -->
+          <text class="paragraph-text">{{item.text}}</text>
+          
+          <!-- 注释气泡 -->
+          <view class="annotation-bubble" wx:if="{{item.annotation && showAnnotations}}">
+            <text class="annotation-text">{{item.annotation}}</text>
+          </view>
+          
+          <!-- 互动点 -->
+          <view class="interactive-point" wx:if="{{item.interactive}}" bindtap="onInteractiveClick" data-point="{{item.interactive}}">
+            <text class="interactive-icon">{{item.interactive.icon}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 翻译对照 -->
+      <view class="translation-panel" wx:if="{{showTranslation && currentTranslation}}">
+        <view class="translation-header">
+          <text class="translation-title">现代文对照</text>
+          <text class="translation-close" bindtap="onCloseTranslation">×</text>
+        </view>
+        <text class="translation-text">{{currentTranslation}}</text>
+      </view>
+    </view>
+
+    <!-- 浮动控制层 -->
+    <view class="floating-controls {{hideControls ? 'hidden' : ''}}" wx:if="{{immersiveMode}}">
+      <view class="floating-btn" bindtap="onToggleImmersive">
+        <text class="btn-icon">🚪</text>
+      </view>
+      <view class="floating-btn" bindtap="onToggleAudio">
+        <text class="btn-icon">{{audioPlaying ? '⏸️' : '▶️'}}</text>
+      </view>
+      <view class="floating-btn" bindtap="onShowSettings">
+        <text class="btn-icon">⚙️</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部控制栏 -->
+  <view class="bottom-controls {{hideControls ? 'hidden' : ''}}" wx:if="{{!immersiveMode}}">
+    <!-- 音频控制 -->
+    <view class="audio-controls" wx:if="{{audioEnabled}}">
+      <view class="audio-player">
+        <text class="audio-btn" bindtap="onToggleAudio">
+          {{audioPlaying ? '⏸️' : '▶️'}}
+        </text>
+        <view class="audio-progress">
+          <slider 
+            value="{{audioProgress}}" 
+            min="0" 
+            max="100" 
+            bindchange="onAudioSeek"
+            activeColor="#667eea"
+            block-size="12"
+          />
+        </view>
+        <text class="audio-time">{{audioCurrentTime}} / {{audioDuration}}</text>
+      </view>
+      
+      <view class="audio-settings">
+        <text class="setting-btn" bindtap="onAudioSpeedChange">
+          {{audioSpeed}}x
+        </text>
+        <text class="setting-btn" bindtap="onToggleAutoRead">
+          {{autoRead ? '自动' : '手动'}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 阅读进度 -->
+    <view class="reading-progress">
+      <view class="progress-info">
+        <text class="progress-text">{{currentParagraph + 1}} / {{totalParagraphs}}</text>
+        <text class="progress-percent">{{Math.round((currentParagraph + 1) / totalParagraphs * 100)}}%</text>
+      </view>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{(currentParagraph + 1) / totalParagraphs * 100}}%"></view>
+      </view>
+    </view>
+
+    <!-- 功能按钮 -->
+    <view class="function-buttons">
+      <view class="function-btn" bindtap="onToggleTranslation">
+        <text class="btn-icon">🔄</text>
+        <text class="btn-text">对照</text>
+      </view>
+      <view class="function-btn" bindtap="onToggleAnnotations">
+        <text class="btn-icon">📝</text>
+        <text class="btn-text">注释</text>
+      </view>
+      <view class="function-btn" bindtap="onBookmark">
+        <text class="btn-icon">🔖</text>
+        <text class="btn-text">书签</text>
+      </view>
+      <view class="function-btn" bindtap="onShare">
+        <text class="btn-icon">📤</text>
+        <text class="btn-text">分享</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 设置面板 -->
+  <view class="settings-panel" wx:if="{{showSettingsPanel}}" bindtap="onCloseSettings">
+    <view class="panel-content" catchtap="stopPropagation">
+      <view class="panel-header">
+        <text class="panel-title">阅读设置</text>
+        <text class="panel-close" bindtap="onCloseSettings">×</text>
+      </view>
+
+      <!-- 视觉设置 -->
+      <view class="setting-group">
+        <text class="group-title">视觉效果</text>
+        
+        <view class="setting-item">
+          <text class="setting-label">背景主题</text>
+          <view class="theme-options">
+            <view 
+              class="theme-option {{backgroundTheme === item.value ? 'active' : ''}}"
+              wx:for="{{themeOptions}}"
+              wx:key="value"
+              bindtap="onThemeChange"
+              data-theme="{{item.value}}"
+            >
+              <view class="theme-preview {{item.value}}"></view>
+              <text class="theme-name">{{item.name}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="setting-item">
+          <text class="setting-label">字体大小</text>
+          <slider 
+            value="{{fontSize}}" 
+            min="14" 
+            max="24" 
+            step="2"
+            show-value
+            bindchange="onFontSizeChange"
+            activeColor="#667eea"
+          />
+        </view>
+
+        <view class="setting-item">
+          <text class="setting-label">行间距</text>
+          <slider 
+            value="{{lineHeight}}" 
+            min="1.2" 
+            max="2.0" 
+            step="0.2"
+            show-value
+            bindchange="onLineHeightChange"
+            activeColor="#667eea"
+          />
+        </view>
+
+        <view class="setting-item switch-item">
+          <text class="setting-label">粒子效果</text>
+          <switch 
+            checked="{{enableParticles}}" 
+            bindchange="onParticlesToggle"
+            color="#667eea"
+          />
+        </view>
+
+        <view class="setting-item switch-item">
+          <text class="setting-label">动态背景</text>
+          <switch 
+            checked="{{enableBackground}}" 
+            bindchange="onBackgroundToggle"
+            color="#667eea"
+          />
+        </view>
+      </view>
+
+      <!-- 音频设置 -->
+      <view class="setting-group">
+        <text class="group-title">音频设置</text>
+        
+        <view class="setting-item switch-item">
+          <text class="setting-label">启用朗读</text>
+          <switch 
+            checked="{{audioEnabled}}" 
+            bindchange="onAudioToggle"
+            color="#667eea"
+          />
+        </view>
+
+        <view class="setting-item" wx:if="{{audioEnabled}}">
+          <text class="setting-label">朗读语音</text>
+          <view class="voice-options">
+            <view 
+              class="voice-option {{selectedVoice === item.value ? 'active' : ''}}"
+              wx:for="{{voiceOptions}}"
+              wx:key="value"
+              bindtap="onVoiceChange"
+              data-voice="{{item.value}}"
+            >
+              <text class="voice-name">{{item.name}}</text>
+              <text class="voice-desc">{{item.description}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="setting-item" wx:if="{{audioEnabled}}">
+          <text class="setting-label">朗读速度</text>
+          <slider 
+            value="{{audioSpeed}}" 
+            min="0.5" 
+            max="2.0" 
+            step="0.1"
+            show-value
+            bindchange="onAudioSpeedSliderChange"
+            activeColor="#667eea"
+          />
+        </view>
+
+        <view class="setting-item switch-item" wx:if="{{audioEnabled}}">
+          <text class="setting-label">背景音乐</text>
+          <switch 
+            checked="{{enableBgMusic}}" 
+            bindchange="onBgMusicToggle"
+            color="#667eea"
+          />
+        </view>
+      </view>
+
+      <!-- 交互设置 -->
+      <view class="setting-group">
+        <text class="group-title">交互设置</text>
+        
+        <view class="setting-item switch-item">
+          <text class="setting-label">自动翻页</text>
+          <switch 
+            checked="{{autoTurnPage}}" 
+            bindchange="onAutoTurnPageToggle"
+            color="#667eea"
+          />
+        </view>
+
+        <view class="setting-item switch-item">
+          <text class="setting-label">显示注释</text>
+          <switch 
+            checked="{{showAnnotations}}" 
+            bindchange="onAnnotationsToggle"
+            color="#667eea"
+          />
+        </view>
+
+        <view class="setting-item switch-item">
+          <text class="setting-label">震动反馈</text>
+          <switch 
+            checked="{{enableVibration}}" 
+            bindchange="onVibrationToggle"
+            color="#667eea"
+          />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 互动弹窗 -->
+  <view class="interactive-modal" wx:if="{{showInteractiveModal}}" bindtap="onCloseInteractive">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">{{interactiveContent.title}}</text>
+        <text class="modal-close" bindtap="onCloseInteractive">×</text>
+      </view>
+      
+      <view class="modal-body">
+        <text class="modal-text">{{interactiveContent.content}}</text>
+        
+        <!-- 互动选项 -->
+        <view class="interactive-options" wx:if="{{interactiveContent.options}}">
+          <view 
+            class="option-btn"
+            wx:for="{{interactiveContent.options}}"
+            wx:key="*this"
+            bindtap="onInteractiveOption"
+            data-option="{{item}}"
+          >
+            {{item}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner">📖</view>
+    <text class="loading-text">正在准备沉浸式阅读体验...</text>
+  </view>
+</view>

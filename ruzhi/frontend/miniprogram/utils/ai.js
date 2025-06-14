@@ -545,6 +545,151 @@ class AIService {
   }
 
   /**
+   * 生成问答题目
+   * @param {Object} params - 生成参数
+   */
+  async generateQuizQuestions(params) {
+    try {
+      if (!this.hasValidApiKey()) {
+        return { success: false, error: 'No API key' }
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/quiz', {
+        topic: params.topic,
+        difficulty: params.difficulty,
+        count: params.count,
+        timeLimit: params.timeLimit,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          questions: response.data.questions,
+          source: 'ai'
+        }
+      }
+
+      return { success: false, error: 'AI generation failed' }
+    } catch (error) {
+      console.error('生成问答题目失败:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  /**
+   * 智能推荐典籍
+   * @param {Object} params - 推荐参数
+   */
+  async recommendClassics(params) {
+    try {
+      if (!this.hasValidApiKey()) {
+        return this.generateMockRecommendations(params)
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/recommend', {
+        userId: params.userId,
+        preferences: params.preferences,
+        readingHistory: params.readingHistory,
+        currentLevel: params.currentLevel,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          recommendations: response.data.recommendations,
+          reasons: response.data.reasons,
+          source: 'ai'
+        }
+      }
+
+      return this.generateMockRecommendations(params)
+    } catch (error) {
+      console.error('智能推荐失败:', error)
+      return this.generateMockRecommendations(params)
+    }
+  }
+
+  /**
+   * 古文现代化改写
+   * @param {Object} params - 改写参数
+   */
+  async modernizeAncientText(params) {
+    try {
+      if (!this.hasValidApiKey()) {
+        return this.generateMockModernization(params)
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/modernize', {
+        originalText: params.originalText,
+        style: params.style,
+        targetAudience: params.targetAudience,
+        preserveEssence: params.preserveEssence,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          modernText: response.data.modernText,
+          explanation: response.data.explanation,
+          keyChanges: response.data.keyChanges,
+          source: 'ai'
+        }
+      }
+
+      return this.generateMockModernization(params)
+    } catch (error) {
+      console.error('古文现代化改写失败:', error)
+      return this.generateMockModernization(params)
+    }
+  }
+
+  /**
+   * 生成沉浸式阅读内容
+   * @param {Object} params - 生成参数
+   */
+  async generateImmersiveContent(params) {
+    try {
+      if (!this.hasValidApiKey()) {
+        return this.generateMockImmersiveContent(params)
+      }
+
+      this.updateUsageStats()
+
+      const response = await this.callBackendAPI('/ai/immersive', {
+        text: params.text,
+        contentType: params.contentType,
+        features: params.features,
+        apiKey: this.userConfig.apiKey
+      })
+
+      if (response && response.success) {
+        return {
+          success: true,
+          audioScript: response.data.audioScript,
+          visualElements: response.data.visualElements,
+          interactivePoints: response.data.interactivePoints,
+          backgroundInfo: response.data.backgroundInfo,
+          source: 'ai'
+        }
+      }
+
+      return this.generateMockImmersiveContent(params)
+    } catch (error) {
+      console.error('生成沉浸式内容失败:', error)
+      return this.generateMockImmersiveContent(params)
+    }
+  }
+
+  /**
    * 调用后端AI代理API
    * @param {string} endpoint - API端点
    * @param {Object} data - 请求数据
@@ -813,6 +958,96 @@ class AIService {
       analysisTypes: analysisTypes,
       timestamp: new Date().toISOString(),
       isMock: true
+    }
+  }
+
+  /**
+   * 生成模拟推荐
+   */
+  generateMockRecommendations(params) {
+    const mockRecommendations = [
+      {
+        id: 'lunyu',
+        title: '论语',
+        author: '孔子',
+        reason: '基于您的学习偏好，推荐从儒家经典开始',
+        difficulty: 'beginner',
+        estimatedTime: '30分钟',
+        tags: ['儒家', '经典', '入门']
+      },
+      {
+        id: 'daodejing',
+        title: '道德经',
+        author: '老子',
+        reason: '适合您当前的学习水平，内容深邃',
+        difficulty: 'intermediate',
+        estimatedTime: '45分钟',
+        tags: ['道家', '哲学', '进阶']
+      }
+    ]
+
+    return {
+      success: true,
+      recommendations: mockRecommendations,
+      reasons: ['基于阅读历史', '符合兴趣偏好', '适合当前水平'],
+      source: 'mock'
+    }
+  }
+
+  /**
+   * 生成模拟现代化改写
+   */
+  generateMockModernization(params) {
+    const { originalText, style, targetAudience } = params
+
+    return {
+      success: true,
+      modernText: `【现代化改写】${originalText}的现代表达方式...（需要AI深度改写）`,
+      explanation: `这段古文通过现代化改写，保持了原文的核心思想，同时使用了更容易理解的现代语言。`,
+      keyChanges: [
+        '将古代词汇替换为现代表达',
+        '调整语序符合现代阅读习惯',
+        '保留核心文化内涵'
+      ],
+      source: 'mock'
+    }
+  }
+
+  /**
+   * 生成模拟沉浸式内容
+   */
+  generateMockImmersiveContent(params) {
+    const { text, contentType, features } = params
+
+    return {
+      success: true,
+      audioScript: `【朗读脚本】${text}...（需要AI生成专业朗读脚本）`,
+      visualElements: [
+        {
+          type: 'background',
+          description: '古代书房场景',
+          timing: '0-30s'
+        },
+        {
+          type: 'animation',
+          description: '文字书写动画',
+          timing: '10-20s'
+        }
+      ],
+      interactivePoints: [
+        {
+          time: 15,
+          type: 'question',
+          content: '这句话的关键词是什么？'
+        },
+        {
+          time: 25,
+          type: 'explanation',
+          content: '点击查看详细解释'
+        }
+      ],
+      backgroundInfo: `关于"${text}"的历史背景和文化内涵...（需要AI深度分析）`,
+      source: 'mock'
     }
   }
 }

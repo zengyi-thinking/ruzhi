@@ -1,0 +1,282 @@
+<!--智能典籍推荐页面-->
+<view class="recommend-container">
+  <!-- 页面头部 -->
+  <view class="header-section">
+    <view class="header-content">
+      <text class="page-title">🤖 智能推荐</text>
+      <text class="page-desc">AI为您量身定制的学习内容</text>
+    </view>
+  </view>
+
+  <!-- 个性化设置 -->
+  <view class="settings-section" wx:if="{{showSettings}}">
+    <view class="settings-card">
+      <view class="settings-header">
+        <text class="settings-title">📋 个性化设置</text>
+        <text class="settings-close" bindtap="onCloseSettings">完成</text>
+      </view>
+      
+      <!-- 学习水平 -->
+      <view class="setting-group">
+        <text class="group-title">学习水平</text>
+        <view class="level-options">
+          <view 
+            class="level-option {{userPreferences.level === item.value ? 'active' : ''}}"
+            wx:for="{{levelOptions}}"
+            wx:key="value"
+            bindtap="onLevelChange"
+            data-level="{{item.value}}"
+          >
+            <text class="level-icon">{{item.icon}}</text>
+            <text class="level-text">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 兴趣偏好 -->
+      <view class="setting-group">
+        <text class="group-title">兴趣偏好</text>
+        <view class="interest-tags">
+          <view 
+            class="interest-tag {{userPreferences.interests.includes(item) ? 'active' : ''}}"
+            wx:for="{{interestOptions}}"
+            wx:key="*this"
+            bindtap="onInterestToggle"
+            data-interest="{{item}}"
+          >
+            {{item}}
+          </view>
+        </view>
+      </view>
+
+      <!-- 学习目标 -->
+      <view class="setting-group">
+        <text class="group-title">学习目标</text>
+        <view class="goal-options">
+          <view 
+            class="goal-option {{userPreferences.goals.includes(item.value) ? 'active' : ''}}"
+            wx:for="{{goalOptions}}"
+            wx:key="value"
+            bindtap="onGoalToggle"
+            data-goal="{{item.value}}"
+          >
+            <text class="goal-icon">{{item.icon}}</text>
+            <text class="goal-text">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 学习时间 -->
+      <view class="setting-group">
+        <text class="group-title">每日学习时间</text>
+        <view class="time-slider">
+          <slider 
+            value="{{userPreferences.dailyTime}}" 
+            min="10" 
+            max="120" 
+            step="10"
+            show-value
+            bindchange="onTimeChange"
+            activeColor="#667eea"
+          />
+          <text class="time-unit">分钟</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 推荐内容 -->
+  <view class="recommendations-section" wx:if="{{!showSettings}}">
+    <!-- 今日推荐 -->
+    <view class="today-recommend">
+      <view class="section-header">
+        <text class="section-title">🌟 今日为您推荐</text>
+        <text class="refresh-btn" bindtap="onRefreshRecommendations">刷新</text>
+      </view>
+      
+      <view class="recommend-card main-card" wx:if="{{todayRecommend}}">
+        <image class="recommend-image" src="{{todayRecommend.image}}" mode="aspectFill" />
+        <view class="recommend-content">
+          <text class="recommend-title">{{todayRecommend.title}}</text>
+          <text class="recommend-author">{{todayRecommend.author}}</text>
+          <text class="recommend-desc">{{todayRecommend.description}}</text>
+          
+          <view class="recommend-meta">
+            <view class="meta-item">
+              <text class="meta-icon">⭐</text>
+              <text class="meta-text">匹配度 {{todayRecommend.matchScore}}%</text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-icon">⏱️</text>
+              <text class="meta-text">{{todayRecommend.estimatedTime}}</text>
+            </view>
+            <view class="meta-item">
+              <text class="meta-icon">📊</text>
+              <text class="meta-text">{{todayRecommend.difficulty}}</text>
+            </view>
+          </view>
+          
+          <view class="recommend-reason">
+            <text class="reason-label">推荐理由：</text>
+            <text class="reason-text">{{todayRecommend.reason}}</text>
+          </view>
+          
+          <view class="recommend-actions">
+            <button class="action-btn secondary-btn" bindtap="onCollectRecommend" data-item="{{todayRecommend}}">
+              {{todayRecommend.collected ? '已收藏' : '收藏'}}
+            </button>
+            <button class="action-btn primary-btn" bindtap="onStartReading" data-item="{{todayRecommend}}">
+              开始阅读
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分类推荐 -->
+    <view class="category-recommendations">
+      <view class="category-tabs">
+        <text 
+          class="tab-item {{currentCategory === item.id ? 'active' : ''}}"
+          wx:for="{{categoryTabs}}"
+          wx:key="id"
+          bindtap="onCategoryChange"
+          data-category="{{item.id}}"
+        >
+          {{item.name}}
+        </text>
+      </view>
+
+      <view class="category-content">
+        <view 
+          class="recommend-item"
+          wx:for="{{categoryRecommendations}}"
+          wx:key="id"
+          bindtap="onRecommendClick"
+          data-item="{{item}}"
+        >
+          <image class="item-image" src="{{item.image}}" mode="aspectFill" />
+          <view class="item-content">
+            <text class="item-title">{{item.title}}</text>
+            <text class="item-author">{{item.author}}</text>
+            <view class="item-tags">
+              <text class="tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+            </view>
+            <view class="item-meta">
+              <text class="match-score">匹配 {{item.matchScore}}%</text>
+              <text class="read-time">{{item.estimatedTime}}</text>
+            </view>
+          </view>
+          <view class="item-actions">
+            <text class="collect-btn {{item.collected ? 'collected' : ''}}" bindtap="onQuickCollect" data-item="{{item}}">
+              {{item.collected ? '💖' : '🤍'}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 学习路径 -->
+    <view class="learning-path-section">
+      <view class="section-header">
+        <text class="section-title">🛤️ 推荐学习路径</text>
+        <text class="path-info">基于您的水平定制</text>
+      </view>
+      
+      <view class="path-timeline">
+        <view 
+          class="path-item {{item.completed ? 'completed' : ''}} {{item.current ? 'current' : ''}}"
+          wx:for="{{learningPath}}"
+          wx:key="id"
+          bindtap="onPathItemClick"
+          data-item="{{item}}"
+        >
+          <view class="path-marker">
+            <text class="marker-icon">{{item.completed ? '✓' : item.current ? '📍' : '○'}}</text>
+          </view>
+          <view class="path-content">
+            <text class="path-title">{{item.title}}</text>
+            <text class="path-desc">{{item.description}}</text>
+            <view class="path-meta">
+              <text class="path-level">{{item.level}}</text>
+              <text class="path-time">{{item.estimatedTime}}</text>
+            </view>
+          </view>
+          <view class="path-progress" wx:if="{{item.progress > 0}}">
+            <text class="progress-text">{{item.progress}}%</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 相似用户推荐 -->
+    <view class="similar-users-section">
+      <view class="section-header">
+        <text class="section-title">👥 相似用户也在读</text>
+        <text class="users-info">发现更多好内容</text>
+      </view>
+      
+      <scroll-view class="similar-scroll" scroll-x="true" show-scrollbar="false">
+        <view class="similar-list">
+          <view 
+            class="similar-item"
+            wx:for="{{similarUsersReading}}"
+            wx:key="id"
+            bindtap="onSimilarItemClick"
+            data-item="{{item}}"
+          >
+            <image class="similar-image" src="{{item.image}}" mode="aspectFill" />
+            <view class="similar-content">
+              <text class="similar-title">{{item.title}}</text>
+              <view class="similar-users">
+                <image 
+                  class="user-avatar" 
+                  wx:for="{{item.readers}}" 
+                  wx:key="id"
+                  wx:for-item="user"
+                  src="{{user.avatar}}" 
+                  mode="aspectFill" 
+                />
+                <text class="users-count">+{{item.readersCount}}人在读</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-toolbar">
+    <view class="toolbar-item" bindtap="onShowSettings">
+      <text class="toolbar-icon">⚙️</text>
+      <text class="toolbar-text">偏好设置</text>
+    </view>
+    <view class="toolbar-item" bindtap="onViewHistory">
+      <text class="toolbar-icon">📚</text>
+      <text class="toolbar-text">阅读历史</text>
+    </view>
+    <view class="toolbar-item" bindtap="onViewCollections">
+      <text class="toolbar-icon">💖</text>
+      <text class="toolbar-text">我的收藏</text>
+    </view>
+    <view class="toolbar-item" bindtap="onGenerateReport">
+      <text class="toolbar-icon">📊</text>
+      <text class="toolbar-text">推荐报告</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner">🤖</view>
+    <text class="loading-text">AI正在分析您的偏好...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && !todayRecommend}}">
+    <view class="empty-icon">🤖</view>
+    <text class="empty-title">暂无推荐内容</text>
+    <text class="empty-desc">完善您的偏好设置，获得更精准的推荐</text>
+    <button class="empty-btn" bindtap="onShowSettings">设置偏好</button>
+  </view>
+</view>

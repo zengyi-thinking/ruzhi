@@ -1,0 +1,127 @@
+<!--欢迎引导页面-->
+<view class="welcome-container">
+  <!-- 背景装饰 -->
+  <view class="bg-decoration">
+    <view class="ink-wash ink-wash-1"></view>
+    <view class="ink-wash ink-wash-2"></view>
+    <view class="ink-wash ink-wash-3"></view>
+  </view>
+
+  <!-- 引导内容 -->
+  <swiper 
+    class="guide-swiper" 
+    indicator-dots="true" 
+    indicator-color="rgba(255,255,255,0.3)"
+    indicator-active-color="#ffffff"
+    autoplay="false"
+    circular="false"
+    bindchange="onSwiperChange"
+  >
+    <!-- 第一页：欢迎 -->
+    <swiper-item class="guide-item">
+      <view class="guide-content">
+        <view class="guide-icon">🏛️</view>
+        <text class="guide-title">欢迎来到儒智</text>
+        <text class="guide-desc">探索中华文化的智慧宝库\n与古代圣贤对话，感受传统文化的魅力</text>
+        <view class="feature-preview">
+          <view class="preview-item">
+            <text class="preview-icon">📚</text>
+            <text class="preview-text">经典阅读</text>
+          </view>
+          <view class="preview-item">
+            <text class="preview-icon">🤖</text>
+            <text class="preview-text">AI对话</text>
+          </view>
+          <view class="preview-item">
+            <text class="preview-icon">📷</text>
+            <text class="preview-text">古籍识别</text>
+          </view>
+        </view>
+      </view>
+    </swiper-item>
+
+    <!-- 第二页：AI功能介绍 -->
+    <swiper-item class="guide-item">
+      <view class="guide-content">
+        <view class="guide-icon">🤖</view>
+        <text class="guide-title">AI智能助手</text>
+        <text class="guide-desc">与孔子、老子等历史人物对话\n获得古籍文字的智能解释</text>
+        <view class="ai-demo">
+          <view class="chat-bubble user">
+            <text>什么是仁？</text>
+          </view>
+          <view class="chat-bubble ai">
+            <text>仁者爱人，这是做人的根本...</text>
+          </view>
+        </view>
+        <view class="ai-tip">
+          <text class="tip-icon">💡</text>
+          <text class="tip-text">支持自定义API密钥，享受专属AI服务</text>
+        </view>
+      </view>
+    </swiper-item>
+
+    <!-- 第三页：个性化学习 -->
+    <swiper-item class="guide-item">
+      <view class="guide-content">
+        <view class="guide-icon">📈</view>
+        <text class="guide-title">个性化学习</text>
+        <text class="guide-desc">智能推荐适合您的学习内容\n记录学习进度，见证成长轨迹</text>
+        <view class="progress-demo">
+          <view class="progress-item">
+            <text class="progress-label">论语</text>
+            <view class="progress-bar">
+              <view class="progress-fill" style="width: 65%"></view>
+            </view>
+            <text class="progress-text">65%</text>
+          </view>
+          <view class="progress-item">
+            <text class="progress-label">道德经</text>
+            <view class="progress-bar">
+              <view class="progress-fill" style="width: 30%"></view>
+            </view>
+            <text class="progress-text">30%</text>
+          </view>
+        </view>
+      </view>
+    </swiper-item>
+
+    <!-- 第四页：开始使用 -->
+    <swiper-item class="guide-item">
+      <view class="guide-content">
+        <view class="guide-icon">🎯</view>
+        <text class="guide-title">开始您的文化之旅</text>
+        <text class="guide-desc">准备好探索传统文化的深邃智慧了吗？</text>
+        <view class="start-options">
+          <view class="option-card" bindtap="onQuickStart" data-type="reading">
+            <text class="option-icon">📚</text>
+            <text class="option-title">开始阅读</text>
+            <text class="option-desc">从经典著作开始</text>
+          </view>
+          <view class="option-card" bindtap="onQuickStart" data-type="chat">
+            <text class="option-icon">💬</text>
+            <text class="option-title">AI对话</text>
+            <text class="option-desc">与圣贤对话</text>
+          </view>
+          <view class="option-card" bindtap="onQuickStart" data-type="ocr">
+            <text class="option-icon">📷</text>
+            <text class="option-title">识别古籍</text>
+            <text class="option-desc">拍照识别文字</text>
+          </view>
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部操作 -->
+  <view class="bottom-actions">
+    <view class="skip-btn" bindtap="onSkip" wx:if="{{currentIndex < 3}}">跳过</view>
+    <view class="next-btn" bindtap="onNext" wx:if="{{currentIndex < 3}}">下一步</view>
+    <view class="start-btn" bindtap="onStartApp" wx:if="{{currentIndex === 3}}">立即开始</view>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="version-info">
+    <text class="version-text">儒智 v1.0.3 - 传承文化，智慧人生</text>
+  </view>
+</view>

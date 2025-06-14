@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/welcome/welcome",
     "pages/home/home",
     "pages/ocr/ocr",
     "pages/chat/chat",
@@ -10,57 +11,87 @@
     "pages/ocr/result/result",
     "pages/chat/history/history",
     "pages/classics/detail/detail",
-    "pages/knowledge/concept/concept"
+    "pages/knowledge/concept/concept",
+    "pages/challenge/challenge",
+    "pages/recommend/recommend",
+    "pages/modernize/modernize",
+    "pages/immersive/immersive",
+    "pages/challenge/history/history",
+    "pages/recommend/report/report"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#1890ff",
+    "navigationBarBackgroundColor": "#667eea",
     "navigationBarTitleText": "儒智",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f5f5",
-    "enablePullDownRefresh": false
+    "backgroundColor": "#f5f7fa",
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance": 50,
+    "backgroundColorTop": "#667eea",
+    "backgroundColorBottom": "#f5f7fa"
   },
   "tabBar": {
     "custom": true,
-    "color": "#666666",
-    "selectedColor": "#1890ff",
+    "color": "#7f8c8d",
+    "selectedColor": "#667eea",
     "backgroundColor": "#ffffff",
-    "borderStyle": "black",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "images/tab/home.png",
+        "selectedIconPath": "images/tab/home-active.png"
       },
       {
         "pagePath": "pages/ocr/ocr",
-        "text": "识别"
+        "text": "识别",
+        "iconPath": "images/tab/ocr.png",
+        "selectedIconPath": "images/tab/ocr-active.png"
       },
       {
         "pagePath": "pages/chat/chat",
-        "text": "对话"
+        "text": "对话",
+        "iconPath": "images/tab/chat.png",
+        "selectedIconPath": "images/tab/chat-active.png"
       },
       {
         "pagePath": "pages/knowledge/knowledge",
-        "text": "知识"
+        "text": "知识",
+        "iconPath": "images/tab/knowledge.png",
+        "selectedIconPath": "images/tab/knowledge-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "images/tab/profile.png",
+        "selectedIconPath": "images/tab/profile-active.png"
       }
     ]
   },
   "networkTimeout": {
-    "request": 10000,
-    "downloadFile": 10000
+    "request": 15000,
+    "downloadFile": 15000,
+    "uploadFile": 15000,
+    "connectSocket": 15000
   },
-  "debug": true,
+  "debug": false,
   "permission": {
     "scope.userLocation": {
       "desc": "您的位置信息将用于小程序位置接口的效果展示"
+    },
+    "scope.camera": {
+      "desc": "您的摄像头权限将用于古籍识别功能"
+    },
+    "scope.album": {
+      "desc": "您的相册权限将用于选择古籍图片进行识别"
     }
   },
+  "requiredBackgroundModes": ["audio"],
   "style": "v2",
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "darkmode": true,
+  "themeLocation": "theme.json"
 }

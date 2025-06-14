@@ -1,0 +1,157 @@
+<!--成就系统页面-->
+<view class="achievements-container">
+  <!-- 页面头部 -->
+  <view class="header-section">
+    <view class="header-bg">
+      <view class="header-content">
+        <text class="page-title">🏆 我的成就</text>
+        <text class="page-desc">记录您的学习里程碑</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成就统计 -->
+  <view class="stats-section">
+    <view class="stats-card">
+      <view class="stat-item">
+        <text class="stat-number">{{achievementStats.total}}</text>
+        <text class="stat-label">总成就</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{achievementStats.unlocked}}</text>
+        <text class="stat-label">已解锁</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{achievementStats.points}}</text>
+        <text class="stat-label">成就点数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成就分类 -->
+  <view class="category-section">
+    <scroll-view class="category-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="category-list">
+        <view 
+          class="category-item {{currentCategory === item.id ? 'active' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="id"
+          bindtap="onCategoryChange"
+          data-category="{{item.id}}"
+        >
+          <text class="category-icon">{{item.icon}}</text>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 成就列表 -->
+  <view class="achievements-section">
+    <view class="achievements-list">
+      <view 
+        class="achievement-item {{item.unlocked ? 'unlocked' : 'locked'}}"
+        wx:for="{{filteredAchievements}}"
+        wx:key="id"
+        bindtap="onAchievementClick"
+        data-achievement="{{item}}"
+      >
+        <view class="achievement-icon">
+          <text class="icon-text">{{item.icon}}</text>
+          <view class="unlock-badge" wx:if="{{item.unlocked}}">✓</view>
+        </view>
+        
+        <view class="achievement-content">
+          <text class="achievement-title">{{item.title}}</text>
+          <text class="achievement-desc">{{item.description}}</text>
+          
+          <view class="achievement-progress" wx:if="{{!item.unlocked && item.progress}}">
+            <view class="progress-bar">
+              <view class="progress-fill" style="width: {{item.progress.percentage}}%"></view>
+            </view>
+            <text class="progress-text">{{item.progress.current}}/{{item.progress.target}}</text>
+          </view>
+          
+          <view class="achievement-meta">
+            <text class="achievement-points">+{{item.points}} 点数</text>
+            <text class="achievement-date" wx:if="{{item.unlocked}}">{{item.unlockedDate}}</text>
+            <text class="achievement-rarity {{item.rarity}}">{{item.rarityText}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近解锁 -->
+  <view class="recent-section" wx:if="{{recentUnlocked.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">🎉 最近解锁</text>
+    </view>
+    
+    <scroll-view class="recent-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="recent-list">
+        <view 
+          class="recent-item"
+          wx:for="{{recentUnlocked}}"
+          wx:key="id"
+        >
+          <text class="recent-icon">{{item.icon}}</text>
+          <text class="recent-title">{{item.title}}</text>
+          <text class="recent-date">{{item.unlockedDate}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 成就详情弹窗 -->
+  <view class="achievement-modal" wx:if="{{showModal}}" bindtap="onCloseModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-icon">{{selectedAchievement.icon}}</text>
+        <text class="modal-title">{{selectedAchievement.title}}</text>
+        <text class="modal-close" bindtap="onCloseModal">×</text>
+      </view>
+      
+      <view class="modal-body">
+        <text class="modal-desc">{{selectedAchievement.description}}</text>
+        <text class="modal-detail">{{selectedAchievement.detail}}</text>
+        
+        <view class="modal-stats">
+          <view class="modal-stat">
+            <text class="stat-label">奖励点数</text>
+            <text class="stat-value">{{selectedAchievement.points}}</text>
+          </view>
+          <view class="modal-stat">
+            <text class="stat-label">稀有度</text>
+            <text class="stat-value {{selectedAchievement.rarity}}">{{selectedAchievement.rarityText}}</text>
+          </view>
+          <view class="modal-stat" wx:if="{{selectedAchievement.unlocked}}">
+            <text class="stat-label">解锁时间</text>
+            <text class="stat-value">{{selectedAchievement.unlockedDate}}</text>
+          </view>
+        </view>
+        
+        <view class="modal-progress" wx:if="{{!selectedAchievement.unlocked && selectedAchievement.progress}}">
+          <text class="progress-label">完成进度</text>
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{selectedAchievement.progress.percentage}}%"></view>
+          </view>
+          <text class="progress-text">{{selectedAchievement.progress.current}}/{{selectedAchievement.progress.target}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && filteredAchievements.length === 0}}">
+    <view class="empty-icon">🏆</view>
+    <text class="empty-title">暂无成就</text>
+    <text class="empty-desc">继续学习，解锁更多成就吧！</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner">⏳</view>
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

@@ -1,0 +1,303 @@
+<!--AI典籍问答挑战页面-->
+<view class="challenge-container">
+  <!-- 页面头部 -->
+  <view class="header-section">
+    <view class="header-bg">
+      <view class="header-content">
+        <text class="page-title">🎯 典籍问答挑战</text>
+        <text class="page-desc">在游戏中学习，在挑战中成长</text>
+      </view>
+      <view class="user-stats">
+        <view class="stat-item">
+          <text class="stat-number">{{userStats.totalScore}}</text>
+          <text class="stat-label">总积分</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{userStats.level}}</text>
+          <text class="stat-label">等级</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{userStats.streak}}</text>
+          <text class="stat-label">连胜</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 挑战模式选择 -->
+  <view class="modes-section" wx:if="{{currentView === 'modes'}}">
+    <view class="section-title">选择挑战模式</view>
+    
+    <view class="modes-grid">
+      <view 
+        class="mode-card {{item.locked ? 'locked' : ''}}" 
+        wx:for="{{challengeModes}}" 
+        wx:key="id"
+        bindtap="onModeSelect"
+        data-mode="{{item}}"
+      >
+        <view class="mode-icon">{{item.icon}}</view>
+        <text class="mode-title">{{item.title}}</text>
+        <text class="mode-desc">{{item.description}}</text>
+        <view class="mode-meta">
+          <text class="mode-difficulty {{item.difficulty}}">{{item.difficultyText}}</text>
+          <text class="mode-reward">+{{item.baseReward}}积分</text>
+        </view>
+        <view class="lock-overlay" wx:if="{{item.locked}}">
+          <text class="lock-icon">🔒</text>
+          <text class="lock-text">{{item.unlockCondition}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 题目类型选择 -->
+  <view class="topics-section" wx:if="{{currentView === 'topics'}}">
+    <view class="section-header">
+      <text class="section-title">选择典籍类型</text>
+      <text class="back-btn" bindtap="onBackToModes">返回</text>
+    </view>
+    
+    <view class="topics-grid">
+      <view 
+        class="topic-card" 
+        wx:for="{{topicCategories}}" 
+        wx:key="id"
+        bindtap="onTopicSelect"
+        data-topic="{{item}}"
+      >
+        <image class="topic-image" src="{{item.image}}" mode="aspectFill" />
+        <view class="topic-content">
+          <text class="topic-title">{{item.title}}</text>
+          <text class="topic-subtitle">{{item.subtitle}}</text>
+          <view class="topic-stats">
+            <text class="topic-questions">{{item.questionCount}}题</text>
+            <text class="topic-best">最佳：{{item.bestScore || 0}}分</text>
+          </view>
+        </view>
+        <view class="topic-badge" wx:if="{{item.isNew}}">新</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 挑战进行中 -->
+  <view class="challenge-active" wx:if="{{currentView === 'challenge'}}">
+    <!-- 进度条 -->
+    <view class="progress-section">
+      <view class="progress-info">
+        <text class="question-counter">{{currentQuestionIndex + 1}}/{{totalQuestions}}</text>
+        <text class="score-display">得分：{{currentScore}}</text>
+      </view>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{(currentQuestionIndex / totalQuestions) * 100}}%"></view>
+      </view>
+      <view class="time-remaining" wx:if="{{timeLimit > 0}}">
+        <text class="time-icon">⏰</text>
+        <text class="time-text">{{remainingTime}}s</text>
+      </view>
+    </view>
+
+    <!-- 当前题目 -->
+    <view class="question-section" wx:if="{{currentQuestion}}">
+      <view class="question-card">
+        <view class="question-header">
+          <text class="question-type">{{currentQuestion.type}}</text>
+          <text class="question-source">《{{currentQuestion.source}}》</text>
+        </view>
+        
+        <text class="question-text">{{currentQuestion.question}}</text>
+        
+        <!-- 原文引用 -->
+        <view class="question-quote" wx:if="{{currentQuestion.quote}}">
+          <text class="quote-text">{{currentQuestion.quote}}</text>
+          <text class="quote-author">—— {{currentQuestion.author}}</text>
+        </view>
+        
+        <!-- 选项 -->
+        <view class="options-list">
+          <view 
+            class="option-item {{selectedOption === index ? 'selected' : ''}} {{showResult ? (item.correct ? 'correct' : (selectedOption === index ? 'wrong' : '')) : ''}}"
+            wx:for="{{currentQuestion.options}}"
+            wx:key="*this"
+            wx:for-index="index"
+            bindtap="onOptionSelect"
+            data-index="{{index}}"
+          >
+            <text class="option-label">{{['A', 'B', 'C', 'D'][index]}}</text>
+            <text class="option-text">{{item.text}}</text>
+            <view class="option-icon" wx:if="{{showResult}}">
+              <text wx:if="{{item.correct}}">✓</text>
+              <text wx:elif="{{selectedOption === index}}">✗</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 解析 -->
+        <view class="explanation-section" wx:if="{{showResult && currentQuestion.explanation}}">
+          <view class="explanation-header">
+            <text class="explanation-title">📖 详细解析</text>
+          </view>
+          <text class="explanation-text">{{currentQuestion.explanation}}</text>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-buttons">
+        <button 
+          class="action-btn secondary-btn" 
+          bindtap="onSkipQuestion"
+          wx:if="{{!showResult && canSkip}}"
+        >
+          跳过 ({{skipCount}}/{{maxSkips}})
+        </button>
+        
+        <button 
+          class="action-btn primary-btn" 
+          bindtap="onNextQuestion"
+          wx:if="{{showResult}}"
+        >
+          {{currentQuestionIndex < totalQuestions - 1 ? '下一题' : '查看结果'}}
+        </button>
+        
+        <button 
+          class="action-btn primary-btn" 
+          bindtap="onSubmitAnswer"
+          disabled="{{selectedOption === null}}"
+          wx:if="{{!showResult}}"
+        >
+          确认答案
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 挑战结果 -->
+  <view class="result-section" wx:if="{{currentView === 'result'}}">
+    <view class="result-card">
+      <view class="result-header">
+        <text class="result-title">挑战完成！</text>
+        <view class="result-score">
+          <text class="score-number">{{finalScore}}</text>
+          <text class="score-label">分</text>
+        </view>
+      </view>
+
+      <view class="result-stats">
+        <view class="result-stat">
+          <text class="stat-label">正确率</text>
+          <text class="stat-value">{{accuracy}}%</text>
+        </view>
+        <view class="result-stat">
+          <text class="stat-label">用时</text>
+          <text class="stat-value">{{usedTime}}s</text>
+        </view>
+        <view class="result-stat">
+          <text class="stat-label">排名</text>
+          <text class="stat-value">前{{ranking}}%</text>
+        </view>
+      </view>
+
+      <!-- 成就解锁 -->
+      <view class="achievements-unlocked" wx:if="{{unlockedAchievements.length > 0}}">
+        <text class="achievements-title">🏆 解锁成就</text>
+        <view class="achievements-list">
+          <view 
+            class="achievement-item" 
+            wx:for="{{unlockedAchievements}}" 
+            wx:key="id"
+          >
+            <text class="achievement-icon">{{item.icon}}</text>
+            <text class="achievement-name">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 错题回顾 -->
+      <view class="wrong-questions" wx:if="{{wrongQuestions.length > 0}}">
+        <text class="wrong-title">📝 错题回顾</text>
+        <view class="wrong-list">
+          <view 
+            class="wrong-item" 
+            wx:for="{{wrongQuestions}}" 
+            wx:key="id"
+            bindtap="onReviewQuestion"
+            data-question="{{item}}"
+          >
+            <text class="wrong-question">{{item.question}}</text>
+            <text class="wrong-source">《{{item.source}}》</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="result-actions">
+        <button class="action-btn secondary-btn" bindtap="onShareResult">分享成绩</button>
+        <button class="action-btn primary-btn" bindtap="onRestartChallenge">再来一次</button>
+        <button class="action-btn secondary-btn" bindtap="onBackToModes">返回首页</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 排行榜 -->
+  <view class="leaderboard-section" wx:if="{{currentView === 'leaderboard'}}">
+    <view class="section-header">
+      <text class="section-title">🏆 排行榜</text>
+      <text class="back-btn" bindtap="onBackToModes">返回</text>
+    </view>
+    
+    <view class="leaderboard-tabs">
+      <text 
+        class="tab-item {{leaderboardType === item.type ? 'active' : ''}}"
+        wx:for="{{leaderboardTabs}}"
+        wx:key="type"
+        bindtap="onLeaderboardTabChange"
+        data-type="{{item.type}}"
+      >
+        {{item.name}}
+      </text>
+    </view>
+
+    <view class="leaderboard-list">
+      <view 
+        class="leaderboard-item {{item.isCurrentUser ? 'current-user' : ''}}"
+        wx:for="{{leaderboardData}}"
+        wx:key="userId"
+      >
+        <view class="rank-info">
+          <text class="rank-number">{{item.rank}}</text>
+          <image class="user-avatar" src="{{item.avatar}}" mode="aspectFill" />
+        </view>
+        <view class="user-info">
+          <text class="user-name">{{item.nickname}}</text>
+          <text class="user-level">Lv.{{item.level}}</text>
+        </view>
+        <view class="score-info">
+          <text class="user-score">{{item.score}}</text>
+          <text class="score-unit">分</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner">⏳</view>
+    <text class="loading-text">{{loadingText}}</text>
+  </view>
+
+  <!-- 底部导航 -->
+  <view class="bottom-nav" wx:if="{{currentView === 'modes'}}">
+    <view class="nav-item" bindtap="onViewLeaderboard">
+      <text class="nav-icon">🏆</text>
+      <text class="nav-text">排行榜</text>
+    </view>
+    <view class="nav-item" bindtap="onViewHistory">
+      <text class="nav-icon">📊</text>
+      <text class="nav-text">历史记录</text>
+    </view>
+    <view class="nav-item" bindtap="onViewAchievements">
+      <text class="nav-icon">🎖️</text>
+      <text class="nav-text">成就</text>
+    </view>
+  </view>
+</view>
