@@ -18,7 +18,7 @@ Page({
         title: '至圣先师',
         dynasty: '春秋',
         description: '儒家学派创始人，以仁爱、礼制、教育思想闻名于世',
-        avatar: '/images/characters/confucius.png',
+        avatar: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSI0MCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNjY3ZWVhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7lrZTlrZA8L3RleHQ+PC9zdmc+',
         tags: ['仁爱', '礼制', '教育', '修身'],
         chatCount: 156,
         satisfaction: 98,
@@ -36,7 +36,7 @@ Page({
         title: '道德天尊',
         dynasty: '春秋',
         description: '道家学派创始人，主张无为而治，追求自然和谐',
-        avatar: '/images/characters/laozi.png',
+        avatar: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSI0MCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNTJjNDFhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7ogIHlrZA8L3RleHQ+PC9zdmc+',
         tags: ['道法自然', '无为', '和谐', '智慧'],
         chatCount: 89,
         satisfaction: 96,
@@ -54,7 +54,7 @@ Page({
         title: '亚圣',
         dynasty: '战国',
         description: '儒家重要代表，提出性善论，主张仁政思想',
-        avatar: '/images/characters/mencius.png',
+        avatar: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSI0MCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNzIyZWQxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7lrZ/lrZA8L3RleHQ+PC9zdmc+',
         tags: ['性善论', '仁政', '民本', '浩然之气'],
         chatCount: 67,
         satisfaction: 94,
@@ -72,7 +72,7 @@ Page({
         title: '理学大师',
         dynasty: '南宋',
         description: '宋代理学集大成者，融合儒道佛三家思想',
-        avatar: '/images/characters/zhuxi.png',
+        avatar: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSI0MCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSIjZmE4YzE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7mnLHnhac8L3RleHQ+PC9zdmc+',
         tags: ['理学', '格物致知', '存天理', '去人欲'],
         chatCount: 43,
         satisfaction: 92,
@@ -90,7 +90,7 @@ Page({
         title: '心学宗师',
         dynasty: '明代',
         description: '明代心学集大成者，提出知行合一理论',
-        avatar: '/images/characters/wangyangming.png',
+        avatar: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSI0MCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjZTc0YzNjIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7njovpmLPmmI48L3RleHQ+PC9zdmc+',
         tags: ['心学', '知行合一', '致良知', '心即理'],
         chatCount: 38,
         satisfaction: 95,
@@ -823,7 +823,7 @@ Page({
       return {
         title: '儒智AI对话 - 与古代圣贤智者交流',
         path: '/pages/chat/chat',
-        imageUrl: '/images/share-chat.png'
+        imageUrl: ''
       }
     }
   }

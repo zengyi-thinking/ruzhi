@@ -5,7 +5,7 @@
     <view class="user-info" bindtap="onUserAvatarClick">
       <image 
         class="user-avatar" 
-        src="{{hasUserInfo ? userInfo.avatarUrl : '/images/default-avatar.png'}}"
+        src="{{hasUserInfo ? userInfo.avatarUrl : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSI0MCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjQwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn5GKPC90ZXh0Pjwvc3ZnPg=='}}"
         mode="aspectFill"
       />
       <view class="user-details">
@@ -58,7 +58,7 @@
         bindtap="onFeatureClick"
       >
         <view class="feature-icon" style="background-color: {{item.color}}20;">
-          <image src="{{item.icon}}" class="feature-image" mode="aspectFit" />
+          <text class="feature-emoji">{{item.icon}}</text>
         </view>
         <text class="feature-title">{{item.title}}</text>
         <text class="feature-desc">{{item.desc}}</text>

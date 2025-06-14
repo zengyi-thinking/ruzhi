@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TabBar图标生成器</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .icon-container { display: inline-block; margin: 10px; text-align: center; }
+        .icon { 
+            width: 81px; 
+            height: 81px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 36px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+        }
+        .normal { background: white; color: #7f8c8d; }
+        .active { background: #667eea; color: white; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>儒智小程序 TabBar图标生成器</h1>
+    <p>点击下载按钮将图标保存为PNG文件</p>
+    
+    <div class="icon-container">
+        <div class="icon normal" id="home">🏠</div>
+        <div>home.png</div>
+        <button onclick="downloadIcon('home', false)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon active" id="home-active">🏠</div>
+        <div>home-active.png</div>
+        <button onclick="downloadIcon('home-active', true)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon normal" id="ocr">📷</div>
+        <div>ocr.png</div>
+        <button onclick="downloadIcon('ocr', false)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon active" id="ocr-active">📷</div>
+        <div>ocr-active.png</div>
+        <button onclick="downloadIcon('ocr-active', true)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon normal" id="chat">💬</div>
+        <div>chat.png</div>
+        <button onclick="downloadIcon('chat', false)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon active" id="chat-active">💬</div>
+        <div>chat-active.png</div>
+        <button onclick="downloadIcon('chat-active', true)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon normal" id="knowledge">🕸️</div>
+        <div>knowledge.png</div>
+        <button onclick="downloadIcon('knowledge', false)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon active" id="knowledge-active">🕸️</div>
+        <div>knowledge-active.png</div>
+        <button onclick="downloadIcon('knowledge-active', true)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon normal" id="profile">👤</div>
+        <div>profile.png</div>
+        <button onclick="downloadIcon('profile', false)">下载</button>
+    </div>
+    
+    <div class="icon-container">
+        <div class="icon active" id="profile-active">👤</div>
+        <div>profile-active.png</div>
+        <button onclick="downloadIcon('profile-active', true)">下载</button>
+    </div>
+
+    <script>
+        function downloadIcon(iconId, isActive) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 81;
+            canvas.height = 81;
+            const ctx = canvas.getContext('2d');
+            
+            // 设置背景
+            if (isActive) {
+                ctx.fillStyle = '#667eea';
+                ctx.fillRect(0, 0, 81, 81);
+                ctx.fillStyle = 'white';
+            } else {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 81, 81);
+                ctx.fillStyle = '#7f8c8d';
+            }
+            
+            // 绘制图标
+            ctx.font = '36px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const iconMap = {
+                'home': '🏠',
+                'home-active': '🏠',
+                'ocr': '📷',
+                'ocr-active': '📷',
+                'chat': '💬',
+                'chat-active': '💬',
+                'knowledge': '🕸️',
+                'knowledge-active': '🕸️',
+                'profile': '👤',
+                'profile-active': '👤'
+            };
+            
+            ctx.fillText(iconMap[iconId], 40.5, 40.5);
+            
+            // 下载
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = iconId + '.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        function downloadAll() {
+            const icons = ['home', 'home-active', 'ocr', 'ocr-active', 'chat', 'chat-active', 'knowledge', 'knowledge-active', 'profile', 'profile-active'];
+            icons.forEach((icon, index) => {
+                setTimeout(() => {
+                    downloadIcon(icon, icon.includes('active'));
+                }, index * 500);
+            });
+        }
+    </script>
+    
+    <div style="margin-top: 30px;">
+        <button onclick="downloadAll()" style="background: #667eea; color: white; font-size: 16px;">一键下载所有图标</button>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px;">
+        <h3>使用说明：</h3>
+        <ol>
+            <li>点击"一键下载所有图标"按钮</li>
+            <li>将下载的PNG文件放置到项目的 <code>images/tab/</code> 目录下</li>
+            <li>确保文件名与app.json中配置的路径一致</li>
+            <li>重新编译小程序即可看到图标</li>
+        </ol>
+    </div>
+</body>
+</html>

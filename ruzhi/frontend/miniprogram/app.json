@@ -31,7 +31,6 @@
     "backgroundColorBottom": "#f5f7fa"
   },
   "tabBar": {
-    "custom": true,
     "color": "#7f8c8d",
     "selectedColor": "#667eea",
     "backgroundColor": "#ffffff",
@@ -39,33 +38,23 @@
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "首页",
-        "iconPath": "images/tab/home.png",
-        "selectedIconPath": "images/tab/home-active.png"
+        "text": "🏠 首页"
       },
       {
         "pagePath": "pages/ocr/ocr",
-        "text": "识别",
-        "iconPath": "images/tab/ocr.png",
-        "selectedIconPath": "images/tab/ocr-active.png"
+        "text": "📷 识别"
       },
       {
         "pagePath": "pages/chat/chat",
-        "text": "对话",
-        "iconPath": "images/tab/chat.png",
-        "selectedIconPath": "images/tab/chat-active.png"
+        "text": "💬 对话"
       },
       {
         "pagePath": "pages/knowledge/knowledge",
-        "text": "知识",
-        "iconPath": "images/tab/knowledge.png",
-        "selectedIconPath": "images/tab/knowledge-active.png"
+        "text": "🕸️ 知识"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "我的",
-        "iconPath": "images/tab/profile.png",
-        "selectedIconPath": "images/tab/profile-active.png"
+        "text": "👤 我的"
       }
     ]
   },

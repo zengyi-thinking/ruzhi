@@ -18,7 +18,7 @@ Page({
         id: 'ocr',
         title: '古籍识别',
         desc: 'OCR识别古籍文字',
-        icon: '/images/features/ocr.png',
+        icon: '📷',
         path: '/pages/ocr/ocr',
         color: '#1890ff'
       },
@@ -26,7 +26,7 @@ Page({
         id: 'chat',
         title: '人物对话',
         desc: '与历史人物对话',
-        icon: '/images/features/chat.png',
+        icon: '💬',
         path: '/pages/chat/chat',
         color: '#52c41a'
       },
@@ -34,7 +34,7 @@ Page({
         id: 'classics',
         title: '经典库',
         desc: '浏览儒家经典',
-        icon: '/images/features/book.png',
+        icon: '📚',
         path: '/pages/classics/classics',
         color: '#722ed1'
       },
@@ -42,7 +42,7 @@ Page({
         id: 'knowledge',
         title: '知识图谱',
         desc: '探索概念关系',
-        icon: '/images/features/knowledge.png',
+        icon: '🕸️',
         path: '/pages/knowledge/knowledge',
         color: '#fa8c16'
       }
@@ -226,7 +226,7 @@ Page({
         category: 'confucian',
         bookId: 'lunyu',
         chapterId: 1,
-        image: '/images/classics/lunyu.jpg',
+        image: '',
         reason: '儒家经典入门，适合初学者',
         difficulty: 'beginner',
         readTime: '5分钟'
@@ -239,7 +239,7 @@ Page({
         category: 'taoist',
         bookId: 'daodejing',
         chapterId: 1,
-        image: '/images/classics/daodejing.jpg',
+        image: '',
         reason: '道家哲学精髓，启发深度思考',
         difficulty: 'intermediate',
         readTime: '8分钟'
@@ -252,7 +252,7 @@ Page({
         category: 'confucian',
         bookId: 'mengzi',
         chapterId: 1,
-        image: '/images/classics/mengzi.jpg',
+        image: '',
         reason: '深入理解仁义思想',
         difficulty: 'intermediate',
         readTime: '6分钟'
@@ -265,7 +265,7 @@ Page({
         category: 'taoist',
         bookId: 'zhuangzi',
         chapterId: 1,
-        image: '/images/classics/zhuangzi.jpg',
+        image: '',
         reason: '体验逍遥自在的人生境界',
         difficulty: 'advanced',
         readTime: '10分钟'
@@ -278,7 +278,7 @@ Page({
         category: 'confucian',
         bookId: 'daxue',
         chapterId: 1,
-        image: '/images/classics/daxue.jpg',
+        image: '',
         reason: '修身治国的理想路径',
         difficulty: 'beginner',
         readTime: '4分钟'
@@ -332,7 +332,7 @@ Page({
         type: 'classic',
         bookId: 'lunyu',
         chapterId: 1,
-        image: '/images/classics/lunyu.jpg',
+        image: '',
         reason: '经典入门推荐',
         readTime: '5分钟'
       },
@@ -343,7 +343,7 @@ Page({
         type: 'classic',
         bookId: 'daodejing',
         chapterId: 1,
-        image: '/images/classics/daodejing.jpg',
+        image: '',
         reason: '哲学思辨启蒙',
         readTime: '8分钟'
       },
@@ -354,7 +354,7 @@ Page({
         type: 'classic',
         bookId: 'daxue',
         chapterId: 1,
-        image: '/images/classics/daxue.jpg',
+        image: '',
         reason: '修身养性指南',
         readTime: '4分钟'
       }
