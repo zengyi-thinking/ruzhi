@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Ruzhi Project Requirements
+- User prefers structured progress tracking with specific fields (task name, priority, estimated hours, status, responsible module, completion percentage, dependencies, notes and risks) and wants immediate documentation updates after each task completion.
+- User expects Ruzhi project development to follow specific order (learning center → backend enhancement → documentation), maintain consistent UI/UX design standards across modules, provide complete testing and documentation for each feature, and update progress reports immediately after completing each module.
+- User wants to develop a WeChat mini-program version of Ruzhi project using native WeChat framework, maintaining feature parity with web version including OCR, AI dialogue, knowledge graph, and classics reading with mobile-optimized UX, maintaining API compatibility with existing backend, preserving traditional Chinese culture UI theme (water-ink style), optimizing for mobile UX, and following WeChat development best practices.
+- User wants Ruzhi project expanded to Web (React/Vue.js, PWA) and Android (native/React Native/Flutter) platforms with full feature parity, cross-platform data sync, API compatibility, and traditional culture UI consistency, prioritizing core functions first then user systems.
+- User prefers implementing Ruzhi project features in two phases: Phase 1 (high priority) includes miniprogram OCR/AI dialogue/learning center, backend database persistence/authentication, and web frontend completion; Phase 2 (medium priority) covers testing and deployment, with emphasis on code quality, test coverage, and backward compatibility.
+- User prefers Ruzhi project development in specific phases (syntax fixes → page navigation → profile center).
+- User wants Ruzhi project to prioritize: 1) classics library module with book lists/details/search, 2) personalized recommendation system, 3) user-configurable DeepSeek API keys in settings, 4) enhanced AI features including intelligent ancient text search, cultural story generation, interactive learning, and deep cultural analysis with secure API key storage and cost controls.
+- User wants continuous optimization of Ruzhi project focusing on missing features, user engagement improvements, and overall enhancement opportunities.
+- User wants 5-8 innovative AI+典籍 interactive features in Ruzhi miniprogram focusing on gamified learning, personalized recommendations, immersive reading experiences, social learning, and creative content generation with complete implementation including pages, logic, and AI integration.
+
+# UI/UX Design and Technology Preferences
+- User prefers unified traditional Chinese culture UI design across all pages (water-ink backgrounds, classical borders, gold decorative elements) and wants traditional Chinese culture-themed UI design with classical elements (borders, ink-wash backgrounds, character avatars, typewriter effects) for Ruzhi project dialogue features.
+- User expects same quality standards as OCR implementation with complete testing and documentation.
+- User wants DeepSeek API integration with secure configuration management, real AI functionality replacing mock data, and comprehensive error handling with caching mechanisms.
+- User expects knowledge graph visualization using D3.js with interactive exploration features.
+- User prefers modular code structure with files under 500 lines, organized into directories like routes/, services/, models/, utils/, and wants to maintain Flask framework with backward compatibility for API interfaces.
+- User requires files under 400 lines and expects modular code structure using existing utils/ modules.
+- User mandates WeChat miniprogram compatible JavaScript syntax (no async/await, arrow functions, template strings).
+- User prefers ruzhi/frontend/miniprogram/ as the main project directory for Ruzhi miniprogram development, not ruzhi/miniprogram/, and wants to merge unique features from the latter into the former.
+
+# Knowledge Graph Enhancements
+- User wants knowledge graph module enhanced with AI-powered dynamic concept generation, multi-layered concept analysis (definition, history, philosophy, application, modern meaning), integrated related stories (historical anecdotes, fables, celebrity stories, modern cases), intelligent recommendations based on learning history, and interactive features like search/autocomplete while maintaining traditional Chinese culture UI design.
+
+# Testing and Validation
+
+- User expects systematic testing approach for Ruzhi project: first validate API configuration, page design consistency, and backend services, then proceed with AI functionality implementation including DeepSeek API integration, prompt engineering for historical figures, and technical optimizations with progress reporting after each major step.
