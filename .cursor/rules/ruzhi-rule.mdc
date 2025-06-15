@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # Ruzhi Project Requirements
 - User prefers structured progress tracking with specific fields (task name, priority, estimated hours, status, responsible module, completion percentage, dependencies, notes and risks) and wants immediate documentation updates after each task completion.
