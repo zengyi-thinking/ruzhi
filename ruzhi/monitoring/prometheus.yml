@@ -1,0 +1,115 @@
+# Prometheus配置文件
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'ruzhi-production'
+    environment: 'prod'
+
+# 告警规则文件
+rule_files:
+  - "alert_rules.yml"
+
+# 告警管理器配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# 抓取配置
+scrape_configs:
+  # Prometheus自身监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # 后端API服务监控
+  - job_name: 'ruzhi-backend'
+    static_configs:
+      - targets: ['backend:8003']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    params:
+      format: ['prometheus']
+
+  # 前端应用监控
+  - job_name: 'ruzhi-frontend'
+    static_configs:
+      - targets: ['frontend:3000']
+    metrics_path: '/api/metrics'
+    scrape_interval: 30s
+
+  # 数据库监控
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 15s
+
+  # Redis监控
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+
+  # 系统监控
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Nginx监控
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 15s
+
+  # AI服务监控
+  - job_name: 'ai-service'
+    static_configs:
+      - targets: ['backend:8003']
+    metrics_path: '/ai/metrics'
+    scrape_interval: 10s
+    params:
+      module: ['ai_performance']
+
+  # 学习服务监控
+  - job_name: 'learning-service'
+    static_configs:
+      - targets: ['backend:8003']
+    metrics_path: '/learning/metrics'
+    scrape_interval: 30s
+
+  # 用户行为监控
+  - job_name: 'user-analytics'
+    static_configs:
+      - targets: ['analytics:8080']
+    scrape_interval: 60s
+
+  # 外部服务监控
+  - job_name: 'external-apis'
+    static_configs:
+      - targets: ['api-monitor:8090']
+    scrape_interval: 30s
+    params:
+      target: ['deepseek-api', 'openai-api']
+
+  # 小程序后端监控
+  - job_name: 'miniprogram-backend'
+    static_configs:
+      - targets: ['miniprogram-backend:8004']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+# 远程写入配置（可选，用于长期存储）
+remote_write:
+  - url: "http://victoriametrics:8428/api/v1/write"
+    queue_config:
+      max_samples_per_send: 10000
+      batch_send_deadline: 5s
+      max_shards: 200
+
+# 远程读取配置（可选）
+remote_read:
+  - url: "http://victoriametrics:8428/api/v1/read"

@@ -1,0 +1,325 @@
+name: RuZhi CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  # 代码质量检查
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Python dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+        pip install flake8 black isort mypy
+    
+    - name: Python code formatting check
+      run: |
+        cd backend
+        black --check .
+        isort --check-only .
+    
+    - name: Python linting
+      run: |
+        cd backend
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Python type checking
+      run: |
+        cd backend
+        mypy . --ignore-missing-imports
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend/web/package-lock.json
+    
+    - name: Install Node.js dependencies
+      run: |
+        cd frontend/web
+        npm ci
+    
+    - name: JavaScript/TypeScript linting
+      run: |
+        cd frontend/web
+        npm run lint
+    
+    - name: Code formatting check
+      run: |
+        cd frontend/web
+        npm run format:check
+
+  # 后端测试
+  backend-tests:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ruzhi_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov
+    
+    - name: Set up test environment
+      run: |
+        cd backend
+        cp .env.example .env.test
+        echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ruzhi_test" >> .env.test
+        echo "TESTING=true" >> .env.test
+    
+    - name: Run unit tests
+      run: |
+        cd backend
+        pytest tests/ -v --cov=. --cov-report=xml --cov-report=html
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: backend/coverage.xml
+        flags: backend
+        name: backend-coverage
+    
+    - name: Run integration tests
+      run: |
+        cd backend
+        pytest tests/integration/ -v --maxfail=5
+    
+    - name: Performance tests
+      run: |
+        cd backend
+        pytest tests/performance/ -v --benchmark-only
+
+  # 前端测试
+  frontend-tests:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend/web/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd frontend/web
+        npm ci
+    
+    - name: Run unit tests
+      run: |
+        cd frontend/web
+        npm run test:coverage
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: frontend/web/coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+    
+    - name: Build application
+      run: |
+        cd frontend/web
+        npm run build
+    
+    - name: Run E2E tests
+      run: |
+        cd frontend/web
+        npm run test:e2e:headless
+
+  # 安全扫描
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+    
+    - name: Python security check
+      run: |
+        cd backend
+        pip install safety bandit
+        safety check
+        bandit -r . -f json -o bandit-report.json
+    
+    - name: Node.js security audit
+      run: |
+        cd frontend/web
+        npm audit --audit-level moderate
+
+  # 构建和部署
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, security-scan]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Login to Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Build and push backend image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./backend
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}/backend:latest
+          ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./frontend/web
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}/frontend:latest
+          ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Deploy to staging
+      if: github.ref == 'refs/heads/develop'
+      run: |
+        echo "Deploying to staging environment..."
+        # 这里添加部署到测试环境的脚本
+    
+    - name: Deploy to production
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "Deploying to production environment..."
+        # 这里添加部署到生产环境的脚本
+    
+    - name: Health check
+      run: |
+        echo "Performing health check..."
+        # 添加健康检查脚本
+        sleep 30
+        curl -f http://your-app-url/health || exit 1
+
+  # 性能测试
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Install k6
+      run: |
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+    
+    - name: Run load tests
+      run: |
+        cd tests/performance
+        k6 run --out json=results.json load-test.js
+    
+    - name: Run Lighthouse CI
+      run: |
+        npm install -g @lhci/cli@0.12.x
+        lhci autorun
+      env:
+        LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  # 通知
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build-and-deploy, performance-tests]
+    if: always()
+    
+    steps:
+    - name: Notify on success
+      if: ${{ needs.build-and-deploy.result == 'success' && needs.performance-tests.result == 'success' }}
+      run: |
+        echo "✅ Deployment successful!"
+        # 添加成功通知逻辑（如Slack、邮件等）
+    
+    - name: Notify on failure
+      if: ${{ needs.build-and-deploy.result == 'failure' || needs.performance-tests.result == 'failure' }}
+      run: |
+        echo "❌ Deployment failed!"
+        # 添加失败通知逻辑

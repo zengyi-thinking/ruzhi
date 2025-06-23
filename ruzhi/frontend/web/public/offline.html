@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离线模式 - 儒智</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .offline-container {
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .offline-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        
+        .offline-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: white;
+        }
+        
+        .offline-subtitle {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .offline-features {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .offline-features h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .retry-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        .retry-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .network-status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .network-status.online {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .network-status.offline {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+        
+        .tips {
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 480px) {
+            .offline-title {
+                font-size: 24px;
+            }
+            
+            .offline-subtitle {
+                font-size: 16px;
+            }
+            
+            .offline-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">
+            📚
+        </div>
+        
+        <h1 class="offline-title">离线模式</h1>
+        <p class="offline-subtitle">
+            网络连接不可用，但您仍可以使用部分功能
+        </p>
+        
+        <div class="offline-features">
+            <h3>可用功能</h3>
+            <ul class="feature-list">
+                <li>浏览已缓存的学习内容</li>
+                <li>查看历史对话记录</li>
+                <li>阅读离线保存的文章</li>
+                <li>使用基础学习工具</li>
+                <li>查看个人学习进度</li>
+            </ul>
+        </div>
+        
+        <div>
+            <a href="/" class="retry-button" onclick="window.location.reload()">
+                重新连接
+            </a>
+            <a href="/learning" class="retry-button">
+                离线学习
+            </a>
+        </div>
+        
+        <div id="networkStatus" class="network-status offline">
+            🔴 网络连接不可用
+        </div>
+        
+        <div class="tips">
+            <p>💡 小贴士：</p>
+            <p>• 连接网络后，您的学习进度将自动同步</p>
+            <p>• 离线模式下的操作会在联网后自动上传</p>
+            <p>• 建议在WiFi环境下使用以获得最佳体验</p>
+        </div>
+    </div>
+
+    <script>
+        // 网络状态检测
+        function updateNetworkStatus() {
+            const statusElement = document.getElementById('networkStatus');
+            
+            if (navigator.onLine) {
+                statusElement.className = 'network-status online';
+                statusElement.innerHTML = '🟢 网络连接正常';
+                
+                // 网络恢复后自动刷新页面
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } else {
+                statusElement.className = 'network-status offline';
+                statusElement.innerHTML = '🔴 网络连接不可用';
+            }
+        }
+        
+        // 监听网络状态变化
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        
+        // 初始化网络状态
+        updateNetworkStatus();
+        
+        // 定期检查网络状态
+        setInterval(() => {
+            fetch('/api/health', { 
+                method: 'HEAD',
+                cache: 'no-cache'
+            })
+            .then(() => {
+                if (!navigator.onLine) {
+                    // 手动触发在线事件
+                    window.dispatchEvent(new Event('online'));
+                }
+            })
+            .catch(() => {
+                if (navigator.onLine) {
+                    // 手动触发离线事件
+                    window.dispatchEvent(new Event('offline'));
+                }
+            });
+        }, 5000);
+        
+        // 重试连接
+        function retryConnection() {
+            window.location.reload();
+        }
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r')) {
+                event.preventDefault();
+                retryConnection();
+            }
+        });
+        
+        // 添加一些交互效果
+        document.querySelectorAll('.retry-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                }, 150);
+            });
+        });
+        
+        // 显示加载动画
+        function showLoading() {
+            const buttons = document.querySelectorAll('.retry-button');
+            buttons.forEach(button => {
+                button.style.opacity = '0.6';
+                button.style.pointerEvents = 'none';
+            });
+        }
+        
+        // Service Worker 注册检查
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then((registration) => {
+                console.log('Service Worker is ready');
+            });
+        }
+    </script>
+</body>
+</html>

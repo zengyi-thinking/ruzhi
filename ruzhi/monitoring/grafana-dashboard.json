@@ -1,0 +1,342 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "儒智(RuZhi)系统监控仪表板",
+    "tags": ["ruzhi", "monitoring", "production"],
+    "style": "dark",
+    "timezone": "Asia/Shanghai",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "系统概览",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "up",
+            "legendFormat": "服务状态",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "请求速率",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "响应时间(P95)",
+            "refId": "C"
+          },
+          {
+            "expr": "rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m]) * 100",
+            "legendFormat": "错误率",
+            "refId": "D"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 80},
+                {"color": "red", "value": 90}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "API请求监控",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "请求/秒",
+            "min": 0
+          }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "max": true,
+          "avg": true
+        }
+      },
+      {
+        "id": 3,
+        "title": "响应时间分布",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "秒",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "系统资源使用",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+            "legendFormat": "CPU使用率 - {{instance}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "百分比",
+            "min": 0,
+            "max": 100
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "内存使用",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16},
+        "targets": [
+          {
+            "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
+            "legendFormat": "内存使用率 - {{instance}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "百分比",
+            "min": 0,
+            "max": 100
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "磁盘使用",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16},
+        "targets": [
+          {
+            "expr": "(node_filesystem_size_bytes{fstype!=\"tmpfs\"} - node_filesystem_avail_bytes{fstype!=\"tmpfs\"}) / node_filesystem_size_bytes{fstype!=\"tmpfs\"} * 100",
+            "legendFormat": "磁盘使用率 - {{mountpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "百分比",
+            "min": 0,
+            "max": 100
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "AI服务监控",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "targets": [
+          {
+            "expr": "rate(ai_requests_total[5m])",
+            "legendFormat": "AI请求速率",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(ai_requests_failed_total[5m])",
+            "legendFormat": "AI请求失败率",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(ai_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "AI响应时间(P95)",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "请求/秒",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "数据库性能",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "targets": [
+          {
+            "expr": "rate(pg_stat_database_tup_fetched[5m])",
+            "legendFormat": "数据库读取速率",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(pg_stat_database_tup_inserted[5m])",
+            "legendFormat": "数据库插入速率",
+            "refId": "B"
+          },
+          {
+            "expr": "pg_stat_database_numbackends",
+            "legendFormat": "活跃连接数",
+            "refId": "C"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "用户活动监控",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 32},
+        "targets": [
+          {
+            "expr": "daily_active_users",
+            "legendFormat": "日活跃用户",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(user_sessions_total[1h])",
+            "legendFormat": "新会话/小时",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "学习效果监控",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 32},
+        "targets": [
+          {
+            "expr": "avg(learning_engagement_score)",
+            "legendFormat": "平均参与度",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(learning_concepts_mastered_total[1h])",
+            "legendFormat": "概念掌握速率",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "错误监控",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 32},
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~\"4..\"}[5m])",
+            "legendFormat": "4xx错误",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(http_requests_total{status=~\"5..\"}[5m])",
+            "legendFormat": "5xx错误",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "告警状态",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 40},
+        "targets": [
+          {
+            "expr": "ALERTS{alertstate=\"firing\"}",
+            "legendFormat": "",
+            "refId": "A",
+            "format": "table"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "__name__": true,
+                "job": true,
+                "instance": true
+              },
+              "indexByName": {},
+              "renameByName": {
+                "alertname": "告警名称",
+                "severity": "严重程度",
+                "service": "服务",
+                "Value": "状态"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(up, instance)",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true
+        },
+        {
+          "name": "service",
+          "type": "query",
+          "query": "label_values(up, job)",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "部署事件",
+          "datasource": "prometheus",
+          "expr": "changes(up[1m]) > 0",
+          "titleFormat": "服务重启",
+          "textFormat": "{{instance}} 服务重启"
+        }
+      ]
+    }
+  }
+}

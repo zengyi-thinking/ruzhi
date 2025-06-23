@@ -1,0 +1,295 @@
+# Prometheus告警规则配置
+groups:
+  # 系统级别告警
+  - name: system_alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "高CPU使用率"
+          description: "实例 {{ $labels.instance }} CPU使用率超过80%，当前值: {{ $value }}%"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "高内存使用率"
+          description: "实例 {{ $labels.instance }} 内存使用率超过85%，当前值: {{ $value }}%"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"}) * 100 < 15
+        for: 10m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "磁盘空间不足"
+          description: "实例 {{ $labels.instance }} 磁盘 {{ $labels.mountpoint }} 可用空间低于15%"
+
+  # 应用级别告警
+  - name: application_alerts
+    rules:
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "API响应时间过长"
+          description: "95%的请求响应时间超过2秒，当前值: {{ $value }}秒"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "高错误率"
+          description: "5xx错误率超过5%，当前值: {{ $value }}%"
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "服务不可用"
+          description: "服务 {{ $labels.job }} 在实例 {{ $labels.instance }} 上不可用"
+
+      - alert: LowThroughput
+        expr: rate(http_requests_total[5m]) < 1
+        for: 10m
+        labels:
+          severity: warning
+          service: backend
+        annotations:
+          summary: "低吞吐量"
+          description: "API请求吞吐量低于1 RPS，当前值: {{ $value }} RPS"
+
+  # 数据库告警
+  - name: database_alerts
+    rules:
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "PostgreSQL数据库不可用"
+          description: "PostgreSQL数据库实例 {{ $labels.instance }} 不可用"
+
+      - alert: HighDatabaseConnections
+        expr: pg_stat_database_numbackends / pg_settings_max_connections * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "数据库连接数过高"
+          description: "数据库连接数使用率超过80%，当前值: {{ $value }}%"
+
+      - alert: SlowQueries
+        expr: rate(pg_stat_database_tup_fetched[5m]) / rate(pg_stat_database_tup_returned[5m]) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "数据库查询效率低"
+          description: "数据库查询效率低于10%，可能存在慢查询"
+
+      - alert: DatabaseLockWait
+        expr: pg_locks_count > 100
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "数据库锁等待过多"
+          description: "数据库锁等待数量超过100，当前值: {{ $value }}"
+
+  # AI服务告警
+  - name: ai_service_alerts
+    rules:
+      - alert: AIServiceHighLatency
+        expr: histogram_quantile(0.95, rate(ai_request_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: ai
+        annotations:
+          summary: "AI服务响应延迟过高"
+          description: "AI服务95%请求延迟超过10秒，当前值: {{ $value }}秒"
+
+      - alert: AIServiceFailureRate
+        expr: rate(ai_requests_failed_total[5m]) / rate(ai_requests_total[5m]) * 100 > 10
+        for: 5m
+        labels:
+          severity: critical
+          service: ai
+        annotations:
+          summary: "AI服务失败率过高"
+          description: "AI服务失败率超过10%，当前值: {{ $value }}%"
+
+      - alert: AITokenUsageHigh
+        expr: ai_token_usage_total > 900000
+        for: 1m
+        labels:
+          severity: warning
+          service: ai
+        annotations:
+          summary: "AI Token使用量过高"
+          description: "AI Token使用量接近限制，当前值: {{ $value }}"
+
+      - alert: AIProviderDown
+        expr: ai_provider_available == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: ai
+        annotations:
+          summary: "AI提供者不可用"
+          description: "AI提供者 {{ $labels.provider }} 不可用，已切换到备用服务"
+
+  # 学习服务告警
+  - name: learning_service_alerts
+    rules:
+      - alert: LowLearningEngagement
+        expr: avg_over_time(learning_engagement_score[1h]) < 0.5
+        for: 30m
+        labels:
+          severity: warning
+          service: learning
+        annotations:
+          summary: "学习参与度低"
+          description: "平均学习参与度低于50%，当前值: {{ $value }}"
+
+      - alert: HighDropoutRate
+        expr: learning_dropout_rate > 0.3
+        for: 15m
+        labels:
+          severity: warning
+          service: learning
+        annotations:
+          summary: "学习流失率高"
+          description: "学习流失率超过30%，当前值: {{ $value }}"
+
+      - alert: ReviewSystemOverload
+        expr: review_queue_size > 1000
+        for: 10m
+        labels:
+          severity: warning
+          service: learning
+        annotations:
+          summary: "复习系统过载"
+          description: "复习队列大小超过1000，当前值: {{ $value }}"
+
+  # 用户体验告警
+  - name: user_experience_alerts
+    rules:
+      - alert: HighPageLoadTime
+        expr: histogram_quantile(0.95, rate(page_load_duration_seconds_bucket[5m])) > 3
+        for: 5m
+        labels:
+          severity: warning
+          service: frontend
+        annotations:
+          summary: "页面加载时间过长"
+          description: "95%的页面加载时间超过3秒，当前值: {{ $value }}秒"
+
+      - alert: LowUserSatisfaction
+        expr: user_satisfaction_score < 4.0
+        for: 30m
+        labels:
+          severity: warning
+          service: user_experience
+        annotations:
+          summary: "用户满意度低"
+          description: "用户满意度评分低于4.0，当前值: {{ $value }}"
+
+      - alert: HighBounceRate
+        expr: user_bounce_rate > 0.6
+        for: 15m
+        labels:
+          severity: warning
+          service: user_experience
+        annotations:
+          summary: "用户跳出率高"
+          description: "用户跳出率超过60%，当前值: {{ $value }}"
+
+  # 安全告警
+  - name: security_alerts
+    rules:
+      - alert: SuspiciousActivity
+        expr: rate(security_suspicious_requests_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: critical
+          service: security
+        annotations:
+          summary: "检测到可疑活动"
+          description: "可疑请求频率超过10/分钟，当前值: {{ $value }}/分钟"
+
+      - alert: FailedLoginAttempts
+        expr: rate(auth_failed_attempts_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "登录失败次数过多"
+          description: "登录失败频率超过5次/分钟，当前值: {{ $value }}/分钟"
+
+      - alert: UnauthorizedAccess
+        expr: rate(http_requests_total{status="401"}[5m]) > 20
+        for: 3m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "未授权访问过多"
+          description: "401错误频率超过20/分钟，当前值: {{ $value }}/分钟"
+
+  # 业务指标告警
+  - name: business_alerts
+    rules:
+      - alert: LowDailyActiveUsers
+        expr: daily_active_users < 100
+        for: 1h
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "日活跃用户数低"
+          description: "日活跃用户数低于100，当前值: {{ $value }}"
+
+      - alert: LowConversionRate
+        expr: user_conversion_rate < 0.05
+        for: 2h
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "用户转化率低"
+          description: "用户转化率低于5%，当前值: {{ $value }}"
+
+      - alert: HighChurnRate
+        expr: user_churn_rate > 0.1
+        for: 1h
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "用户流失率高"
+          description: "用户流失率超过10%，当前值: {{ $value }}"
