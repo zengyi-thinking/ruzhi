@@ -255,6 +255,29 @@ def validate_config():
 
     return True
 
+# AI API详细配置
+AI_API_CONFIG = {
+    'deepseek': {
+        'api_key': os.getenv('DEEPSEEK_API_KEY', ''),
+        'base_url': os.getenv('DEEPSEEK_BASE_URL', 'https://api.deepseek.com/v1'),
+        'model': os.getenv('DEEPSEEK_MODEL', 'deepseek-chat'),
+        'max_tokens': get_int_env('DEEPSEEK_MAX_TOKENS', 2000),
+        'temperature': get_float_env('DEEPSEEK_TEMPERATURE', 0.7)
+    },
+    'openai': {
+        'api_key': os.getenv('OPENAI_API_KEY', ''),
+        'base_url': os.getenv('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'model': os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo'),
+        'max_tokens': get_int_env('OPENAI_MAX_TOKENS', 2000),
+        'temperature': get_float_env('OPENAI_TEMPERATURE', 0.7)
+    },
+    'default_provider': os.getenv('AI_DEFAULT_PROVIDER', 'deepseek'),
+    'fallback_provider': os.getenv('AI_FALLBACK_PROVIDER', 'mock'),
+    'enable_stream': get_bool_env('AI_ENABLE_STREAM', True),
+    'retry_attempts': get_int_env('AI_RETRY_ATTEMPTS', 3),
+    'retry_delay': get_float_env('AI_RETRY_DELAY', 1.0)
+}
+
 # 兼容性配置（保持向后兼容）
 FLASK_CONFIG = {
     'DEBUG': APP_CONFIG['debug'],

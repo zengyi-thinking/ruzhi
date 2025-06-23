@@ -1,0 +1,273 @@
+<!--AI对话页面-->
+<view class="chat-container">
+  <!-- 顶部人物信息 -->
+  <view class="character-header" wx:if="{{selectedCharacter}}">
+    <image 
+      class="character-avatar" 
+      src="{{selectedCharacter.avatar || '/images/default-avatar.png'}}"
+      mode="aspectFill"
+    />
+    <view class="character-info">
+      <text class="character-name">{{selectedCharacter.name}}</text>
+      <text class="character-title">{{selectedCharacter.title}} · {{selectedCharacter.dynasty}}</text>
+    </view>
+    <view class="header-actions">
+      <view class="action-btn" bindtap="toggleThinking">
+        <image class="action-icon" src="/images/icons/thinking.png" />
+      </view>
+      <view class="action-btn" bindtap="clearConversation">
+        <image class="action-icon" src="/images/icons/clear.png" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 人物选择器 -->
+  <view class="character-selector" wx:if="{{!selectedCharacter}}">
+    <view class="selector-title">选择对话人物</view>
+    <scroll-view class="characters-list" scroll-y>
+      <view 
+        class="character-item {{item.id === selectedCharacterId ? 'selected' : ''}}"
+        wx:for="{{characters}}" 
+        wx:key="id"
+        bindtap="selectCharacter"
+        data-character="{{item}}"
+      >
+        <image class="character-item-avatar" src="{{item.avatar || '/images/default-avatar.png'}}" />
+        <view class="character-item-info">
+          <text class="character-item-name">{{item.name}}</text>
+          <text class="character-item-desc">{{item.description}}</text>
+          <view class="character-specialties">
+            <text 
+              class="specialty-tag" 
+              wx:for="{{item.specialties}}" 
+              wx:for-item="specialty"
+              wx:key="*this"
+            >
+              {{specialty}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view 
+    class="messages-container" 
+    scroll-y 
+    scroll-top="{{scrollTop}}"
+    scroll-into-view="{{scrollIntoView}}"
+    wx:if="{{selectedCharacter}}"
+  >
+    <view 
+      class="message-item {{message.type}}"
+      wx:for="{{messages}}" 
+      wx:key="id"
+      id="msg-{{message.id}}"
+    >
+      <!-- 系统消息 -->
+      <view class="system-message" wx:if="{{message.type === 'system'}}">
+        <text class="system-text">{{message.content}}</text>
+      </view>
+
+      <!-- 用户消息 -->
+      <view class="user-message" wx:if="{{message.type === 'user'}}">
+        <view class="message-bubble user-bubble">
+          <text class="message-text">{{message.content}}</text>
+          <text class="message-time">{{message.timeStr}}</text>
+        </view>
+        <image class="user-avatar" src="/images/user-avatar.png" />
+      </view>
+
+      <!-- 助手消息 -->
+      <view class="assistant-message" wx:if="{{message.type === 'assistant'}}">
+        <image 
+          class="assistant-avatar" 
+          src="{{selectedCharacter.avatar || '/images/default-avatar.png'}}" 
+        />
+        <view class="message-bubble assistant-bubble">
+          <text class="message-text">{{message.content}}</text>
+          
+          <!-- 流式打字效果 -->
+          <view class="typing-indicator" wx:if="{{message.isStreaming}}">
+            <view class="typing-dot"></view>
+            <view class="typing-dot"></view>
+            <view class="typing-dot"></view>
+          </view>
+
+          <!-- 消息详情 */
+          <view class="message-details" wx:if="{{message.showDetails}}">
+            <!-- 质量指标 -->
+            <view class="quality-indicators" wx:if="{{message.qualityAssessment}}">
+              <view class="quality-chip">
+                质量: {{message.qualityScore}}%
+              </view>
+              <view class="time-chip" wx:if="{{message.processingTime}}">
+                {{message.processingTimeStr}}
+              </view>
+            </view>
+
+            <!-- RAG增强信息 -->
+            <view class="rag-info" wx:if="{{message.ragEnhancement && message.ragEnhancement.knowledgeUsed > 0}}">
+              <text class="rag-text">知识增强: {{message.ragEnhancement.knowledgeUsed}}个知识点</text>
+            </view>
+
+            <!-- 思考过程 -->
+            <view class="thinking-process" wx:if="{{message.thinkingProcess && showThinking}}">
+              <view class="thinking-title">💭 思考过程</view>
+              <text class="thinking-text">{{message.thinkingProcess}}</text>
+            </view>
+          </view>
+
+          <!-- 消息操作 -->
+          <view class="message-actions">
+            <text class="message-time">{{message.timeStr}}</text>
+            <view class="action-buttons">
+              <view 
+                class="action-button" 
+                bindtap="toggleMessageDetails"
+                data-id="{{message.id}}"
+              >
+                详情
+              </view>
+              <view 
+                class="action-button" 
+                bindtap="copyMessage"
+                data-content="{{message.content}}"
+              >
+                复制
+              </view>
+              <view 
+                class="action-button {{message.feedback === 'helpful' ? 'active' : ''}}" 
+                bindtap="submitFeedback"
+                data-id="{{message.id}}"
+                data-type="helpful"
+              >
+                👍
+              </view>
+              <view 
+                class="action-button {{message.feedback === 'unhelpful' ? 'active' : ''}}" 
+                bindtap="submitFeedback"
+                data-id="{{message.id}}"
+                data-type="unhelpful"
+              >
+                👎
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 错误消息 -->
+      <view class="error-message" wx:if="{{message.type === 'error'}}">
+        <text class="error-text">{{message.content}}</text>
+      </view>
+    </view>
+
+    <!-- 正在输入指示器 -->
+    <view class="typing-container" wx:if="{{isTyping}}">
+      <image class="typing-avatar" src="{{selectedCharacter.avatar || '/images/default-avatar.png'}}" />
+      <view class="typing-bubble">
+        <text class="typing-text">{{selectedCharacter.name}}正在思考...</text>
+        <view class="typing-animation">
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-container" wx:if="{{selectedCharacter}}">
+    <view class="input-wrapper">
+      <textarea 
+        class="message-input"
+        placeholder="与{{selectedCharacter.name}}对话..."
+        value="{{inputMessage}}"
+        bindinput="onInputChange"
+        bindconfirm="sendMessage"
+        auto-height
+        maxlength="1000"
+        disabled="{{isLoading}}"
+      />
+      <view class="input-counter">{{inputMessage.length}}/1000</view>
+    </view>
+    <button 
+      class="send-button {{inputMessage.trim() && !isLoading ? 'active' : 'disabled'}}"
+      bindtap="sendMessage"
+      disabled="{{!inputMessage.trim() || isLoading}}"
+    >
+      <image 
+        class="send-icon" 
+        src="{{isLoading ? '/images/icons/loading.png' : '/images/icons/send.png'}}"
+      />
+    </button>
+  </view>
+
+  <!-- 相关推荐 -->
+  <view class="recommendations" wx:if="{{recommendations.length > 0}}">
+    <view class="recommendations-title">💡 相关推荐</view>
+    <scroll-view class="recommendations-list" scroll-x>
+      <view 
+        class="recommendation-item"
+        wx:for="{{recommendations}}" 
+        wx:key="title"
+        bindtap="selectRecommendation"
+        data-recommendation="{{item}}"
+      >
+        <text class="recommendation-title">{{item.title}}</text>
+        <text class="recommendation-desc">{{item.description}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 快捷输入 -->
+  <view class="quick-inputs" wx:if="{{selectedCharacter && messages.length <= 1}}">
+    <view class="quick-inputs-title">💬 快速开始</view>
+    <view class="quick-buttons">
+      <button 
+        class="quick-button"
+        bindtap="selectQuickInput"
+        data-text="请谈谈您的核心思想"
+      >
+        询问思想观点
+      </button>
+      <button 
+        class="quick-button"
+        bindtap="selectQuickInput"
+        data-text="在人生迷茫时，您有什么建议？"
+      >
+        寻求人生建议
+      </button>
+      <button 
+        class="quick-button"
+        bindtap="selectQuickInput"
+        data-text="您的思想在现代社会如何应用？"
+      >
+        探讨现代应用
+      </button>
+      <button 
+        class="quick-button"
+        bindtap="selectQuickInput"
+        data-text="如何更好地学习传统文化？"
+      >
+        学习方法指导
+      </button>
+    </view>
+  </view>
+
+  <!-- 加载提示 -->
+  <view class="loading-overlay" wx:if="{{isLoading && !isTyping}}">
+    <view class="loading-content">
+      <image class="loading-icon" src="/images/icons/loading.png" />
+      <text class="loading-text">正在生成回复...</text>
+    </view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-toast {{errorMessage ? 'show' : ''}}" wx:if="{{errorMessage}}">
+    <text class="error-toast-text">{{errorMessage}}</text>
+    <view class="error-toast-close" bindtap="clearError">×</view>
+  </view>
+</view>
