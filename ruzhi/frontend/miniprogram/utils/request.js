@@ -1,15 +1,17 @@
 // 网络请求封装
-const app = getApp()
+const { config, logger } = require('../config/env');
+const errorHandler = require('./errorHandler');
 
 class Request {
   constructor() {
-    this.baseURL = app.globalData.apiBase
-    this.timeout = 10000
+    this.baseURL = config.API_BASE_URL;
+    this.timeout = config.TIMEOUT.DEFAULT;
+    this.requestQueue = new Map(); // 防重复请求
     this.interceptors = {
       request: [],
       response: []
     }
-    
+
     // 添加默认拦截器
     this.addDefaultInterceptors()
   }
@@ -38,7 +40,7 @@ class Request {
         config.header.Authorization = `Bearer ${userToken}`
       }
       
-      console.log('请求发送:', config)
+      logger.debug('请求发送:', config)
       return config
     })
 
@@ -48,14 +50,18 @@ class Request {
       if (config.showLoading !== false) {
         wx.hideLoading()
       }
-      
-      console.log('响应接收:', response)
-      
+
+      logger.debug('响应接收:', response)
+
       // 处理HTTP状态码
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return response.data
       } else {
-        throw new Error(`HTTP ${response.statusCode}: ${response.data?.message || '请求失败'}`)
+        const error = new Error(`HTTP ${response.statusCode}: ${response.data?.message || '请求失败'}`);
+        error.code = response.statusCode;
+        error.url = config.url;
+        error.method = config.method;
+        throw error;
       }
     })
   }
@@ -103,6 +109,38 @@ class Request {
         ...options
       }
 
+      // 防重复请求
+      const requestKey = this.getRequestKey(config);
+      if (config.preventDuplicate !== false && this.requestQueue.has(requestKey)) {
+        logger.warn('重复请求被阻止:', requestKey);
+        return this.requestQueue.get(requestKey);
+      }
+
+      const requestPromise = this.executeRequest(config);
+
+      // 添加到请求队列
+      if (config.preventDuplicate !== false) {
+        this.requestQueue.set(requestKey, requestPromise);
+
+        // 请求完成后从队列中移除
+        requestPromise.finally(() => {
+          this.requestQueue.delete(requestKey);
+        });
+      }
+
+      return requestPromise;
+    })
+  }
+
+  // 生成请求唯一标识
+  getRequestKey(config) {
+    const { method, url, data } = config;
+    return `${method}:${url}:${JSON.stringify(data)}`;
+  }
+
+  // 执行实际请求
+  executeRequest(config) {
+    return new Promise((resolve, reject) => {
       try {
         // 执行请求拦截器
         const finalConfig = this.executeRequestInterceptors(config)
@@ -139,43 +177,15 @@ class Request {
       wx.hideLoading()
     }
 
-    console.error('请求错误:', error)
+    // 使用统一错误处理器
+    const errorInfo = errorHandler.handleApiError(error, {
+      url: config.url,
+      method: config.method,
+      data: config.data,
+      showError: config.showError
+    });
 
-    // 根据错误类型显示不同提示
-    let message = '网络请求失败'
-    
-    if (error.errMsg) {
-      if (error.errMsg.includes('timeout')) {
-        message = '请求超时，请检查网络连接'
-      } else if (error.errMsg.includes('fail')) {
-        message = '网络连接失败，请检查网络设置'
-      }
-    } else if (error.message) {
-      message = error.message
-    }
-
-    // 显示错误提示
-    if (config.showError !== false) {
-      wx.showToast({
-        title: message,
-        icon: 'none',
-        duration: 3000
-      })
-    }
-
-    // 错误上报
-    this.reportError(error, config)
-  }
-
-  // 错误上报
-  reportError(error, config) {
-    // 可以在这里集成错误监控服务
-    console.log('错误上报:', {
-      error: error,
-      config: config,
-      timestamp: new Date().toISOString(),
-      userAgent: app.globalData.systemInfo
-    })
+    return errorInfo;
   }
 
   // GET请求

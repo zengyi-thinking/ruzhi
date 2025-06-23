@@ -1,16 +1,34 @@
 // 儒智微信小程序 - 主应用文件
+const { config, logger } = require('./config/env');
+const errorHandler = require('./utils/errorHandler');
+
 App({
   onLaunch: function () {
-    console.log('儒智小程序启动')
-    
+    logger.info('儒智小程序启动', { version: config.VERSION, env: config.ENV })
+
+    // 初始化全局配置
+    this.initGlobalConfig()
+
     // 检查更新
     this.checkForUpdate()
-    
+
     // 初始化全局数据
     this.initGlobalData()
-    
+
     // 检查网络状态
     this.checkNetworkStatus()
+  },
+
+  // 初始化全局配置
+  initGlobalConfig: function() {
+    // 将环境配置合并到全局数据
+    this.globalData = {
+      ...this.globalData,
+      config: config,
+      logger: logger
+    };
+
+    logger.info('全局配置初始化完成', config);
   },
 
   onShow: function (options) {
@@ -22,9 +40,11 @@ App({
   },
 
   onError: function (msg) {
-    console.error('小程序错误:', msg)
-    // 错误上报
-    this.reportError(msg)
+    logger.error('小程序错误:', msg)
+    // 使用统一错误处理器
+    errorHandler.handleSystemError(new Error(msg), {
+      source: 'app_on_error'
+    });
   },
 
   // 检查小程序更新
@@ -219,11 +239,7 @@ App({
     
     // 网络状态
     networkType: 'unknown',
-    
-    // API配置
-    apiBase: 'http://localhost:8000', // 开发环境
-    // apiBase: 'https://api.ruzhi.com', // 生产环境
-    
+
     // 应用配置
     appName: '儒智',
     version: '1.0.0',

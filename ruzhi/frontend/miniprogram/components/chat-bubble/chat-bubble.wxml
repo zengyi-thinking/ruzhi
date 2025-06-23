@@ -1,0 +1,81 @@
+<!-- 聊天气泡组件模板 -->
+<view class="chat-bubble {{type}}" wx:if="{{message && message.content}}">
+  
+  <!-- 头像 -->
+  <view class="avatar-container" wx:if="{{showAvatar}}" bindtap="onAvatarClick">
+    <view class="avatar">
+      <image 
+        wx:if="{{message.avatar}}" 
+        src="{{message.avatar}}" 
+        mode="aspectFill"
+      />
+      <text wx:else class="avatar-text">
+        {{type === 'user' ? '我' : (message.character || 'AI')}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 消息内容容器 -->
+  <view class="message-container">
+    
+    <!-- 时间显示 -->
+    <view class="time-display" wx:if="{{showTime && timeDisplay}}">
+      {{timeDisplay}}
+    </view>
+
+    <!-- 消息气泡 -->
+    <view 
+      class="bubble {{isLoading ? 'loading' : ''}} {{isError ? 'error' : ''}}"
+      bindtap="onBubbleClick"
+      bindlongpress="onBubbleLongPress"
+    >
+      
+      <!-- 加载状态 -->
+      <block wx:if="{{isLoading}}">
+        <text>思考中</text>
+        <view class="loading-dots">
+          <view class="loading-dot"></view>
+          <view class="loading-dot"></view>
+          <view class="loading-dot"></view>
+        </view>
+      </block>
+
+      <!-- 错误状态 -->
+      <block wx:elif="{{isError}}">
+        <text class="error-icon">⚠️</text>
+        <text>{{message.content || '消息发送失败'}}</text>
+      </block>
+
+      <!-- 正常消息内容 -->
+      <block wx:else>
+        <view class="message-content">
+          <text>{{displayContent || processedContent}}</text>
+        </view>
+        
+        <!-- 消息附加信息 -->
+        <view class="message-meta" wx:if="{{message.source || message.confidence}}">
+          <text wx:if="{{message.source}}" class="source">来源：{{message.source}}</text>
+          <text wx:if="{{message.confidence}}" class="confidence">
+            置信度：{{message.confidence}}%
+          </text>
+        </view>
+        
+        <!-- 消息操作按钮 -->
+        <view class="message-actions" wx:if="{{type === 'assistant' && !isLoading}}">
+          <view class="action-btn" bindtap="copyMessage">
+            <text class="action-icon">📋</text>
+          </view>
+          <view class="action-btn" bindtap="favoriteMessage">
+            <text class="action-icon">⭐</text>
+          </view>
+          <view class="action-btn" wx:if="{{message.liked}}" bindtap="unlikeMessage">
+            <text class="action-icon">👍</text>
+          </view>
+          <view class="action-btn" wx:else bindtap="likeMessage">
+            <text class="action-icon">👍</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>
