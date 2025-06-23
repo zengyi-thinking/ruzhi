@@ -1,0 +1,179 @@
+<view class="interpret-container">
+  <!-- 标题 -->
+  <view class="header">
+    <view class="title-container">
+      <image class="title-icon" src="/images/features/interpret.png" mode="aspectFit"></image>
+      <text class="title">古文今译与解析</text>
+    </view>
+    <text class="subtitle">多层次解析古典文本，深入理解字词义、句义、篇章义与思想价值</text>
+  </view>
+
+  <!-- 输入区域 -->
+  <view class="input-section">
+    <view class="input-container">
+      <textarea 
+        class="input-text" 
+        value="{{inputText}}" 
+        placeholder="请输入古文文本..." 
+        bindinput="onInputChange"
+        maxlength="500"
+        auto-height
+      ></textarea>
+      <view class="input-tools">
+        <view class="tool-btn" bindtap="clearInput">
+          <text class="icon">✕</text>
+          <text class="tool-text">清空</text>
+        </view>
+        <view class="tool-btn primary" bindtap="interpretText">
+          <text class="icon">↻</text>
+          <text class="tool-text">解析</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 预设文本 -->
+    <view class="preset-container">
+      <text class="preset-title">经典文本：</text>
+      <scroll-view class="preset-list" scroll-x="true">
+        <view 
+          class="preset-item" 
+          wx:for="{{presetTexts}}" 
+          wx:key="index"
+          bindtap="usePresetText"
+          data-index="{{index}}"
+        >
+          <text>{{item.title}}</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 分析层级选择 -->
+  <view class="level-selector">
+    <text class="selector-title">分析层级：</text>
+    <view class="level-tabs">
+      <view 
+        class="level-tab {{currentLevel === item.id ? 'active' : ''}}" 
+        wx:for="{{levels}}" 
+        wx:key="id"
+        bindtap="changeLevel"
+        data-level="{{item.id}}"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">文本解析中...</text>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-container" wx:if="{{errorMessage}}">
+    <text class="error-text">{{errorMessage}}</text>
+  </view>
+
+  <!-- 解析结果区域 -->
+  <view class="result-container" wx:if="{{result && !loading}}">
+    <!-- 数据来源标签 -->
+    <view class="source-tag {{dataSource}}">
+      <text>{{dataSource === 'online' ? '在线解析' : dataSource === 'offline' ? '离线数据' : dataSource === 'cache' ? '缓存数据' : '未知来源'}}</text>
+    </view>
+
+    <!-- 字词义解析 -->
+    <view class="result-section" wx:if="{{(currentLevel === 'all' || currentLevel === 'word') && result.wordLevel}}">
+      <view class="section-header">
+        <text class="section-title">字词义解析</text>
+        <text class="section-desc">点击单字查看详细释义</text>
+      </view>
+      <view class="word-container">
+        <view 
+          class="word-item" 
+          wx:for="{{result.wordLevel}}" 
+          wx:key="index"
+          bindtap="viewWordDetail"
+          data-index="{{index}}"
+        >
+          <text class="word-char">{{item.word}}</text>
+          <text class="word-meaning">{{item.explanation}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 句义解析 -->
+    <view class="result-section" wx:if="{{(currentLevel === 'all' || currentLevel === 'sentence') && result.sentenceLevel}}">
+      <view class="section-header">
+        <text class="section-title">句义解析</text>
+      </view>
+      <view class="sentence-container">
+        <text class="sentence-text">{{result.sentenceLevel}}</text>
+      </view>
+    </view>
+
+    <!-- 篇章义解析 -->
+    <view class="result-section" wx:if="{{(currentLevel === 'all' || currentLevel === 'paragraph') && result.paragraphLevel}}">
+      <view class="section-header">
+        <text class="section-title">篇章义解析</text>
+      </view>
+      <view class="paragraph-container">
+        <text class="paragraph-text">{{result.paragraphLevel}}</text>
+      </view>
+    </view>
+
+    <!-- 思想价值解析 -->
+    <view class="result-section" wx:if="{{(currentLevel === 'all' || currentLevel === 'thought') && result.thoughtLevel}}">
+      <view class="section-header">
+        <text class="section-title">思想价值解析</text>
+      </view>
+      <view class="thought-container">
+        <text class="thought-text">{{result.thoughtLevel}}</text>
+      </view>
+    </view>
+
+    <!-- 相关典故按钮 -->
+    <view class="allusions-btn" bindtap="toggleAllusions">
+      <text>{{showAllusions ? '收起典故' : '查看相关典故'}}</text>
+    </view>
+
+    <!-- 相关典故面板 -->
+    <view class="allusions-panel" wx:if="{{showAllusions && allusions}}">
+      <view class="allusions-header">
+        <text class="allusions-title">相关典故</text>
+      </view>
+      <view class="allusions-list">
+        <view class="allusion-item" wx:for="{{allusions}}" wx:key="index">
+          <text class="allusion-title">{{item.title}}</text>
+          <text class="allusion-source">来源：{{item.source}}</text>
+          <text class="allusion-content">{{item.content}}</text>
+          <text class="allusion-significance">意义：{{item.significance}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 词汇详情弹窗 -->
+  <view class="word-detail-modal" wx:if="{{selectedWord}}" bindtap="closeWordDetail">
+    <view class="word-detail-content" catchtap="stopPropagation">
+      <view class="word-detail-header">
+        <text class="word-detail-char">{{selectedWord.word}}</text>
+        <text class="word-detail-close" bindtap="closeWordDetail">×</text>
+      </view>
+      <view class="word-detail-body">
+        <view class="word-detail-item">
+          <text class="word-detail-label">基本释义：</text>
+          <text class="word-detail-value">{{selectedWord.explanation}}</text>
+        </view>
+        <view class="word-detail-item" wx:if="{{selectedWord.etymology}}">
+          <text class="word-detail-label">字源解析：</text>
+          <text class="word-detail-value">{{selectedWord.etymology}}</text>
+        </view>
+        <view class="word-detail-item" wx:if="{{selectedWord.examples}}">
+          <text class="word-detail-label">用例：</text>
+          <text class="word-detail-value">{{selectedWord.examples}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

@@ -1,0 +1,15 @@
+{
+  "timestamp": 1750664866.317196,
+  "total_tests": 6,
+  "passed_tests": 3,
+  "failed_tests": 3,
+  "success_rate": 0.5,
+  "results": {
+    "配置系统": true,
+    "数据库操作": false,
+    "安全功能": false,
+    "日志系统": true,
+    "监控系统": false,
+    "OCR功能": true
+  }
+}

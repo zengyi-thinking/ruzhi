@@ -14,7 +14,7 @@
       </view>
     </view>
     <view class="header-actions">
-      <text class="icon-bell">🔔</text>
+      <text class="icon-bell">通知</text>
     </view>
   </view>
 
@@ -58,7 +58,7 @@
         bindtap="onFeatureClick"
       >
         <view class="feature-icon" style="background-color: {{item.color}}20;">
-          <text class="feature-emoji">{{item.icon}}</text>
+          <image class="feature-image" src="{{item.icon}}" mode="aspectFit"></image>
         </view>
         <text class="feature-title">{{item.title}}</text>
         <text class="feature-desc">{{item.desc}}</text>
@@ -100,7 +100,7 @@
   <view class="daily-quote-section" wx:if="{{dailyQuote}}">
     <view class="quote-card" bindtap="onQuoteClick">
       <view class="quote-header">
-        <text class="quote-label">📖 每日一句</text>
+        <text class="quote-label">每日一句</text>
         <text class="quote-date">{{dailyQuote.date}}</text>
       </view>
       <text class="quote-content">{{dailyQuote.content}}</text>
@@ -118,7 +118,7 @@
   <!-- 学习打卡 -->
   <view class="checkin-section">
     <view class="section-header">
-      <text class="section-title">📅 学习打卡</text>
+      <text class="section-title">学习打卡</text>
       <text class="checkin-streak">连续{{learningStreak}}天</text>
     </view>
 
@@ -152,14 +152,14 @@
   <!-- AI创新功能 -->
   <view class="ai-features-section">
     <view class="section-header">
-      <text class="section-title">✨ AI创新体验</text>
+      <text class="section-title">AI创新体验</text>
       <text class="section-subtitle">让传统文化学习更有趣</text>
     </view>
 
     <view class="ai-features-list">
       <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="challenge">
         <view class="ai-feature-header">
-          <view class="ai-feature-icon">🎯</view>
+          <view class="ai-feature-icon"><image src="/images/features/target.png" mode="aspectFit"></image></view>
           <view class="ai-feature-badge">热门</view>
         </view>
         <text class="ai-feature-title">典籍问答挑战</text>
@@ -172,40 +172,40 @@
 
       <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="recommend">
         <view class="ai-feature-header">
-          <view class="ai-feature-icon">🤖</view>
+          <view class="ai-feature-icon"><image src="/images/features/robot.png" mode="aspectFit"></image></view>
           <view class="ai-feature-badge">智能</view>
         </view>
         <text class="ai-feature-title">智能典籍推荐</text>
         <text class="ai-feature-desc">AI分析偏好，个性化推荐学习内容</text>
         <view class="ai-feature-stats">
-          <text class="stat-item">🎯 匹配度{{recommendStats.accuracy}}%</text>
-          <text class="stat-item">📚 推荐{{recommendStats.totalBooks}}本</text>
+          <text class="stat-item">匹配度{{recommendStats.accuracy}}%</text>
+          <text class="stat-item">推荐{{recommendStats.totalBooks}}本</text>
         </view>
       </view>
 
       <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="modernize">
         <view class="ai-feature-header">
-          <view class="ai-feature-icon">✨</view>
+          <view class="ai-feature-icon"><image src="/images/features/star.png" mode="aspectFit"></image></view>
           <view class="ai-feature-badge">创新</view>
         </view>
         <text class="ai-feature-title">古文现代化改写</text>
         <text class="ai-feature-desc">AI将古文改写为现代文，保持原意更易懂</text>
         <view class="ai-feature-stats">
-          <text class="stat-item">🔄 已改写{{modernizeStats.totalTexts}}篇</text>
-          <text class="stat-item">⭐ 满意度{{modernizeStats.satisfaction}}%</text>
+          <text class="stat-item">已改写{{modernizeStats.totalTexts}}篇</text>
+          <text class="stat-item">满意度{{modernizeStats.satisfaction}}%</text>
         </view>
       </view>
 
       <view class="ai-feature-card" bindtap="onAIFeatureClick" data-feature="immersive">
         <view class="ai-feature-header">
-          <view class="ai-feature-icon">🎵</view>
+          <view class="ai-feature-icon"><image src="/images/features/music.png" mode="aspectFit"></image></view>
           <view class="ai-feature-badge">沉浸</view>
         </view>
         <text class="ai-feature-title">沉浸式阅读</text>
         <text class="ai-feature-desc">AI朗读、背景音乐、视觉效果的多感官体验</text>
         <view class="ai-feature-stats">
-          <text class="stat-item">🎧 支持多种语音</text>
-          <text class="stat-item">🎨 丰富视觉效果</text>
+          <text class="stat-item">支持多种语音</text>
+          <text class="stat-item">丰富视觉效果</text>
         </view>
       </view>
     </view>
@@ -238,13 +238,13 @@
 
   <!-- 加载状态 -->
   <view class="loading-container" wx:if="{{loading}}">
-    <view class="loading-spinner">⏳</view>
+    <view class="loading-spinner"><image src="/images/loading.png" mode="aspectFit"></image></view>
     <text class="loading-text">加载中...</text>
   </view>
 
   <!-- 空状态 -->
   <view class="empty-state" wx:if="{{!loading && todayRecommend.length === 0 && recentUsed.length === 0}}">
-    <view class="empty-icon">📚</view>
+    <view class="empty-icon"><image src="/images/features/classics.png" mode="aspectFit"></image></view>
     <text class="empty-text">暂无内容</text>
   </view>
 </view>

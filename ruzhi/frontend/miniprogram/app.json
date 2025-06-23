@@ -11,6 +11,7 @@
     "pages/ocr/result/result",
     "pages/chat/history/history",
     "pages/classics/detail/detail",
+    "pages/classics/interpret/interpret",
     "pages/knowledge/concept/concept",
     "pages/challenge/challenge",
     "pages/recommend/recommend",

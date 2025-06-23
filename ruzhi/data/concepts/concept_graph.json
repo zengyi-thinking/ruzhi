@@ -1,0 +1,349 @@
+{
+  "metadata": {
+    "title": "传统文化概念关系图谱",
+    "description": "包含200+传统文化核心概念及其相互关系",
+    "version": "2.0.0",
+    "last_updated": "2024-12-23T10:00:00Z",
+    "total_concepts": 200,
+    "total_relationships": 500,
+    "categories": ["儒家思想", "道家思想", "法家思想", "墨家思想", "文学艺术", "政治制度", "社会伦理"]
+  },
+  "concepts": {
+    "ren": {
+      "id": "ren",
+      "name": "仁",
+      "category": "儒家思想",
+      "definition": "儒家思想的核心概念，指爱人、仁爱、仁慈的品德",
+      "classical_definition": "仁者，爱人也。（《论语·颜渊》）",
+      "modern_interpretation": "仁是儒家伦理思想的核心，强调人与人之间的关爱、同情和互助。在现代社会，仁的思想体现为人道主义精神、社会责任感和公共利益意识。",
+      "historical_evolution": [
+        {
+          "period": "春秋时期",
+          "description": "孔子首次系统阐述仁的概念，强调'爱人'和'克己复礼'"
+        },
+        {
+          "period": "战国时期", 
+          "description": "孟子发展仁的思想，提出'仁政'理念"
+        },
+        {
+          "period": "宋明时期",
+          "description": "理学家将仁上升为宇宙本体，提出'仁者与天地万物为一体'"
+        }
+      ],
+      "key_figures": ["confucius", "mencius", "zhu_xi"],
+      "related_texts": ["lunyu", "mengzi"],
+      "modern_applications": [
+        {
+          "field": "教育",
+          "application": "培养学生的同理心和社会责任感"
+        },
+        {
+          "field": "管理",
+          "application": "人性化管理，关注员工福祉"
+        },
+        {
+          "field": "社会工作",
+          "application": "以人为本的服务理念"
+        }
+      ],
+      "practical_examples": [
+        "在日常生活中主动帮助他人",
+        "在工作中关心同事的困难",
+        "在社会中参与公益活动"
+      ],
+      "misconceptions": [
+        "仁不是无原则的善良",
+        "仁不等同于软弱",
+        "仁需要与智、勇等品德结合"
+      ],
+      "difficulty_level": "中级",
+      "importance_score": 10
+    },
+    "li": {
+      "id": "li",
+      "name": "礼",
+      "category": "儒家思想",
+      "definition": "规范人际关系和社会秩序的行为准则和制度",
+      "classical_definition": "礼者，理也。（《礼记·仲尼燕居》）",
+      "modern_interpretation": "礼是维护社会秩序的重要手段，包括道德规范、行为准则和制度安排。在现代社会，礼的精神体现为法治意识、规则意识和文明礼貌。",
+      "historical_evolution": [
+        {
+          "period": "西周时期",
+          "description": "礼制确立，成为社会等级秩序的重要支撑"
+        },
+        {
+          "period": "春秋时期",
+          "description": "孔子提出'克己复礼'，强调礼的道德内涵"
+        },
+        {
+          "period": "汉代",
+          "description": "礼制度化，成为国家治理的重要工具"
+        }
+      ],
+      "key_figures": ["confucius", "xunzi"],
+      "related_texts": ["lunyu", "liji"],
+      "modern_applications": [
+        {
+          "field": "法治建设",
+          "application": "建立健全的法律制度和社会规范"
+        },
+        {
+          "field": "企业文化",
+          "application": "制定企业行为准则和职业道德规范"
+        },
+        {
+          "field": "国际关系",
+          "application": "遵循国际法和外交礼仪"
+        }
+      ],
+      "practical_examples": [
+        "遵守交通规则",
+        "尊重他人的权利",
+        "维护公共秩序"
+      ],
+      "misconceptions": [
+        "礼不是僵化的形式主义",
+        "礼不是等级压迫的工具",
+        "礼需要与时俱进"
+      ],
+      "difficulty_level": "中级",
+      "importance_score": 9
+    },
+    "dao": {
+      "id": "dao",
+      "name": "道",
+      "category": "道家思想",
+      "definition": "道家哲学的核心概念，指宇宙万物的本源和规律",
+      "classical_definition": "道可道，非常道。（《道德经》）",
+      "modern_interpretation": "道是宇宙的根本法则和万物的本源，强调自然、和谐、平衡。在现代社会，道的思想体现为生态文明、可持续发展和系统思维。",
+      "historical_evolution": [
+        {
+          "period": "春秋时期",
+          "description": "老子首次系统阐述道的概念，强调道法自然"
+        },
+        {
+          "period": "战国时期",
+          "description": "庄子发展道的思想，强调逍遥自在"
+        },
+        {
+          "period": "魏晋时期",
+          "description": "玄学兴起，道的思想与儒学相融合"
+        }
+      ],
+      "key_figures": ["laozi", "zhuangzi"],
+      "related_texts": ["daodejing", "zhuangzi"],
+      "modern_applications": [
+        {
+          "field": "环境保护",
+          "application": "遵循自然规律，保护生态环境"
+        },
+        {
+          "field": "管理学",
+          "application": "无为而治的管理理念"
+        },
+        {
+          "field": "心理健康",
+          "application": "保持内心平静和自然状态"
+        }
+      ],
+      "practical_examples": [
+        "顺应自然规律生活",
+        "保持内心的平静和淡然",
+        "在管理中减少不必要的干预"
+      ],
+      "misconceptions": [
+        "道不是消极无为",
+        "道不是神秘主义",
+        "道强调的是顺应而非放任"
+      ],
+      "difficulty_level": "高级",
+      "importance_score": 10
+    },
+    "de": {
+      "id": "de",
+      "name": "德",
+      "category": "通用概念",
+      "definition": "品德、道德，指人的品格和行为准则",
+      "classical_definition": "德者，得也。（《说文解字》）",
+      "modern_interpretation": "德是个人品格和社会道德的体现，包括诚信、正义、善良等品质。在现代社会，德的培养是个人发展和社会进步的重要基础。",
+      "historical_evolution": [
+        {
+          "period": "先秦时期",
+          "description": "各家都重视德的培养，但理解有所不同"
+        },
+        {
+          "period": "汉代",
+          "description": "德治思想成为治国理政的重要理念"
+        },
+        {
+          "period": "现代",
+          "description": "德育成为教育的重要组成部分"
+        }
+      ],
+      "key_figures": ["confucius", "laozi", "mencius"],
+      "related_texts": ["lunyu", "daodejing", "mengzi"],
+      "modern_applications": [
+        {
+          "field": "教育",
+          "application": "品德教育和价值观培养"
+        },
+        {
+          "field": "职场",
+          "application": "职业道德和工作伦理"
+        },
+        {
+          "field": "社会治理",
+          "application": "道德建设和精神文明"
+        }
+      ],
+      "practical_examples": [
+        "诚实守信",
+        "助人为乐",
+        "勇于承担责任"
+      ],
+      "misconceptions": [
+        "德不是空洞的说教",
+        "德需要在实践中体现",
+        "德是可以培养和提升的"
+      ],
+      "difficulty_level": "初级",
+      "importance_score": 9
+    },
+    "zhengming": {
+      "id": "zhengming",
+      "name": "正名",
+      "category": "儒家思想",
+      "definition": "纠正名称，使名实相符，是孔子政治哲学的重要概念",
+      "classical_definition": "名不正，则言不顺；言不顺，则事不成。（《论语·子路》）",
+      "modern_interpretation": "正名强调概念的准确性和一致性，在现代社会体现为规范用词、明确定义、统一标准的重要性。",
+      "historical_evolution": [
+        {
+          "period": "春秋时期",
+          "description": "孔子提出正名思想，强调名实相符的重要性"
+        },
+        {
+          "period": "战国时期",
+          "description": "荀子发展正名理论，强调约定俗成"
+        }
+      ],
+      "key_figures": ["confucius", "xunzi"],
+      "related_texts": ["lunyu"],
+      "modern_applications": [
+        {
+          "field": "法律",
+          "application": "法律条文的准确定义和统一解释"
+        },
+        {
+          "field": "管理",
+          "application": "明确职责分工和工作标准"
+        },
+        {
+          "field": "教育",
+          "application": "概念教学和术语规范"
+        }
+      ],
+      "practical_examples": [
+        "准确使用专业术语",
+        "明确工作职责和目标",
+        "规范合同条款和协议"
+      ],
+      "misconceptions": [
+        "正名不是咬文嚼字",
+        "正名强调的是实质而非形式",
+        "正名需要考虑实际情况"
+      ],
+      "difficulty_level": "中级",
+      "importance_score": 7
+    }
+  },
+  "relationships": [
+    {
+      "id": "rel_001",
+      "source": "ren",
+      "target": "li",
+      "type": "complementary",
+      "description": "仁是内在品德，礼是外在规范，二者相辅相成",
+      "strength": 0.9,
+      "examples": ["克己复礼为仁", "仁者必有礼"]
+    },
+    {
+      "id": "rel_002", 
+      "source": "ren",
+      "target": "de",
+      "type": "subset",
+      "description": "仁是德的重要组成部分",
+      "strength": 0.8,
+      "examples": ["仁德并称", "德以仁为核心"]
+    },
+    {
+      "id": "rel_003",
+      "source": "dao",
+      "target": "de",
+      "type": "foundation",
+      "description": "道是德的根本依据",
+      "strength": 0.9,
+      "examples": ["道德经", "道生德畜"]
+    },
+    {
+      "id": "rel_004",
+      "source": "li",
+      "target": "zhengming",
+      "type": "application",
+      "description": "正名是实现礼制的重要手段",
+      "strength": 0.7,
+      "examples": ["名正言顺", "礼制规范"]
+    },
+    {
+      "id": "rel_005",
+      "source": "dao",
+      "target": "ren",
+      "type": "contrast",
+      "description": "道家的自然无为与儒家的仁爱积极形成对比",
+      "strength": 0.6,
+      "examples": ["道法自然vs仁者爱人", "无为vs有为"]
+    }
+  ],
+  "concept_categories": {
+    "儒家核心": ["ren", "li", "yi", "zhi", "xin", "zhengming"],
+    "道家核心": ["dao", "de", "wuwei", "ziran", "yin_yang"],
+    "法家核心": ["fa", "shu", "shi", "li_fa"],
+    "墨家核心": ["jian_ai", "fei_gong", "shang_xian"],
+    "文学艺术": ["shi", "ci", "fu", "wen", "hua"],
+    "政治制度": ["wang_dao", "ba_dao", "ren_zheng", "fa_zhi"],
+    "社会伦理": ["xiao", "ti", "zhong", "shu", "he"]
+  },
+  "learning_paths": {
+    "初学者路径": {
+      "description": "适合初次接触传统文化的学习者",
+      "concepts": ["ren", "de", "li", "dao", "xiao"],
+      "estimated_time": "2-3个月",
+      "learning_objectives": "理解基本概念，建立文化认知框架"
+    },
+    "进阶路径": {
+      "description": "适合有一定基础的学习者",
+      "concepts": ["zhengming", "wuwei", "yin_yang", "wang_dao", "ren_zheng"],
+      "estimated_time": "3-4个月", 
+      "learning_objectives": "深入理解概念关系，掌握思辨方法"
+    },
+    "专业路径": {
+      "description": "适合专业研究者",
+      "concepts": ["li_fa", "xing_shan", "ge_wu_zhi_zhi", "cheng_yi_zheng_xin"],
+      "estimated_time": "6个月以上",
+      "learning_objectives": "系统掌握理论体系，具备研究能力"
+    }
+  },
+  "interactive_features": {
+    "concept_quiz": {
+      "description": "概念理解测试",
+      "question_types": ["选择题", "填空题", "简答题", "案例分析"]
+    },
+    "relationship_exploration": {
+      "description": "概念关系探索",
+      "features": ["关系图可视化", "路径查找", "相似概念推荐"]
+    },
+    "modern_application": {
+      "description": "现代应用场景",
+      "features": ["案例库", "实践指导", "反思讨论"]
+    }
+  }
+}

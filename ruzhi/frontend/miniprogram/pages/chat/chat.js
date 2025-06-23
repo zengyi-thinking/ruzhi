@@ -1,7 +1,7 @@
 // AI人物对话页面
 const app = getApp()
 const { chatAPI, userAPI } = require('../../api/index')
-const { aiService } = require('../../utils/ai.js')
+const { aiService } = require('../../services/aiService')
 
 Page({
 
@@ -441,7 +441,7 @@ Page({
         this.saveConversationToLocal(messages.concat([assistantMessage]))
 
       } else {
-        throw new Error('AI服务响应失败')
+        throw new Error('AI服务响应失败: ' + response.error)
       }
     } catch (error) {
       console.error('发送消息失败:', error)

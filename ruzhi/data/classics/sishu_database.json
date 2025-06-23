@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "title": "四书数据库",
+    "description": "包含《论语》、《孟子》、《大学》、《中庸》的完整文本和注释",
+    "version": "2.0.0",
+    "last_updated": "2024-12-23T10:00:00Z",
+    "total_books": 4,
+    "total_chapters": 47,
+    "annotation_system": "朱熹集注为主，结合现代解释"
+  },
+  "classics": {
+    "lunyu": {
+      "id": "lunyu",
+      "title": "论语",
+      "author": "孔子弟子及再传弟子",
+      "dynasty": "春秋",
+      "description": "记录孔子及其弟子言行的语录体散文集，儒家经典之一",
+      "structure": {
+        "total_chapters": 20,
+        "total_passages": 492,
+        "main_themes": ["仁", "礼", "教育", "政治", "修身"]
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "title": "学而第一",
+          "theme": "学习与修身",
+          "passages": [
+            {
+              "id": "1.1",
+              "original": "子曰：「学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？」",
+              "modern_chinese": "孔子说：「学习了知识并且按时复习，不是很愉快吗？有朋友从远方来，不是很快乐吗？别人不了解我但我不生气，不也是君子的品格吗？」",
+              "annotation": {
+                "key_concepts": ["学习", "复习", "友谊", "君子"],
+                "zhu_xi_note": "此章言学者入德之门也。学之为言效也，人性皆善，而觉有先后，后觉者必效先觉之所为，乃可以明善而复其初也。",
+                "modern_interpretation": "这是《论语》开篇，强调了学习的重要性和正确态度。学习不仅要获取知识，更要通过反复实践来内化。同时体现了孔子对人际关系和个人修养的重视。",
+                "life_application": "在现代社会，这句话提醒我们要保持终身学习的态度，珍视友谊，并且要有宽容的心态面对误解。"
+              },
+              "related_concepts": ["教育", "修身", "人际关系"],
+              "difficulty_level": "初级",
+              "frequency": "高频"
+            },
+            {
+              "id": "1.2", 
+              "original": "有子曰：「其为人也孝弟，而好犯上者，鲜矣；不好犯上，而好作乱者，未之有也。君子务本，本立而道生。孝弟也者，其为仁之本与！」",
+              "modern_chinese": "有子说：「一个人如果孝顺父母、敬爱兄长，却喜欢冒犯上级的，是很少的；不喜欢冒犯上级，却喜欢造反作乱的，是没有的。君子专心致力于根本，根本确立了，道就产生了。孝顺父母、敬爱兄长，这就是仁的根本吧！」",
+              "annotation": {
+                "key_concepts": ["孝悌", "仁", "根本", "道"],
+                "zhu_xi_note": "有子，孔子弟子，姓有，名若。善事父母为孝，善事兄长为弟。犯上，谓干犯在上之人。鲜，少也。",
+                "modern_interpretation": "有子强调了家庭伦理是社会秩序的基础。一个人如果连父母兄长都不能善待，很难指望他会尊重社会秩序。孝悌是培养仁德的起点。",
+                "life_application": "现代社会中，家庭教育和家庭关系仍然是个人品格形成的重要基础。良好的家庭关系有助于培养责任感和社会适应能力。"
+              },
+              "related_concepts": ["家庭伦理", "社会秩序", "道德基础"],
+              "difficulty_level": "中级",
+              "frequency": "中频"
+            }
+          ]
+        },
+        {
+          "chapter": 2,
+          "title": "为政第二", 
+          "theme": "政治与治理",
+          "passages": [
+            {
+              "id": "2.1",
+              "original": "子曰：「为政以德，譬如北辰，居其所而众星共之。」",
+              "modern_chinese": "孔子说：「用道德来治理政事，就像北极星一样，安居在自己的位置上，众星都围绕着它。」",
+              "annotation": {
+                "key_concepts": ["德治", "政治", "领导力"],
+                "zhu_xi_note": "政者，正也。德者，得也，得其道也。北辰，北极星也，居其所，不动也。共，同拱也，言众星之拱北辰，犹众民之归有德也。",
+                "modern_interpretation": "孔子提出了德治的政治理念，认为统治者应该以道德感化民众，而不是仅仅依靠权力和法律。真正的领导者应该像北极星一样，以自身的德行吸引和感化他人。",
+                "life_application": "在现代管理中，这一理念强调了以身作则和道德领导的重要性。无论是企业管理还是团队领导，都需要通过自身的品格和行为来影响他人。"
+              },
+              "related_concepts": ["领导力", "道德治理", "影响力"],
+              "difficulty_level": "中级",
+              "frequency": "高频"
+            }
+          ]
+        }
+      ],
+      "study_guide": {
+        "reading_order": "建议按章节顺序阅读，重点关注学而、为政、里仁等篇",
+        "key_passages": ["1.1", "2.1", "4.1", "6.30", "12.1"],
+        "study_methods": ["诵读", "背诵", "讨论", "实践"],
+        "modern_relevance": "《论语》的教育思想、政治理念、道德观念在现代社会仍有重要指导意义"
+      }
+    },
+    "mengzi": {
+      "id": "mengzi",
+      "title": "孟子",
+      "author": "孟子及其弟子",
+      "dynasty": "战国",
+      "description": "记录孟子思想言论的儒家经典，发展了孔子的仁学思想",
+      "structure": {
+        "total_chapters": 7,
+        "total_passages": 261,
+        "main_themes": ["性善论", "仁政", "民本", "浩然之气"]
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "title": "梁惠王章句上",
+          "theme": "仁政与王道",
+          "passages": [
+            {
+              "id": "1A.1",
+              "original": "孟子见梁惠王。王曰：「叟！不远千里而来，亦将有以利吾国乎？」孟子对曰：「王！何必曰利？亦有仁义而已矣。」",
+              "modern_chinese": "孟子拜见梁惠王。王说：「老先生！不远千里而来，一定是有什么能够使我的国家获利的办法吧？」孟子回答说：「大王！何必说利呢？只要有仁义就够了。」",
+              "annotation": {
+                "key_concepts": ["仁义", "利益", "王道政治"],
+                "zhu_xi_note": "梁惠王，魏侯罃也。叟，老人之称。孟子时年已五十矣。利者，私欲之谓。仁义者，天理之公也。",
+                "modern_interpretation": "孟子开篇就明确反对单纯追求利益的政治观，强调仁义的重要性。这体现了儒家重义轻利的价值观，认为道德原则应该高于物质利益。",
+                "life_application": "在现代社会，这提醒我们在追求经济发展的同时，不能忽视道德和社会责任。企业经营和个人发展都应该在道德框架内进行。"
+              },
+              "related_concepts": ["道德与利益", "政治哲学", "价值观"],
+              "difficulty_level": "中级",
+              "frequency": "高频"
+            }
+          ]
+        }
+      ],
+      "study_guide": {
+        "reading_order": "建议从梁惠王章句开始，重点学习性善论和仁政思想",
+        "key_passages": ["1A.1", "2A.6", "6A.6", "6A.8"],
+        "study_methods": ["理解论证逻辑", "分析思辨过程", "联系现实"],
+        "modern_relevance": "孟子的民本思想、人性论对现代民主政治和人权理念有重要启发"
+      }
+    },
+    "daxue": {
+      "id": "daxue",
+      "title": "大学",
+      "author": "曾子",
+      "dynasty": "春秋",
+      "description": "儒家经典之一，阐述修身治国的基本原理",
+      "structure": {
+        "total_chapters": 1,
+        "total_passages": 11,
+        "main_themes": ["三纲领", "八条目", "修身齐家治国平天下"]
+      },
+      "key_passage": {
+        "id": "1.1",
+        "original": "大学之道，在明明德，在亲民，在止于至善。知止而后有定，定而后能静，静而后能安，安而后能虑，虑而后能得。",
+        "modern_chinese": "大学的宗旨，在于弘扬光明的品德，在于使人弃旧图新，在于达到最完善的境界。知道应该达到的境界才能够志向坚定；志向坚定才能够镇静不躁；镇静不躁才能够心安理得；心安理得才能够思虑周详；思虑周详才能够有所收获。",
+        "annotation": {
+          "key_concepts": ["明德", "亲民", "至善", "修身"],
+          "zhu_xi_note": "大学者，大人之学也。明德者，人之所得乎天，而虚灵不昧，以具众理而应万事者也。",
+          "modern_interpretation": "《大学》提出了儒家教育的根本目标和实现路径。三纲领指出了教育的三个基本目标，而后面的论述则说明了实现这些目标需要循序渐进的过程。",
+          "life_application": "这一理念强调了个人修养的重要性，以及从个人修养到社会责任的递进关系。在现代社会，这提醒我们要注重内在品格的培养。"
+        },
+        "related_concepts": ["教育目标", "个人修养", "社会责任"],
+        "difficulty_level": "高级",
+        "frequency": "高频"
+      },
+      "study_guide": {
+        "reading_order": "全文较短，建议通读并重点理解三纲领八条目",
+        "key_concepts": ["格物致知", "诚意正心", "修身齐家治国平天下"],
+        "study_methods": ["背诵", "理解层次关系", "实践应用"],
+        "modern_relevance": "《大学》的修身理念和治理思想对现代教育和管理有重要指导意义"
+      }
+    },
+    "zhongyong": {
+      "id": "zhongyong", 
+      "title": "中庸",
+      "author": "子思",
+      "dynasty": "春秋",
+      "description": "阐述中庸之道的儒家经典，强调和谐与平衡",
+      "structure": {
+        "total_chapters": 1,
+        "total_passages": 33,
+        "main_themes": ["中庸之道", "诚", "天人合一", "和谐"]
+      },
+      "key_passage": {
+        "id": "1.1",
+        "original": "天命之谓性，率性之谓道，修道之谓教。道也者，不可须臾离也，可离非道也。",
+        "modern_chinese": "天赋予人的叫做性，遵循本性叫做道，修养道德叫做教。道，是不可以片刻离开的，可以离开的就不是道了。",
+        "annotation": {
+          "key_concepts": ["天命", "性", "道", "教育"],
+          "zhu_xi_note": "天以阴阳五行化生万物，气以成形，而理亦赋焉，犹命令也。于人则指其性而言也。",
+          "modern_interpretation": "《中庸》开篇就阐述了天、人、道的关系，强调了道德修养的重要性和普遍性。这体现了儒家天人合一的思想。",
+          "life_application": "这提醒我们要认识自己的本性，遵循正确的道路，并且要持之以恒地进行道德修养。"
+        },
+        "related_concepts": ["天人关系", "道德修养", "教育哲学"],
+        "difficulty_level": "高级",
+        "frequency": "高频"
+      },
+      "study_guide": {
+        "reading_order": "建议先理解中庸的基本概念，再深入学习诚的思想",
+        "key_concepts": ["中庸", "诚", "慎独", "和而不同"],
+        "study_methods": ["哲学思辨", "内省修养", "平衡实践"],
+        "modern_relevance": "中庸之道对现代人处理复杂关系、保持心理平衡有重要指导意义"
+      }
+    }
+  },
+  "cross_references": {
+    "common_themes": {
+      "仁": ["lunyu:1.1", "mengzi:1A.1", "daxue:1.1"],
+      "教育": ["lunyu:1.1", "daxue:1.1", "zhongyong:1.1"],
+      "修身": ["lunyu:1.2", "daxue:1.1", "zhongyong:1.1"],
+      "政治": ["lunyu:2.1", "mengzi:1A.1"]
+    },
+    "character_connections": {
+      "confucius": ["lunyu"],
+      "mencius": ["mengzi"],
+      "zengzi": ["daxue"],
+      "zisi": ["zhongyong"]
+    }
+  },
+  "study_resources": {
+    "difficulty_progression": ["lunyu", "mengzi", "daxue", "zhongyong"],
+    "thematic_study": {
+      "道德修养": ["lunyu:1.1", "daxue:1.1", "zhongyong:1.1"],
+      "政治思想": ["lunyu:2.1", "mengzi:1A.1"],
+      "教育理念": ["lunyu:1.1", "daxue:1.1"]
+    },
+    "modern_applications": {
+      "个人发展": "重点学习修身相关内容",
+      "领导管理": "重点学习政治和治理思想",
+      "教育工作": "重点学习教育理念和方法"
+    }
+  }
+}

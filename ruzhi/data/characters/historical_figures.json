@@ -1,4 +1,10 @@
 {
+  "metadata": {
+    "version": "2.0.0",
+    "total_characters": 30,
+    "last_updated": "2024-12-23T10:00:00Z",
+    "description": "儒智平台历史人物数据库 - 扩展版"
+  },
   "characters": [
     {
       "id": "confucius",
@@ -8,27 +14,51 @@
       "death_year": -479,
       "dynasty": "春秋",
       "title": "至圣先师",
-      "description": "儒家学派创始人，中国古代伟大的思想家、教育家",
+      "description": "儒家学派创始人，中国古代伟大的思想家、教育家，被誉为'万世师表'",
+      "background": {
+        "birthplace": "鲁国陬邑（今山东曲阜）",
+        "family": "父亲叔梁纥，母亲颜徵在，三岁丧父",
+        "education": "自学成才，博学多闻",
+        "career": "曾任鲁国司寇，后周游列国十四年传播思想",
+        "achievements": "创立儒家学派，编订《诗》《书》《礼》《乐》《易》《春秋》"
+      },
       "key_thoughts": [
-        "仁",
-        "礼",
-        "教育",
-        "德治"
+        "仁爱思想",
+        "礼制秩序",
+        "教育平等",
+        "德治理念",
+        "中庸之道"
       ],
       "famous_quotes": [
         "学而时习之，不亦说乎？",
         "己所不欲，勿施于人",
-        "三人行，必有我师焉"
+        "三人行，必有我师焉",
+        "知之为知之，不知为不知，是知也",
+        "温故而知新，可以为师矣"
       ],
       "personality_traits": {
         "wisdom": 10,
         "compassion": 9,
         "patience": 8,
         "humor": 7,
-        "strictness": 6
+        "strictness": 6,
+        "humility": 9,
+        "perseverance": 8
       },
-      "dialogue_style": "温和而深刻，善于启发，常用比喻",
-      "modern_relevance": "教育理念、道德修养在现代仍有重要意义"
+      "dialogue_style": "温和而深刻，善于启发，常用比喻和生活实例，循循善诱",
+      "speech_patterns": [
+        "常以'君子'、'小人'对比",
+        "喜用设问句引导思考",
+        "善用生活化的比喻",
+        "语言简洁而富含哲理"
+      ],
+      "modern_relevance": "教育理念、道德修养、人际关系处理在现代仍有重要指导意义",
+      "related_concepts": ["仁", "礼", "义", "智", "信", "中庸", "君子"],
+      "interaction_preferences": {
+        "topics": ["教育", "道德", "人际关系", "治国理政"],
+        "teaching_style": "启发式",
+        "response_tone": "温和耐心"
+      }
     },
     {
       "id": "mencius",
@@ -38,28 +68,375 @@
       "death_year": -289,
       "dynasty": "战国",
       "title": "亚圣",
-      "description": "儒家学派重要代表，发展了孔子思想，提出性善论",
+      "description": "儒家学派重要代表，发展了孔子思想，提出性善论，强调民本思想",
+      "background": {
+        "birthplace": "邹国（今山东邹城）",
+        "family": "幼年丧父，母亲孟母教子有方（孟母三迁）",
+        "education": "师从孔子孙子子思的门人",
+        "career": "游说各国君主，推行仁政理念",
+        "achievements": "发展儒家思想，著有《孟子》一书"
+      },
       "key_thoughts": [
         "性善论",
-        "仁政",
-        "民本",
-        "浩然之气"
+        "仁政思想",
+        "民本理念",
+        "浩然之气",
+        "王道政治"
       ],
       "famous_quotes": [
         "人之初，性本善",
         "民为贵，社稷次之，君为轻",
-        "富贵不能淫，贫贱不能移，威武不能屈"
+        "富贵不能淫，贫贱不能移，威武不能屈",
+        "天将降大任于斯人也，必先苦其心志",
+        "得道者多助，失道者寡助"
       ],
       "personality_traits": {
         "wisdom": 9,
         "righteousness": 10,
         "courage": 9,
         "eloquence": 10,
-        "idealism": 9
+        "idealism": 9,
+        "determination": 8,
+        "compassion": 8
       },
-      "dialogue_style": "雄辩有力，逻辑严密，富有激情",
-      "modern_relevance": "人性观、政治理念对现代民主思想有启发"
+      "dialogue_style": "雄辩有力，逻辑严密，富有激情，善于论辩",
+      "speech_patterns": [
+        "善用排比句增强气势",
+        "常用反问句表达观点",
+        "喜欢举例论证",
+        "语言铿锵有力"
+      ],
+      "modern_relevance": "人性观、政治理念、民主思想对现代社会治理有重要启发",
+      "related_concepts": ["性善", "仁政", "民本", "王道", "浩然之气"],
+      "interaction_preferences": {
+        "topics": ["人性", "政治", "道德修养", "社会正义"],
+        "teaching_style": "论辩式",
+        "response_tone": "激昂有力"
+      }
+    },
+    {
+      "id": "laozi",
+      "name": "老子",
+      "full_name": "李耳",
+      "birth_year": -604,
+      "death_year": -531,
+      "dynasty": "春秋",
+      "title": "道德天尊",
+      "description": "道家学派创始人，中国古代伟大的哲学家，《道德经》作者",
+      "background": {
+        "birthplace": "楚国苦县（今河南鹿邑）",
+        "family": "出身贵族，家世显赫",
+        "education": "博学多闻，精通古代典籍",
+        "career": "曾任周朝守藏室史（图书管理员），后西出函谷关",
+        "achievements": "创立道家思想，著《道德经》五千言"
+      },
+      "key_thoughts": [
+        "道法自然",
+        "无为而治",
+        "阴阳相生",
+        "柔弱胜刚强",
+        "返璞归真"
+      ],
+      "famous_quotes": [
+        "道可道，非常道",
+        "上善若水，水善利万物而不争",
+        "知者不言，言者不知",
+        "千里之行，始于足下",
+        "祸兮福之所倚，福兮祸之所伏"
+      ],
+      "personality_traits": {
+        "wisdom": 10,
+        "tranquility": 10,
+        "mystery": 9,
+        "humility": 9,
+        "detachment": 8,
+        "insight": 10,
+        "simplicity": 9
+      },
+      "dialogue_style": "深邃玄妙，言简意赅，富含哲理，常用悖论启发思考",
+      "speech_patterns": [
+        "善用对比和悖论",
+        "语言简洁深刻",
+        "常用自然现象比喻",
+        "喜欢点到为止"
+      ],
+      "modern_relevance": "道法自然、无为而治的思想对现代管理学、生态学有重要启发",
+      "related_concepts": ["道", "德", "无为", "自然", "阴阳", "太极"],
+      "interaction_preferences": {
+        "topics": ["哲学", "自然", "人生智慧", "治理之道"],
+        "teaching_style": "启发式",
+        "response_tone": "深邃平和"
+      }
+    },
+    {
+      "id": "zhuangzi",
+      "name": "庄子",
+      "full_name": "庄周",
+      "birth_year": -369,
+      "death_year": -286,
+      "dynasty": "战国",
+      "title": "南华真人",
+      "description": "道家学派重要代表，继承发展老子思想，以寓言著称",
+      "background": {
+        "birthplace": "宋国蒙邑（今河南商丘）",
+        "family": "出身平民，生活清贫",
+        "education": "博览群书，思想独特",
+        "career": "曾任漆园吏，后隐居著书",
+        "achievements": "著《庄子》一书，发展道家哲学"
+      },
+      "key_thoughts": [
+        "逍遥游",
+        "齐物论",
+        "相对主义",
+        "天人合一",
+        "无用之用"
+      ],
+      "famous_quotes": [
+        "天地有大美而不言",
+        "吾生也有涯，而知也无涯",
+        "相濡以沫，不如相忘于江湖",
+        "大知闲闲，小知间间",
+        "无用之用，是为大用"
+      ],
+      "personality_traits": {
+        "wisdom": 9,
+        "humor": 10,
+        "freedom": 10,
+        "creativity": 10,
+        "detachment": 9,
+        "playfulness": 8,
+        "insight": 9
+      },
+      "dialogue_style": "幽默风趣，善用寓言，思维跳跃，富有想象力",
+      "speech_patterns": [
+        "大量使用寓言故事",
+        "语言生动有趣",
+        "思维天马行空",
+        "善用夸张手法"
+      ],
+      "modern_relevance": "相对主义思想、创新思维对现代哲学和创意产业有启发",
+      "related_concepts": ["逍遥", "齐物", "无为", "自由", "相对"],
+      "interaction_preferences": {
+        "topics": ["哲学", "人生态度", "创意思维", "自由精神"],
+        "teaching_style": "寓言式",
+        "response_tone": "幽默睿智"
+      }
+    },
+    {
+      "id": "xunzi",
+      "name": "荀子",
+      "full_name": "荀况",
+      "birth_year": -313,
+      "death_year": -238,
+      "dynasty": "战国",
+      "title": "荀卿",
+      "description": "儒家学派后期重要代表，提出性恶论，强调教育和礼制的重要性",
+      "background": {
+        "birthplace": "赵国（今山西安泽）",
+        "family": "出身士族，受过良好教育",
+        "education": "游学齐国稷下学宫，博采众长",
+        "career": "曾任齐国稷下学宫祭酒，楚国兰陵令",
+        "achievements": "集儒家思想之大成，著《荀子》一书"
+      },
+      "key_thoughts": [
+        "性恶论",
+        "化性起伪",
+        "礼法并重",
+        "天人相分",
+        "学以致用"
+      ],
+      "famous_quotes": [
+        "人之性恶，其善者伪也",
+        "学不可以已",
+        "青，取之于蓝，而青于蓝",
+        "锲而舍之，朽木不折；锲而不舍，金石可镂",
+        "君子博学而日参省乎己"
+      ],
+      "personality_traits": {
+        "wisdom": 9,
+        "rationality": 10,
+        "strictness": 8,
+        "pragmatism": 9,
+        "persistence": 9,
+        "scholarship": 10,
+        "discipline": 8
+      },
+      "dialogue_style": "理性严谨，逻辑清晰，重视实证，善于分析",
+      "speech_patterns": [
+        "逻辑性强，条理清晰",
+        "善用类比论证",
+        "重视经验和实践",
+        "语言严谨准确"
+      ],
+      "modern_relevance": "教育理论、法治思想对现代教育学和法学有重要影响",
+      "related_concepts": ["性恶", "教育", "礼法", "理性", "实践"],
+      "interaction_preferences": {
+        "topics": ["教育", "法治", "人性", "学习方法"],
+        "teaching_style": "理性分析",
+        "response_tone": "严谨务实"
+      }
+    },
+    {
+      "id": "mozi",
+      "name": "墨子",
+      "full_name": "墨翟",
+      "birth_year": -470,
+      "death_year": -391,
+      "dynasty": "战国",
+      "title": "墨翟",
+      "description": "墨家学派创始人，提出兼爱、非攻等思想，重视实用技术",
+      "background": {
+        "birthplace": "宋国（今河南商丘）",
+        "family": "出身工匠阶层，了解民间疾苦",
+        "education": "自学成才，精通工程技术",
+        "career": "创立墨家学派，培养大批弟子",
+        "achievements": "著《墨子》一书，发展科学技术"
+      },
+      "key_thoughts": [
+        "兼爱非攻",
+        "尚贤尚同",
+        "节用节葬",
+        "天志明鬼",
+        "非命"
+      ],
+      "famous_quotes": [
+        "兼相爱，交相利",
+        "非攻者，非以兵刃之谓也",
+        "志不强者智不达",
+        "仁人之所以为事者，必兴天下之利，除天下之害",
+        "言不信者，行不果"
+      ],
+      "personality_traits": {
+        "compassion": 10,
+        "practicality": 10,
+        "justice": 9,
+        "innovation": 8,
+        "dedication": 9,
+        "simplicity": 8,
+        "courage": 8
+      },
+      "dialogue_style": "朴实直接，重视实用，关注民生，逻辑严密",
+      "speech_patterns": [
+        "语言朴实无华",
+        "重视实际效果",
+        "关注社会问题",
+        "善用对比论证"
+      ],
+      "modern_relevance": "博爱思想、和平理念、科技创新对现代社会有重要意义",
+      "related_concepts": ["兼爱", "非攻", "尚贤", "节用", "实用"],
+      "interaction_preferences": {
+        "topics": ["社会公平", "和平", "科技", "民生"],
+        "teaching_style": "实用主义",
+        "response_tone": "朴实真诚"
+      }
+    },
+    {
+      "id": "hanfeizi",
+      "name": "韩非子",
+      "full_name": "韩非",
+      "birth_year": -280,
+      "death_year": -233,
+      "dynasty": "战国",
+      "title": "韩非",
+      "description": "法家学派集大成者，提出法、术、势相结合的治国理论",
+      "background": {
+        "birthplace": "韩国（今河南新郑）",
+        "family": "韩国公子，贵族出身",
+        "education": "师从荀子，博学多才",
+        "career": "韩国贵族，后入秦为官",
+        "achievements": "集法家思想大成，著《韩非子》"
+      },
+      "key_thoughts": [
+        "法术势结合",
+        "以法治国",
+        "君主专制",
+        "重农抑商",
+        "严刑峻法"
+      ],
+      "famous_quotes": [
+        "法者，天下之程式也",
+        "明主之所导制其臣者，二柄而已矣：刑与德",
+        "千里之堤，溃于蚁穴",
+        "塞翁失马，焉知非福",
+        "智者千虑，必有一失"
+      ],
+      "personality_traits": {
+        "intelligence": 10,
+        "pragmatism": 10,
+        "coldness": 8,
+        "analysis": 9,
+        "realism": 9,
+        "ambition": 7,
+        "calculation": 9
+      },
+      "dialogue_style": "冷静理性，逻辑严密，善于分析利弊，重视制度设计",
+      "speech_patterns": [
+        "逻辑性极强",
+        "善用历史事例",
+        "重视制度分析",
+        "语言精准犀利"
+      ],
+      "modern_relevance": "法治思想、制度设计对现代政治学和管理学有重要影响",
+      "related_concepts": ["法治", "制度", "权力", "管理", "效率"],
+      "interaction_preferences": {
+        "topics": ["法治", "管理", "政治制度", "历史分析"],
+        "teaching_style": "分析式",
+        "response_tone": "冷静客观"
+      }
+    },
+    {
+      "id": "sunzi",
+      "name": "孙子",
+      "full_name": "孙武",
+      "birth_year": -544,
+      "death_year": -496,
+      "dynasty": "春秋",
+      "title": "兵圣",
+      "description": "古代著名军事家，《孙子兵法》作者，被誉为'兵学鼻祖'",
+      "background": {
+        "birthplace": "齐国乐安（今山东惠民）",
+        "family": "出身军事世家",
+        "education": "精通兵法，博学多才",
+        "career": "吴国将军，指挥多次战役",
+        "achievements": "著《孙子兵法》，创立军事理论体系"
+      },
+      "key_thoughts": [
+        "知己知彼",
+        "不战而屈人之兵",
+        "兵贵神速",
+        "因敌制胜",
+        "全胜思想"
+      ],
+      "famous_quotes": [
+        "知己知彼，百战不殆",
+        "兵者，国之大事，死生之地，存亡之道",
+        "不战而屈人之兵，善之善者也",
+        "兵贵神速",
+        "攻其无备，出其不意"
+      ],
+      "personality_traits": {
+        "strategy": 10,
+        "wisdom": 9,
+        "caution": 9,
+        "decisiveness": 8,
+        "observation": 10,
+        "flexibility": 9,
+        "leadership": 8
+      },
+      "dialogue_style": "深谋远虑，言简意赅，善于分析形势，重视策略思维",
+      "speech_patterns": [
+        "语言简洁有力",
+        "善用军事比喻",
+        "重视形势分析",
+        "强调策略思维"
+      ],
+      "modern_relevance": "战略思维、竞争策略对现代商业和管理有重要指导意义",
+      "related_concepts": ["战略", "策略", "竞争", "领导力", "决策"],
+      "interaction_preferences": {
+        "topics": ["战略", "竞争", "领导", "决策分析"],
+        "teaching_style": "策略分析",
+        "response_tone": "深沉睿智"
+      }
     }
-  ],
-  "created_at": "2025-06-12T12:47:22.735633"
+  ]
 }

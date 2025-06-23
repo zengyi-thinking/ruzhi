@@ -18,7 +18,7 @@ Page({
         id: 'ocr',
         title: '古籍识别',
         desc: 'OCR识别古籍文字',
-        icon: '📷',
+        icon: '/images/features/ocr.png',
         path: '/pages/ocr/ocr',
         color: '#1890ff'
       },
@@ -26,7 +26,7 @@ Page({
         id: 'chat',
         title: '人物对话',
         desc: '与历史人物对话',
-        icon: '💬',
+        icon: '/images/features/chat.png',
         path: '/pages/chat/chat',
         color: '#52c41a'
       },
@@ -34,7 +34,7 @@ Page({
         id: 'classics',
         title: '经典库',
         desc: '浏览儒家经典',
-        icon: '📚',
+        icon: '/images/features/classics.png',
         path: '/pages/classics/classics',
         color: '#722ed1'
       },
@@ -42,7 +42,7 @@ Page({
         id: 'knowledge',
         title: '知识图谱',
         desc: '探索概念关系',
-        icon: '🕸️',
+        icon: '/images/features/knowledge.png',
         path: '/pages/knowledge/knowledge',
         color: '#fa8c16'
       }

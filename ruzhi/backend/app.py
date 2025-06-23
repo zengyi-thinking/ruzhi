@@ -1,10 +1,12 @@
 """
 儒智项目 - 重构后的主应用文件
-传统文化智能学习平台后端服务
+传统文化智能学习平台后端服务 - 增强版
 """
 import os
 import sys
-from flask import Flask, jsonify, request
+import uuid
+import time
+from flask import Flask, jsonify, request, g
 from flask_cors import CORS
 import logging
 from datetime import datetime
@@ -13,8 +15,10 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 导入配置和工具
-from config.settings import FLASK_CONFIG
-from utils.helpers import setup_logging, handle_errors
+from config.settings import APP_CONFIG, CORS_CONFIG, FLASK_CONFIG
+from utils.logging_config import setup_logging, request_logger, business_logger, security_logger
+from utils.monitoring import setup_monitoring
+from middleware.security import add_security_headers, require_auth, rate_limit
 
 # 导入路由蓝图
 from routes.ocr_routes import ocr_bp
@@ -26,20 +30,65 @@ from routes.config_routes import config_bp
 
 # 设置日志
 setup_logging()
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('ruzhi.app')
 
 def create_app():
-    """创建Flask应用"""
+    """创建Flask应用 - 增强版"""
     app = Flask(__name__)
-    
-    # 配置CORS
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"]
-        }
+
+    # 应用配置
+    app.config.update({
+        'SECRET_KEY': APP_CONFIG['secret_key'],
+        'DEBUG': APP_CONFIG['debug'],
+        'JSON_AS_ASCII': False,  # 支持中文JSON
+        'MAX_CONTENT_LENGTH': 16 * 1024 * 1024  # 16MB
     })
+
+    # 配置CORS
+    CORS(app,
+         origins=CORS_CONFIG['origins'],
+         methods=CORS_CONFIG['methods'],
+         allow_headers=CORS_CONFIG['allow_headers'],
+         supports_credentials=CORS_CONFIG['supports_credentials'])
+
+    # 设置监控
+    setup_monitoring(app)
+
+    # 请求中间件
+    @app.before_request
+    def before_request():
+        # 生成请求ID
+        g.request_id = str(uuid.uuid4())
+        g.start_time = time.time()
+
+        # 记录请求开始
+        request_logger.log_request_start(g.request_id)
+
+    @app.after_request
+    def after_request(response):
+        # 添加安全头
+        response = add_security_headers(response)
+
+        # 记录请求结束
+        if hasattr(g, 'start_time'):
+            response_time = time.time() - g.start_time
+            request_logger.log_request_end(g.request_id, response.status_code, response_time)
+
+        return response
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        # 记录错误
+        if hasattr(g, 'request_id'):
+            request_logger.log_error(g.request_id, e)
+
+        # 返回错误响应
+        if isinstance(e, ValueError):
+            return jsonify({'error': str(e)}), 400
+        elif isinstance(e, PermissionError):
+            return jsonify({'error': '权限不足'}), 403
+        else:
+            return jsonify({'error': '服务器内部错误'}), 500
     
     # 注册蓝图
     app.register_blueprint(ocr_bp)
